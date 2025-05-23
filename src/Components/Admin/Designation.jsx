@@ -1,0 +1,187 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import Swal from "sweetalert2";
+import { FcApproval } from "react-icons/fc";
+import AdminLayout from "./AdminLayout";
+
+// ✅ Replace with your actual Department ID
+const STATIC_DEPARTMENT_ID = "663d7de9c5299b8a14fbdfef";
+
+// ✅ Yup validation
+const schema = yup.object().shape({
+  name: yup.string().required("Designation name is required"),
+  departmentId: yup.string().required("Department is required"),
+});
+
+const DesignationManagement = () => {
+  const [designations, setDesignations] = useState([]);
+  const [editId, setEditId] = useState(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: { departmentId: STATIC_DEPARTMENT_ID },
+  });
+
+  const fetchDesignations = async () => {
+    const res = await axios.get("http://localhost:3003/api/designations");
+    if (res.data.success) setDesignations(res.data.data);
+  };
+
+  useEffect(() => {
+    fetchDesignations();
+  }, []);
+
+  const getToken = () => {
+    return `Bearer ${JSON.parse(localStorage.getItem("user"))?.token || ""}`;
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      if (editId) {
+        const res = await axios.put(
+          `http://localhost:3003/api/designations/${editId}`,
+          data,
+          {
+            headers: { Authorization: getToken() },
+          }
+        );
+        if (res.data.success) {
+          Swal.fire("Updated!", res.data.message, "success");
+          setEditId(null);
+        }
+      } else {
+        const res = await axios.post("http://localhost:3003/api/designations", data, {
+          headers: { Authorization: getToken() },
+        });
+        if (res.data.success) {
+          Swal.fire("Success", res.data.message, "success");
+        } else {
+          Swal.fire("Error", res.data.message, "error");
+        }
+      }
+      reset({ name: "", departmentId: STATIC_DEPARTMENT_ID });
+      fetchDesignations();
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Something went wrong", "error");
+    }
+  };
+
+  const handleEdit = (item) => {
+    setValue("name", item.name);
+    setValue("departmentId", item.departmentId?._id || STATIC_DEPARTMENT_ID);
+    setEditId(item._id);
+  };
+
+  const handleDelete = async (id) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (confirm.isConfirmed) {
+      await axios.delete(`http://localhost:3003/api/designations/${id}`, {
+        headers: { Authorization: getToken() },
+      });
+      fetchDesignations();
+      Swal.fire("Deleted!", "Designation has been deleted.", "success");
+    }
+  };
+
+  return (
+    <AdminLayout>
+        <div className="container mt-5">
+      <h3 className="text-center mb-4 d-flex justify-content-center align-items-center gap-2">
+        <FcApproval />
+        Designation Management
+      </h3>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="mb-4">
+        <div className="row g-2">
+          <div className="col-md-6">
+            <input
+              type="text"
+              className={`form-control ${errors.name ? "is-invalid" : ""}`}
+              placeholder="Enter Designation Name"
+              {...register("name")}
+            />
+            <div className="invalid-feedback">{errors.name?.message}</div>
+          </div>
+
+          <div className="col-md-4">
+            <input
+              type="text"
+              className={`form-control ${errors.departmentId ? "is-invalid" : ""}`}
+              placeholder="Department ID"
+              {...register("departmentId")}
+              readOnly
+            />
+            <div className="invalid-feedback">{errors.departmentId?.message}</div>
+          </div>
+
+          <div className="col-md-2">
+            <button type="submit" className="btn btn-dark w-100">
+              {editId ? "Update" : "Add"}
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <table className="table table-bordered text-center">
+        <thead className="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Designation</th>
+            <th>Department</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {designations.length > 0 ? (
+            designations.map((item, index) => (
+              <tr key={item._id}>
+                <td>{index + 1}</td>
+                <td>{item.name}</td>
+                <td>{item.departmentId?.name || "N/A"}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-warning me-2"
+                    onClick={() => handleEdit(item)}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleDelete(item._id)}
+                  >
+                    <FaTrash />
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4">No designations found.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+    </AdminLayout>
+  );
+};
+
+export default DesignationManagement;

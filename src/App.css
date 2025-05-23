@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* Ensure SweetAlert always appears on top */
+.swal2-container.custom-swal-zindex {
+  z-index: 11000 !important;
+  position: fixed !important;
+}
+

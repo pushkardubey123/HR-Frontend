@@ -29,6 +29,7 @@ const schema = yup.object({
 const Register = () => {
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
+  const [shifts, setShifts] = useState([]);
 
   const {
     register,
@@ -45,9 +46,11 @@ const Register = () => {
         const [d, ds, s] = await Promise.all([
           axios.get("http://localhost:3003/api/departments"),
           axios.get("http://localhost:3003/api/designations"),
+          axios.get("http://localhost:3003/api/shifts"),
         ]);
         setDepartments(d.data.data || []);
         setDesignations(ds.data.data || []);
+        setShifts(s.data.data || []);
       } catch (err) {
         console.error("Fetching dropdowns failed", err);
       }
@@ -157,9 +160,7 @@ const Register = () => {
         {errors.designationId && <p className="text-danger">{errors.designationId.message}</p>}
         <select className="form-control mb-2" {...register("shiftId")}>
           <option value="">Select Shift</option>
-          <option value="Day">Day</option>
-          <option value="Night">Night</option>
-          <option value="Full-time">Full-Time</option>
+          {shifts.map((d)=><option key={d._id}>{d.name}</option>)}
         </select><br />
         {errors.shiftId && <p className="text-danger">{errors.shiftId.message}</p>}
 

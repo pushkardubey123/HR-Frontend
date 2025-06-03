@@ -38,6 +38,11 @@ const EmployeeLayout = ({ children }) => {
       to: "/employee/my-attendence-list",
       icon: <CiBoxList />,
     },
+    {
+      name: "Salary List",
+      to: "/employee/salary-slips",
+      icon: <CiBoxList />,
+    },
   ];
 
   return (

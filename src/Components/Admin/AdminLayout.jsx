@@ -5,6 +5,9 @@ import { FaAddressCard } from "react-icons/fa";
 import { BiSolidDashboard } from "react-icons/bi";
 import { MdOutlineDesignServices } from "react-icons/md";
 import { FcLeave } from "react-icons/fc";
+import { IoListCircle } from "react-icons/io5";
+import { BsFillShiftFill } from "react-icons/bs";
+import { TbCalendarDollar } from "react-icons/tb";
 
 const AdminLayout = ({ children }) => {
   const [toggle, setToggle] = useState(true);
@@ -35,7 +38,17 @@ const AdminLayout = ({ children }) => {
     {
       name: "Employee Att. Lists",
       to: "/admin/employee-attendence-lists",
-      icon: <FcLeave />,
+      icon: <IoListCircle />,
+    },
+    {
+      name: "Shifts",
+      to: "/admin/shifts",
+      icon: <BsFillShiftFill />,
+    },
+    {
+      name: "Payrolls",
+      to: "/admin/payroll",
+      icon: <TbCalendarDollar />,
     },
   ];
 

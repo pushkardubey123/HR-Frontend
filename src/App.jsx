@@ -17,6 +17,9 @@ import MarkAttendance from './Components/Employee/MarkAttendance'
 import Footer from './Components/Home/Footer'
 import MyAttendanceList from './Components/Employee/MyAttendanceList'
 import AdminAttendancePanel from './Components/Admin/AdminAttendencePanel'
+import ShiftManagement from './Components/Admin/ShiftManagement'
+import PayrollManagement from './Components/Admin/PayrollManagement'
+import MySalarySlips from './Components/Employee/MySalarySlip'
 
 function App() {
 
@@ -30,14 +33,17 @@ function App() {
     <Route path="/admin/department" element={<Department />} />
     <Route path="/admin/department/:id" element={<Department />} />
     <Route path="/admin/designations" element={<DesignationManagement />} />
+    <Route path="/admin/shifts" element={<ShiftManagement />} />
     <Route path="/admin/leaves" element={<AdminLeavePanel />} />
     <Route path="/admin/employee-attendence-lists" element={<AdminAttendancePanel />} />
+    <Route path="/admin/payroll" element={<PayrollManagement />} />
     
     <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
     <Route path="/employee/apply-leave" element={<ApplyLeave />} />
     <Route path="/employee/my-leaves" element={<MyLeaveList/>} />
     <Route path="/employee/mark-attendence" element={<MarkAttendance/>} />
     <Route path="/employee/my-attendence-list" element={<MyAttendanceList/>} />
+    <Route path="/employee/salary-slips" element={<MySalarySlips />} />
     <Route path="/register" element={<Register/>} />
     <Route path="/login" element={<Login/>} />
   </Routes>

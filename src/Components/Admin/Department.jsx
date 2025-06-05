@@ -9,7 +9,6 @@ import { Button, Form } from "react-bootstrap";
 import AdminLayout from "./AdminLayout";
 import { FcDepartment } from "react-icons/fc";
 
-// ✅ Validation Schema
 const schema = yup.object().shape({
   name: yup.string().required("Department name is required"),
   description: yup.string().required("Description is required"),
@@ -17,8 +16,8 @@ const schema = yup.object().shape({
 
 const Department = () => {
   const [departments, setDepartments] = useState([]);
-  const { id } = useParams(); // for edit
-  const location = useLocation(); // for edit prefilling
+  const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const {
@@ -53,7 +52,6 @@ const Department = () => {
     }
   }, [location.state, setValue]);
 
-  // ➕ Submit Form
   const onSubmit = async (data) => {
     try {
       if (id) {

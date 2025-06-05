@@ -76,7 +76,7 @@ const MySalarySlips = () => {
         <table className="table table-bordered text-center">
           <thead className="table-dark">
             <tr>
-              <th>#</th>
+              <th>S No.</th>
               <th>Month</th>
               <th>Basic</th>
               <th>Net</th>

@@ -14,12 +14,17 @@ const MySalarySlips = () => {
     setUserId(user?.id);
     const fetchPayrolls = async () => {
       try {
-        const res = await axios.get("http://localhost:3003/api/payrolls", {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        });
-        const data = res.data.data.filter((p) => p.employeeId?._id === user?.id);
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/payrolls`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        const data = res.data.data.filter(
+          (p) => p.employeeId?._id === user?.id
+        );
         setPayrolls(data);
       } catch (error) {
         console.error("Failed to fetch payrolls", error.message);
@@ -43,8 +48,14 @@ const MySalarySlips = () => {
         ["Month", item.month],
         ["Basic Salary", `INR ${item.basicSalary}`],
         ["Net Salary", `INR ${item.netSalary}`],
-        ["Allowances", item.allowances.map(a => `${a.title}: INR ${a.amount}`).join(", ")],
-        ["Deductions", item.deductions.map(d => `${d.title}: INR ${d.amount}`).join(", ")],
+        [
+          "Allowances",
+          item.allowances.map((a) => `${a.title}: INR ${a.amount}`).join(", "),
+        ],
+        [
+          "Deductions",
+          item.deductions.map((d) => `${d.title}: INR ${d.amount}`).join(", "),
+        ],
       ],
     });
     doc.save(`SalarySlip-${item.month}.pdf`);
@@ -63,9 +74,7 @@ const MySalarySlips = () => {
             onChange={(e) => setSelectedMonth(e.target.value)}
           >
             <option value="">All</option>
-            {[
-              ...new Set(payrolls.map((p) => p.month)),
-            ].map((month) => (
+            {[...new Set(payrolls.map((p) => p.month))].map((month) => (
               <option key={month} value={month}>
                 {month}
               </option>

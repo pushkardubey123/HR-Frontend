@@ -13,7 +13,7 @@ const MyLeaveList = () => {
       const employeeId = user?.id;
 
       const res = await axios.get(
-        `http://localhost:3003/api/leaves/employee/${employeeId}`,
+        `${import.meta.env.VITE_API_URL}/api/leaves/employee/${employeeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,7 +38,9 @@ const MyLeaveList = () => {
   return (
     <EmployeeLayout>
       <div className="container mt-4">
-        <h4 className="shadow-lg text-center p-2 bg-secondary text-white">My Leave Lists</h4>
+        <h4 className="shadow-lg text-center p-2 bg-secondary text-white">
+          My Leave Lists
+        </h4>
         {loading ? (
           <p>Loading...</p>
         ) : leaves.length === 0 ? (

@@ -25,7 +25,7 @@ const ShiftManagement = () => {
 
   const fetchShifts = async () => {
     try {
-      const res = await axios.get("http://localhost:3003/api/shifts");
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`);
       if (res.data.success) setShifts(res.data.data);
     } catch (err) {
       console.error("Fetch Shifts Error:", err.message);
@@ -40,7 +40,7 @@ const ShiftManagement = () => {
     try {
       if (editId) {
         const res = await axios.put(
-          `http://localhost:3003/api/shifts/${editId}`,
+          `${import.meta.env.VITE_API_URL}/api/shifts/${editId}`,
           data,
           getTokenHeader()
         );
@@ -49,7 +49,7 @@ const ShiftManagement = () => {
         }
       } else {
         const res = await axios.post(
-          "http://localhost:3003/api/shifts",
+          `${import.meta.env.VITE_API_URL}/api/shifts`,
           data,
           getTokenHeader()
         );
@@ -80,7 +80,10 @@ const ShiftManagement = () => {
       confirmButtonText: "Yes, Delete",
     });
     if (confirm.isConfirmed) {
-      await axios.delete(`http://localhost:3003/api/shifts/${id}`, getTokenHeader());
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/shifts/${id}`,
+        getTokenHeader()
+      );
       Swal.fire("Deleted!", "Shift has been deleted.", "success");
       fetchShifts();
     }
@@ -98,7 +101,9 @@ const ShiftManagement = () => {
               placeholder="Shift Name"
               {...register("name", { required: true })}
             />
-            {errors.name && <small className="text-danger">Name is required</small>}
+            {errors.name && (
+              <small className="text-danger">Name is required</small>
+            )}
           </div>
 
           <div className="col-md-3">
@@ -107,7 +112,9 @@ const ShiftManagement = () => {
               className="form-control"
               {...register("startTime", { required: true })}
             />
-            {errors.startTime && <small className="text-danger">Start time is required</small>}
+            {errors.startTime && (
+              <small className="text-danger">Start time is required</small>
+            )}
           </div>
 
           <div className="col-md-3">
@@ -116,7 +123,9 @@ const ShiftManagement = () => {
               className="form-control"
               {...register("endTime", { required: true })}
             />
-            {errors.endTime && <small className="text-danger">End time is required</small>}
+            {errors.endTime && (
+              <small className="text-danger">End time is required</small>
+            )}
           </div>
 
           <div className="col-md-2">

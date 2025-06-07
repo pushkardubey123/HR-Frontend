@@ -4,7 +4,6 @@ import axios from "axios";
 import { MdOpacity } from "react-icons/md";
 
 const AdminDashboard = () => {
-
   const backgroundStyle = {
     backgroundImage: 'url("/images/office-bg.jpg")',
     backgroundSize: "cover",
@@ -44,15 +43,22 @@ const AdminDashboard = () => {
 
     const fetchAllStats = async () => {
       try {
-        const [usersRes, deptRes, desigRes, leavesRes, attendRes] = await Promise.all([
-          axios.get("http://localhost:3003/user/", { headers }),
-          axios.get("http://localhost:3003/api/departments"),
-          axios.get("http://localhost:3003/api/designations"),
-          axios.get("http://localhost:3003/api/leaves", { headers }),
-          axios.get("http://localhost:3003/api/attendance", { headers }),
-        ]);
+        const [usersRes, deptRes, desigRes, leavesRes, attendRes] =
+          await Promise.all([
+            axios.get(`${import.meta.env.VITE_API_URL}/user/`, { headers }),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/departments`),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/designations`),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/leaves`, {
+              headers,
+            }),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/attendance`, {
+              headers,
+            }),
+          ]);
 
-        const totalEmployees = usersRes.data.data.filter(u => u.role === "employee").length;
+        const totalEmployees = usersRes.data.data.filter(
+          (u) => u.role === "employee"
+        ).length;
 
         setStats({
           totalEmployees,
@@ -70,9 +76,17 @@ const AdminDashboard = () => {
   }, []);
 
   const cards = [
-    { label: "Total Employees", value: stats.totalEmployees, color: "dark"},
-    { label: "Total Departments", value: stats.totalDepartments, color: "dark" },
-    { label: "Total Designations", value: stats.totalDesignations, color: "dark" },
+    { label: "Total Employees", value: stats.totalEmployees, color: "dark" },
+    {
+      label: "Total Departments",
+      value: stats.totalDepartments,
+      color: "dark",
+    },
+    {
+      label: "Total Designations",
+      value: stats.totalDesignations,
+      color: "dark",
+    },
     { label: "Total Leaves", value: stats.totalLeaves, color: "dark" },
     { label: "Total Attendance", value: stats.totalAttendance, color: "dark" },
   ];
@@ -83,20 +97,20 @@ const AdminDashboard = () => {
         <div style={overlayStyle}></div>
         <div style={contentStyle}>
           <div className="container mt-4">
-        <h3 className="text-center mb-4"></h3>
-        <div className="row">
-          {cards.map((card, i) => (
-            <div className="col-md-4 mb-3" key={i}>
-              <div className={`card text-white bg-${card.color} shadow`}>
-                <div className="card-body text-center">
-                  <h5 className="card-title">{card.label}</h5>
-                  <h2>{card.value}</h2>
+            <h3 className="text-center mb-4"></h3>
+            <div className="row">
+              {cards.map((card, i) => (
+                <div className="col-md-4 mb-3" key={i}>
+                  <div className={`card text-white bg-${card.color} shadow`}>
+                    <div className="card-body text-center">
+                      <h5 className="card-title">{card.label}</h5>
+                      <h2>{card.value}</h2>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
         </div>
       </div>
     </AdminLayout>

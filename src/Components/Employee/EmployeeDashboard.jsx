@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import EmployeeLayout from "./EmployeeLayout";
 import jsPDF from "jspdf";
-import { autoTable } from 'jspdf-autotable'
+import { autoTable } from "jspdf-autotable";
 import Papa from "papaparse";
 
 const EmployeeDashboard = () => {
@@ -23,11 +23,16 @@ const EmployeeDashboard = () => {
       const username = user?.username;
       try {
         setUserName(username);
-        const res = await axios.get(`http://localhost:3003/api/leaves/employee/${employeeId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/leaves/employee/${employeeId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const myLeaves = res.data.data.filter(
-          (leave) => leave.employeeId === employeeId || leave.employeeId?._id === employeeId
+          (leave) =>
+            leave.employeeId === employeeId ||
+            leave.employeeId?._id === employeeId
         );
 
         const stats = {
@@ -46,7 +51,6 @@ const EmployeeDashboard = () => {
     fetchData();
   }, []);
 
-  // 📦 Export to PDF
   const exportToPDF = () => {
     const doc = new jsPDF();
     doc.text("Recent Leave Requests", 14, 10);
@@ -57,33 +61,32 @@ const EmployeeDashboard = () => {
       leave.status,
       leave.reason,
     ]);
-    autoTable(doc,{
-  head: [["Type", "From", "To", "Status", "Reason"]],
-  body: tableData,
-  theme: "striped", // striped / grid / plain
-  headStyles: {
-    fillColor: [123, 123, 255], // Bootstrap Primary color (blue)
-    textColor: 255, // white text
-    fontStyle: "bold",
-  },
-  bodyStyles: {
-    textColor: [0, 0, 0], // black text
-    fontSize: 10,
-  },
-  alternateRowStyles: {
-    fillColor: [240, 240, 240], // light grey for alternate rows
-  },
-  styles: {
-    cellPadding: 3,
-    font: "helvetica",
-    fontSize: 11,
-  },
-});
+    autoTable(doc, {
+      head: [["Type", "From", "To", "Status", "Reason"]],
+      body: tableData,
+      theme: "striped",
+      headStyles: {
+        fillColor: [123, 123, 255],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+      bodyStyles: {
+        textColor: [0, 0, 0],
+        fontSize: 10,
+      },
+      alternateRowStyles: {
+        fillColor: [240, 240, 240],
+      },
+      styles: {
+        cellPadding: 3,
+        font: "helvetica",
+        fontSize: 11,
+      },
+    });
 
     doc.save("leaves.pdf");
   };
 
-  // 📦 Export to CSV
   const exportToCSV = () => {
     const csvData = latestLeaves.map((leave) => ({
       Type: leave.leaveType,
@@ -104,9 +107,20 @@ const EmployeeDashboard = () => {
 
   return (
     <EmployeeLayout>
-      <div className="container mt-4 bg-secondary p-4 rounded" style={{ minHeight: "80vh" }}>
-        <h4 className="text-center" style={{ textShadow: "2px 2px 5px rgba(0,0,0,0.7)", fontFamily: "cursive", color: "orange" }}>
-          <span style={{ fontSize: "50px" }}>W</span>elcome {userName || "Employee"},
+      <div
+        className="container mt-4 bg-secondary p-4 rounded"
+        style={{ minHeight: "80vh" }}
+      >
+        <h4
+          className="text-center"
+          style={{
+            textShadow: "2px 2px 5px rgba(0,0,0,0.7)",
+            fontFamily: "cursive",
+            color: "orange",
+          }}
+        >
+          <span style={{ fontSize: "50px" }}>W</span>elcome{" "}
+          {userName || "Employee"},
         </h4>
 
         <div className="row mt-4">
@@ -130,11 +144,15 @@ const EmployeeDashboard = () => {
         <h5 className="mt-4 d-flex justify-content-between align-items-center">
           Recent Leave Requests
           <div>
-            <button className="btn btn-sm btn-light me-2" onClick={exportToCSV}>Export CSV</button>
-            <button className="btn btn-sm btn-light" onClick={exportToPDF}>Export PDF</button>
+            <button className="btn btn-sm btn-light me-2" onClick={exportToCSV}>
+              Export CSV
+            </button>
+            <button className="btn btn-sm btn-light" onClick={exportToPDF}>
+              Export PDF
+            </button>
           </div>
         </h5>
-          
+
         <table className="table table-bordered mt-2">
           <thead className="table-light">
             <tr>

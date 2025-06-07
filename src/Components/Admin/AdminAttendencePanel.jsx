@@ -9,15 +9,18 @@ import AdminLayout from "./AdminLayout";
 const AdminAttendancePanel = () => {
   const [attendances, setAttendances] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
-const token = JSON.parse(localStorage.getItem("user"))?.token;  
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
   const fetchAllAttendance = async () => {
     const token = JSON.parse(localStorage.getItem("user"))?.token;
     try {
-      const res = await axios.get("http://localhost:3003/api/attendance", {
-  headers: { Authorization: `Bearer ${token}` }
-});;
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/attendance`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (res.data.success) setAttendances(res.data.data);
-      console.log(res)
+      console.log(res);
     } catch (error) {
       console.error("Fetch error:", error);
     }
@@ -27,37 +30,39 @@ const token = JSON.parse(localStorage.getItem("user"))?.token;
     fetchAllAttendance();
   }, []);
 
-const handleDelete = async (id) => {
-  const confirm = await Swal.fire({
-    title: "Are you sure?",
-    text: "This will permanently delete the attendance record!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, delete it!",
-  });
+  const handleDelete = async (id) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will permanently delete the attendance record!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    });
 
-  if (confirm.isConfirmed) {
-    try {
-      const res = await axios.delete(`http://localhost:3003/api/attendance/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.data.success) {
-        Swal.fire("Deleted", "Attendance deleted successfully", "success");
-        fetchAllAttendance();
+    if (confirm.isConfirmed) {
+      try {
+        const res = await axios.delete(
+          `${import.meta.env.VITE_API_URL}/api/attendance/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.data.success) {
+          Swal.fire("Deleted", "Attendance deleted successfully", "success");
+          fetchAllAttendance();
+        }
+      } catch (error) {
+        Swal.fire("Error", "Delete failed", "error");
       }
-    } catch (error) {
-      Swal.fire("Error", "Delete failed", "error");
     }
-  }
-};
+  };
 
-
-const handleStatusUpdate = async (id) => {
-  const { value: formValues } = await Swal.fire({
-    title: "Update Attendance",
-    html: `
+  const handleStatusUpdate = async (id) => {
+    const { value: formValues } = await Swal.fire({
+      title: "Update Attendance",
+      html: `
       <select id="status" class="swal2-select">
         <option value="Present">Present</option>
         <option value="Absent">Absent</option>
@@ -68,32 +73,35 @@ const handleStatusUpdate = async (id) => {
         <option value="Auto">Auto</option>
       </select>
     `,
-    focusConfirm: false,
-    preConfirm: () => {
-      return {
-        status: document.getElementById("status").value,
-        statusType: document.getElementById("type").value,
-      };
-    },
-  });
+      focusConfirm: false,
+      preConfirm: () => {
+        return {
+          status: document.getElementById("status").value,
+          statusType: document.getElementById("type").value,
+        };
+      },
+    });
 
-  if (formValues) {
-    try {
-      const res = await axios.put(`http://localhost:3003/api/attendance/${id}`, formValues, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.data.success) {
-        Swal.fire("Updated", "Attendance updated successfully", "success");
-        fetchAllAttendance();
+    if (formValues) {
+      try {
+        const res = await axios.put(
+          `${import.meta.env.VITE_API_URL}/api/attendance/${id}`,
+          formValues,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.data.success) {
+          Swal.fire("Updated", "Attendance updated successfully", "success");
+          fetchAllAttendance();
+        }
+      } catch (error) {
+        Swal.fire("Error", "Update failed", "error");
       }
-    } catch (error) {
-      Swal.fire("Error", "Update failed", "error");
     }
-  }
-};
-
+  };
 
   const filtered = filterStatus
     ? attendances.filter((a) => a.status === filterStatus)
@@ -194,7 +202,15 @@ const handleStatusUpdate = async (id) => {
                     <td>{new Date(a.date).toLocaleDateString()}</td>
                     <td>{a.inTime}</td>
                     <td>
-                      <span className={`badge bg-${a.status === "Present" ? "success" : a.status === "Late" ? "warning" : "danger"}`}>
+                      <span
+                        className={`badge bg-${
+                          a.status === "Present"
+                            ? "success"
+                            : a.status === "Late"
+                            ? "warning"
+                            : "danger"
+                        }`}
+                      >
                         {a.status}
                       </span>
                     </td>

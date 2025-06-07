@@ -54,8 +54,13 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div className="d-flex" style={{ minHeight: "100vh" }}>
-      {/* Sidebar */}
-      <div className={toggle ? "col-sm-2 men bg-dark text-white p-3" : "col-sm-1 men bg-dark text-white p-3"}>
+      <div
+        className={
+          toggle
+            ? "col-sm-2 men bg-dark text-white p-3"
+            : "col-sm-1 men bg-dark text-white p-3"
+        }
+      >
         <div
           className="d-flex justify-content-between align-items-center mb-4"
           style={{ cursor: "pointer" }}
@@ -83,18 +88,23 @@ const AdminLayout = ({ children }) => {
                 style={
                   toggle
                     ? { padding: "5px 0" }
-                    : { textAlign: "center", padding: "5px 0", justifyContent: "center" }
+                    : {
+                        textAlign: "center",
+                        padding: "5px 0",
+                        justifyContent: "center",
+                      }
                 }
               >
-                <span className="fs-4">{item.icon}</span> {toggle ? item.name : ""}
+                <span className="fs-4">{item.icon}</span>{" "}
+                {toggle ? item.name : ""}
               </h5>
             </Link>
           );
         })}
       </div>
-
-      {/* Main Content */}
-      <div className={toggle ? "col-sm-10 p-4 bg-light" : "col-sm-11 p-4 bg-light"}>
+      <div
+        className={toggle ? "col-sm-10 p-4 bg-light" : "col-sm-11 p-4 bg-light"}
+      >
         <div className="bg-white shadow-sm p-4 rounded">{children}</div>
       </div>
     </div>

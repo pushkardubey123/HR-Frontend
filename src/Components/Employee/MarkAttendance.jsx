@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import EmployeeLayout from "./EmployeeLayout";
-import { FaCheckCircle, FaRegCircle, FaSignInAlt, FaSignOutAlt, FaClock } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaRegCircle,
+  FaSignInAlt,
+  FaSignOutAlt,
+  FaClock,
+} from "react-icons/fa";
 import { FaLocationCrosshairs } from "react-icons/fa6";
 import { MdDoneOutline } from "react-icons/md";
 
@@ -22,7 +28,9 @@ const MarkAttendance = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const employeeId = user?.id;
     const today = new Date().toDateString();
-    const storedDate = localStorage.getItem(`attendanceMarkedDate_${employeeId}`);
+    const storedDate = localStorage.getItem(
+      `attendanceMarkedDate_${employeeId}`
+    );
 
     if (storedDate === today) {
       setMarkedToday(true);
@@ -34,12 +42,17 @@ const MarkAttendance = () => {
   const fetchTodayLogs = async (employeeId) => {
     const token = JSON.parse(localStorage.getItem("user"))?.token;
     try {
-      const res = await axios.get(`http://localhost:3003/api/attendance/employee/${employeeId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/attendance/employee/${employeeId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (res.data.success) {
         const today = new Date().toDateString();
-        const todayLog = res.data.data.find(log => new Date(log.date).toDateString() === today);
+        const todayLog = res.data.data.find(
+          (log) => new Date(log.date).toDateString() === today
+        );
         if (todayLog) {
           setInOutLogs(todayLog.inOutLogs || []);
         }
@@ -55,7 +68,11 @@ const MarkAttendance = () => {
     const employeeId = user?.id;
 
     if (!navigator.geolocation) {
-      Swal.fire("Error", "Geolocation is not supported by your browser", "error");
+      Swal.fire(
+        "Error",
+        "Geolocation is not supported by your browser",
+        "error"
+      );
       return;
     }
 
@@ -67,7 +84,7 @@ const MarkAttendance = () => {
 
         try {
           const res = await axios.post(
-            "http://localhost:3003/api/attendance/mark",
+            `${import.meta.env.VITE_API_URL}/api/attendance/mark`,
             { employeeId, latitude, longitude, inTime },
             { headers: { Authorization: `Bearer ${token}` } }
           );
@@ -108,7 +125,7 @@ const MarkAttendance = () => {
       try {
         const { latitude, longitude } = position.coords;
         const res = await axios.post(
-          "http://localhost:3003/api/attendance/session",
+          `${import.meta.env.VITE_API_URL}/api/attendance/session`,
           {
             employeeId,
             latitude,
@@ -120,13 +137,21 @@ const MarkAttendance = () => {
           }
         );
         if (res.data.success) {
-          Swal.fire("Success", `${type === "in" ? "Checked In" : "Checked Out"} successfully`, "success");
+          Swal.fire(
+            "Success",
+            `${type === "in" ? "Checked In" : "Checked Out"} successfully`,
+            "success"
+          );
           fetchTodayLogs(employeeId);
         } else {
           Swal.fire("Error", res.data.message, "error");
         }
       } catch (err) {
-        Swal.fire("Error", err.response?.data?.message || "Something went wrong", "error");
+        Swal.fire(
+          "Error",
+          err.response?.data?.message || "Something went wrong",
+          "error"
+        );
       }
     });
   };
@@ -162,10 +187,16 @@ const MarkAttendance = () => {
         </button>
 
         <div className="d-flex justify-content-center gap-3 mt-3">
-          <button className="btn btn-outline-primary d-flex align-items-center gap-2" onClick={() => handleCheck("in")}>
+          <button
+            className="btn btn-outline-primary d-flex align-items-center gap-2"
+            onClick={() => handleCheck("in")}
+          >
             <FaSignInAlt /> Check In
           </button>
-          <button className="btn btn-outline-danger d-flex align-items-center gap-2" onClick={() => handleCheck("out")}>
+          <button
+            className="btn btn-outline-danger d-flex align-items-center gap-2"
+            onClick={() => handleCheck("out")}
+          >
             <FaSignOutAlt /> Check Out
           </button>
         </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import EmployeeLayout from "./EmployeeLayout";
 import { FcBusinessContact, FcExport } from "react-icons/fc";
-import Papa from "papaparse"
+import Papa from "papaparse";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Swal from "sweetalert2";
@@ -21,14 +21,16 @@ const MyAttendanceList = () => {
 
       try {
         const res = await axios.get(
-          `http://localhost:3003/api/attendance/employee/${employeeId}`,
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/attendance/employee/${employeeId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log(res)
+        console.log(res);
         if (res.data.success) {
           const reversed = res.data.data.reverse();
           setAttendances(reversed);
@@ -110,94 +112,101 @@ const MyAttendanceList = () => {
 
   return (
     <EmployeeLayout>
-  <div className="container mt-5">
-    {/* Heading & Export Buttons */}
-    <div className="row justify-content-between align-items-center mb-3 g-2">
-      <div className="col-12 col-md-6">
-        <h4 className="mb-0">🧾 My Attendance History</h4>
-      </div>
-      <div className="col-12 col-md-6 text-md-end text-start">
-        <div className="d-flex flex-wrap gap-2 justify-content-md-end">
-          <button className="btn btn-secondary d-flex align-items-center" onClick={exportToPDF}>
-            <FcExport className="me-1" /> Export PDF
-          </button>
-          <button className="btn btn-secondary d-flex align-items-center" onClick={exportToCSV}>
-            <FcExport className="me-1" /> Export CSV
-          </button>
+      <div className="container mt-5">
+        <div className="row justify-content-between align-items-center mb-3 g-2">
+          <div className="col-12 col-md-6">
+            <h4 className="mb-0">🧾 My Attendance History</h4>
+          </div>
+          <div className="col-12 col-md-6 text-md-end text-start">
+            <div className="d-flex flex-wrap gap-2 justify-content-md-end">
+              <button
+                className="btn btn-secondary d-flex align-items-center"
+                onClick={exportToPDF}
+              >
+                <FcExport className="me-1" /> Export PDF
+              </button>
+              <button
+                className="btn btn-secondary d-flex align-items-center"
+                onClick={exportToCSV}
+              >
+                <FcExport className="me-1" /> Export CSV
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Date Filters */}
+        <div className="row mb-4 g-2">
+          <div className="col-12 col-md-5">
+            <label>From Date:</label>
+            <input
+              type="date"
+              className="form-control"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+            />
+          </div>
+          <div className="col-12 col-md-5">
+            <label>To Date:</label>
+            <input
+              type="date"
+              className="form-control"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+            />
+          </div>
+          <div className="col-12 col-md-2 d-grid align-items-end">
+            <button className="btn btn-secondary" onClick={handleFilter}>
+              Filter
+            </button>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="table-responsive">
+          <table className="table table-bordered text-center">
+            <thead className="table-dark">
+              <tr>
+                <th>S No.</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {attendances.length > 0 ? (
+                attendances.map((att, index) => (
+                  <tr key={att._id}>
+                    <td>{index + 1}</td>
+                    <td>{new Date(att.date).toLocaleDateString()}</td>
+                    <td>{att.inTime}</td>
+                    <td>{att.type || "GPS"}</td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          att.status === "Present"
+                            ? "bg-success"
+                            : att.status === "Late"
+                            ? "bg-warning text-dark"
+                            : "bg-danger"
+                        }`}
+                      >
+                        {att.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5">No attendance records found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
-
-    {/* Date Filters */}
-    <div className="row mb-4 g-2">
-      <div className="col-12 col-md-5">
-        <label>From Date:</label>
-        <input
-          type="date"
-          className="form-control"
-          value={fromDate}
-          onChange={(e) => setFromDate(e.target.value)}
-        />
-      </div>
-      <div className="col-12 col-md-5">
-        <label>To Date:</label>
-        <input
-          type="date"
-          className="form-control"
-          value={toDate}
-          onChange={(e) => setToDate(e.target.value)}
-        />
-      </div>
-      <div className="col-12 col-md-2 d-grid align-items-end">
-        <button className="btn btn-secondary" onClick={handleFilter}>Filter</button>
-      </div>
-    </div>
-
-    {/* Table */}
-    <div className="table-responsive">
-      <table className="table table-bordered text-center">
-        <thead className="table-dark">
-          <tr>
-            <th>S No.</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Type</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {attendances.length > 0 ? (
-            attendances.map((att, index) => (
-              <tr key={att._id}>
-                <td>{index + 1}</td>
-                <td>{new Date(att.date).toLocaleDateString()}</td>
-                <td>{att.inTime}</td>
-                <td>{att.type || "GPS"}</td>
-                <td>
-                  <span
-                    className={`badge ${
-                      att.status === "Present"
-                        ? "bg-success"
-                        : att.status === "Late"
-                        ? "bg-warning text-dark"
-                        : "bg-danger"
-                    }`}
-                  >
-                    {att.status}
-                  </span>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5">No attendance records found.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</EmployeeLayout>
+    </EmployeeLayout>
   );
 };
 

@@ -34,7 +34,9 @@ const Department = () => {
 
   const fetchDepartments = async () => {
     try {
-      const res = await axios.get("http://localhost:3003/api/departments");
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/departments`
+      );
       setDepartments(res.data.data || []);
     } catch (err) {
       console.error("Error fetching departments", err);
@@ -52,18 +54,19 @@ const Department = () => {
     }
   }, [location.state, setValue]);
 
+  // ➕ Submit Form
   const onSubmit = async (data) => {
     try {
       if (id) {
         const res = await axios.put(
-          `http://localhost:3003/api/departments/${id}`,
+          `${import.meta.env.VITE_API_URL}/api/departments/${id}`,
           data,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         Swal.fire("Updated!", res.data.message, "success");
       } else {
         const res = await axios.post(
-          "http://localhost:3003/api/departments",
+          `${import.meta.env.VITE_API_URL}/api/departments`,
           data,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -73,7 +76,11 @@ const Department = () => {
       navigate("/admin/department");
       fetchDepartments();
     } catch (err) {
-      Swal.fire("Error", err.response?.data?.message || "Action failed", "error");
+      Swal.fire(
+        "Error",
+        err.response?.data?.message || "Action failed",
+        "error"
+      );
     }
   };
 
@@ -88,9 +95,12 @@ const Department = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3003/api/departments/${deptId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(
+          `${import.meta.env.VITE_API_URL}/api/departments/${deptId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         Swal.fire("Deleted!", "Department removed successfully", "success");
         fetchDepartments();
       } catch (err) {
@@ -101,76 +111,80 @@ const Department = () => {
 
   return (
     <AdminLayout>
-        <div className="container mt-4">
-      <h3 className="text-center mb-4 d-flex justify-content-center align-items-center gap-2">
-  <FcDepartment />
-  Department Management
-</h3>
+      <div className="container mt-4">
+        <h3 className="text-center mb-4 d-flex justify-content-center align-items-center gap-2">
+          <FcDepartment />
+          Department Management
+        </h3>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mb-4">
-        <div className="row">
-          <div className="col-md-5">
-            <Form.Control
-              placeholder="Department Name"
-              {...register("name")}
-              className="mb-2"
-            />
-            {errors.name && <small className="text-danger">{errors.name.message}</small>}
-          </div>
-          <div className="col-md-5">
-            <Form.Control
-              placeholder="Description"
-              {...register("description")}
-              className="mb-2"
-            />
-            {errors.description && (
-              <small className="text-danger">{errors.description.message}</small>
-            )}
-          </div>
-          <div className="col-md-2 d-grid">
-            <Button type="submit" variant={id ? "secondary" : "dark"}>
-              {id ? "Update" : "Add"}
-            </Button>
-          </div>
-        </div>
-      </form>
-
-      <ul className="list-group">
-        {departments.map((dept) => (
-          <li
-            key={dept._id}
-            className="list-group-item d-flex justify-content-between align-items-center"
-          >
-            <div>
-              <strong>{dept.name}</strong>
-              <br />
-              <small className="text-muted">{dept.description}</small>
+        <form onSubmit={handleSubmit(onSubmit)} className="mb-4">
+          <div className="row">
+            <div className="col-md-5">
+              <Form.Control
+                placeholder="Department Name"
+                {...register("name")}
+                className="mb-2"
+              />
+              {errors.name && (
+                <small className="text-danger">{errors.name.message}</small>
+              )}
             </div>
-            <div>
-              <Button
-                variant="btn btn-secondary"
-                size="sm"
-                className="me-2"
-                onClick={() =>
-                  navigate(`/admin/department/${dept._id}`, {
-                    state: { name: dept.name, description: dept.description },
-                  })
-                }
-              >
-                Edit
-              </Button>
-              <Button
-                variant="bt btn-danger"
-                size="sm"
-                onClick={() => handleDelete(dept._id)}
-              >
-                Delete
+            <div className="col-md-5">
+              <Form.Control
+                placeholder="Description"
+                {...register("description")}
+                className="mb-2"
+              />
+              {errors.description && (
+                <small className="text-danger">
+                  {errors.description.message}
+                </small>
+              )}
+            </div>
+            <div className="col-md-2 d-grid">
+              <Button type="submit" variant={id ? "secondary" : "dark"}>
+                {id ? "Update" : "Add"}
               </Button>
             </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+          </div>
+        </form>
+
+        <ul className="list-group">
+          {departments.map((dept) => (
+            <li
+              key={dept._id}
+              className="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <div>
+                <strong>{dept.name}</strong>
+                <br />
+                <small className="text-muted">{dept.description}</small>
+              </div>
+              <div>
+                <Button
+                  variant="btn btn-secondary"
+                  size="sm"
+                  className="me-2"
+                  onClick={() =>
+                    navigate(`/admin/department/${dept._id}`, {
+                      state: { name: dept.name, description: dept.description },
+                    })
+                  }
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="bt btn-danger"
+                  size="sm"
+                  onClick={() => handleDelete(dept._id)}
+                >
+                  Delete
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </AdminLayout>
   );
 };

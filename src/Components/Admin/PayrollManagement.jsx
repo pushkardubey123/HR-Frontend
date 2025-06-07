@@ -43,10 +43,10 @@ const PayrollManagement = () => {
 
   const fetchData = async () => {
     const [empRes, payRes] = await Promise.all([
-      axios.get("http://localhost:3003/user/", {
+      axios.get(`${import.meta.env.VITE_API_URL}/user/`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
-      axios.get("http://localhost:3003/api/payrolls", {
+      axios.get(`${import.meta.env.VITE_API_URL}/api/payrolls`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
     ]);
@@ -96,14 +96,22 @@ const PayrollManagement = () => {
 
     try {
       if (editingId) {
-        await axios.put(`http://localhost:3003/api/payrolls/${editingId}`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.put(
+          `${import.meta.env.VITE_API_URL}/api/payrolls/${editingId}`,
+          payload,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         Swal.fire("Updated", "Payroll updated", "success");
       } else {
-        await axios.post("http://localhost:3003/api/payrolls", payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/payrolls`,
+          payload,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         Swal.fire("Created", "Payroll created", "success");
       }
       reset();
@@ -137,7 +145,7 @@ const PayrollManagement = () => {
     });
 
     if (confirm.isConfirmed) {
-      await axios.delete(`http://localhost:3003/api/payrolls/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/payrolls/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();
@@ -191,7 +199,10 @@ const PayrollManagement = () => {
 
         <form className="row g-3 mt-3" onSubmit={handleSubmit(onSubmit)}>
           <div className="col-md-4">
-            <select className={`form-select ${errors.employeeId ? "is-invalid" : ""}`} {...register("employeeId")}>
+            <select
+              className={`form-select ${errors.employeeId ? "is-invalid" : ""}`}
+              {...register("employeeId")}
+            >
               <option value="">Select Employee</option>
               {employees.map((emp) => (
                 <option key={emp._id} value={emp._id}>
@@ -214,11 +225,15 @@ const PayrollManagement = () => {
           <div className="col-md-4">
             <input
               type="number"
-              className={`form-control ${errors.basicSalary ? "is-invalid" : ""}`}
+              className={`form-control ${
+                errors.basicSalary ? "is-invalid" : ""
+              }`}
               placeholder="Basic Salary"
               {...register("basicSalary")}
             />
-            <div className="invalid-feedback">{errors.basicSalary?.message}</div>
+            <div className="invalid-feedback">
+              {errors.basicSalary?.message}
+            </div>
           </div>
 
           <div className="col-md-6">
@@ -273,7 +288,8 @@ const PayrollManagement = () => {
 
           <div className="col-12">
             <button type="submit" className="btn btn-secondary w-100 ">
-              {editingId ? "Update Payroll" : "Add Payroll"} (Net ₹{calculateNet(watch("basicSalary"))})
+              {editingId ? "Update Payroll" : "Add Payroll"} (Net ₹
+              {calculateNet(watch("basicSalary"))})
             </button>
           </div>
         </form>
@@ -289,10 +305,16 @@ const PayrollManagement = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <div>
-            <button className="btn btn-sm btn-outline-success me-2" onClick={exportToCSV}>
+            <button
+              className="btn btn-sm btn-outline-success me-2"
+              onClick={exportToCSV}
+            >
               Export CSV
             </button>
-            <button className="btn btn-sm btn-outline-primary" onClick={exportToPDF}>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              onClick={exportToPDF}
+            >
               Export PDF
             </button>
           </div>
@@ -319,10 +341,16 @@ const PayrollManagement = () => {
                 <td>₹{p.basicSalary}</td>
                 <td>₹{p.netSalary}</td>
                 <td>
-                  <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(p)}>
+                  <button
+                    className="btn btn-sm btn-warning me-2"
+                    onClick={() => handleEdit(p)}
+                  >
                     Edit
                   </button>
-                  <button className="btn btn-sm btn-danger" onClick={() => handleDelete(p._id)}>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleDelete(p._id)}
+                  >
                     Delete
                   </button>
                 </td>

@@ -27,12 +27,15 @@ const DesignationManagement = () => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  const getToken = () => `Bearer ${JSON.parse(localStorage.getItem("user"))?.token || ""}`;
+  const getToken = () =>
+    `Bearer ${JSON.parse(localStorage.getItem("user"))?.token || ""}`;
 
   const fetchDesignations = async () => {
     try {
-      const res = await axios.get("http://localhost:3003/api/designations");
-      console.log(res)
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/designations`
+      );
+      console.log(res);
       if (res.data.success) setDesignations(res.data.data);
     } catch (err) {
       console.error("Error fetching designations:", err);
@@ -41,7 +44,9 @@ const DesignationManagement = () => {
 
   const fetchDepartments = async () => {
     try {
-      const res = await axios.get("http://localhost:3003/api/departments");
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/departments`
+      );
       if (res.data.success) setDepartments(res.data.data);
     } catch (err) {
       console.error("Error fetching departments:", err);
@@ -56,17 +61,25 @@ const DesignationManagement = () => {
   const onSubmit = async (data) => {
     try {
       if (editId) {
-        const res = await axios.put(`http://localhost:3003/api/designations/${editId}`, data, {
-          headers: { Authorization: getToken() },
-        });
+        const res = await axios.put(
+          `${import.meta.env.VITE_API_URL}/api/designations/${editId}`,
+          data,
+          {
+            headers: { Authorization: getToken() },
+          }
+        );
         if (res.data.success) {
           Swal.fire("Updated!", res.data.message, "success");
           setEditId(null);
         }
       } else {
-        const res = await axios.post("http://localhost:3003/api/designations", data, {
-          headers: { Authorization: getToken() },
-        });
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/designations`,
+          data,
+          {
+            headers: { Authorization: getToken() },
+          }
+        );
         if (res.data.success) {
           Swal.fire("Success", res.data.message, "success");
         } else {
@@ -98,9 +111,12 @@ const DesignationManagement = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3003/api/designations/${id}`, {
-          headers: { Authorization: getToken() },
-        });
+        await axios.delete(
+          `${import.meta.env.VITE_API_URL}/api/designations/${id}`,
+          {
+            headers: { Authorization: getToken() },
+          }
+        );
         fetchDesignations();
         Swal.fire("Deleted!", "Designation has been deleted.", "success");
       } catch (err) {
@@ -131,7 +147,9 @@ const DesignationManagement = () => {
 
             <div className="col-md-4">
               <select
-                className={`form-select ${errors.departmentId ? "is-invalid" : ""}`}
+                className={`form-select ${
+                  errors.departmentId ? "is-invalid" : ""
+                }`}
                 {...register("departmentId")}
               >
                 <option value="">Select Department</option>
@@ -141,7 +159,9 @@ const DesignationManagement = () => {
                   </option>
                 ))}
               </select>
-              <div className="invalid-feedback">{errors.departmentId?.message}</div>
+              <div className="invalid-feedback">
+                {errors.departmentId?.message}
+              </div>
             </div>
 
             <div className="col-md-2">

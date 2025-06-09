@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
-import { FaAddressCard } from "react-icons/fa";
+import { FaAddressCard, FaUsers } from "react-icons/fa";
 import { BiSolidDashboard } from "react-icons/bi";
 import { MdOutlineDesignServices } from "react-icons/md";
 import { FcLeave } from "react-icons/fc";
@@ -19,6 +19,11 @@ const AdminLayout = ({ children }) => {
       name: "Dashboard",
       to: "/admin/dashboard",
       icon: <BiSolidDashboard />,
+    },
+    {
+      name: "Employee",
+      to: "/admin/employee-management",
+      icon: <FaUsers />,
     },
     {
       name: "Department",

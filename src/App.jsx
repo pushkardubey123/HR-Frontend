@@ -20,6 +20,7 @@ import AdminAttendancePanel from './Components/Admin/AdminAttendencePanel'
 import ShiftManagement from './Components/Admin/ShiftManagement'
 import PayrollManagement from './Components/Admin/PayrollManagement'
 import MySalarySlips from './Components/Employee/MySalarySlip'
+import AdminEmployeeManagement from './Components/Admin/AdminEmployeeManagement'
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
     <Route path="/admin/leaves" element={<AdminLeavePanel />} />
     <Route path="/admin/employee-attendence-lists" element={<AdminAttendancePanel />} />
     <Route path="/admin/payroll" element={<PayrollManagement />} />
+    <Route path="/admin/employee-management" element={<AdminEmployeeManagement />} />
     
     <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
     <Route path="/employee/apply-leave" element={<ApplyLeave />} />

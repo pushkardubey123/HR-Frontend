@@ -8,6 +8,7 @@ import EmployeeLayout from "./EmployeeLayout";
 import { MdSick } from "react-icons/md";
 import { FaHourglassEnd, FaHourglassStart } from "react-icons/fa";
 import { VscGitStashApply } from "react-icons/vsc";
+import { useNavigate } from "react-router-dom";
 
 const schema = yup.object().shape({
   leaveType: yup.string().required("Leave type is required"),
@@ -17,6 +18,8 @@ const schema = yup.object().shape({
 });
 
 const ApplyLeave = () => {
+
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -43,6 +46,7 @@ const ApplyLeave = () => {
       if (response.data.success) {
         Swal.fire("Success", response.data.message, "success");
         reset();
+        navigate("/employee/my-leaves")
       } else {
         Swal.fire("Error", response.data.message, "error");
       }

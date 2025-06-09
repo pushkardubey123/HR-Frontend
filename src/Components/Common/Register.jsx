@@ -88,7 +88,7 @@ const Register = () => {
         formData.append("profilePic", data.profilePic[0]);
       }
       const res = await axios.post(
-        "https://backend-hrms-k73a.onrender.com/user/register",
+        `${import.meta.env.VITE_API_URL}/user/register`,
         formData
       );
 

@@ -35,7 +35,7 @@ const EmployeeManagement = () => {
 
   const fetchData = async () => {
     const [empRes, deptRes, desigRes, shiftRes] = await Promise.all([
-      axios.get("https://backend-hrms-k73a.onrender.com/user", getHeaders()),
+      axios.get(`${import.meta.env.VITE_API_URL}/user`, getHeaders()),
       axios.get(`${import.meta.env.VITE_API_URL}/api/departments`),
       axios.get(`${import.meta.env.VITE_API_URL}/api/designations`),
       axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`),
@@ -263,7 +263,7 @@ const EmployeeManagement = () => {
               <input className="form-control" name="emergency.relation" value={formData.emergencyContact.relation} onChange={handleChange} placeholder="Relation" />
             </div>
             <div className="col-12 text-end">
-              <Button variant="dark" type="submit">{editId ? "Update" : "Add"} Employee</Button>
+              <Button variant="primary" type="submit">{editId ? "Update" : "Add"} Employee</Button>
             </div>
           </form>
         </Modal.Body>

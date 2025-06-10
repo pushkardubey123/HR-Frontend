@@ -138,7 +138,7 @@ const ShiftManagement = () => {
         <table className="table table-bordered text-center">
           <thead className="table-dark">
             <tr>
-              <th>#</th>
+              <th>S No.</th>
               <th>Shift Name</th>
               <th>Start Time</th>
               <th>End Time</th>

@@ -181,7 +181,7 @@ const AdminAttendancePanel = () => {
           <table className="table table-bordered text-center table-hover">
             <thead className="table-dark">
               <tr>
-                <th>#</th>
+                <th>S No.</th>
                 <th>Employee</th>
                 <th>Email</th>
                 <th>Date</th>

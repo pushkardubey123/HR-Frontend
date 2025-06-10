@@ -158,7 +158,7 @@ const EmployeeManagement = () => {
         <table className="table table-bordered text-center">
           <thead className="table-dark">
             <tr>
-              <th>#</th>
+              <th>S No.</th>
               <th>Name</th>
               <th>Email</th>
               <th>Department</th>

@@ -175,7 +175,7 @@ const DesignationManagement = () => {
         <table className="table table-bordered text-center">
           <thead className="table-dark">
             <tr>
-              <th>#</th>
+              <th>S No</th>
               <th>Designation</th>
               <th>Department</th>
               <th>Actions</th>

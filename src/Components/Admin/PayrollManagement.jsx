@@ -324,7 +324,7 @@ const PayrollManagement = () => {
         <table className="table table-bordered mt-3 text-center">
           <thead className="table-dark">
             <tr>
-              <th>#</th>
+              <th>S No.</th>
               <th>Employee</th>
               <th>Month</th>
               <th>Basic</th>

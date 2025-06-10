@@ -1,4 +1,3 @@
-// src/pages/VerifyOtp.jsx
 import React from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -6,6 +5,7 @@ import * as yup from "yup";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { FaKey } from "react-icons/fa";
 
 const schema = yup.object().shape({
   otp: yup.string().required("OTP is required"),
@@ -36,18 +36,54 @@ const VerifyOtp = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h3>Verify OTP</h3>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-3">
-          <label>Enter OTP</label>
-          <input className="form-control" {...register("otp")} />
-          <small className="text-danger">{errors.otp?.message}</small>
+    <div style={backdropStyle}>
+      <div className="card shadow" style={cardStyle}>
+        <div className="card-header text-center">
+          <h4>Verify OTP</h4>
         </div>
-        <button className="btn btn-success">Verify</button>
-      </form>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="card-body">
+            <div className="mb-3">
+              <label className="form-label d-flex align-items-center gap-1">
+                <FaKey /> <span>Enter OTP</span>
+              </label>
+              <input
+                className="form-control"
+                placeholder="Enter the OTP"
+                {...register("otp")}
+              />
+              {errors.otp && (
+                <small className="text-danger">{errors.otp.message}</small>
+              )}
+            </div>
+          </div>
+          <div className="card-footer text-end">
+            <button type="submit" className="btn btn-success">
+              Verify
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
+};
+
+const backdropStyle = {
+  backgroundImage: `url('https://img.freepik.com/free-vector/enter-otp-concept-illustration_114360-7867.jpg?semt=ais_items_boosted&w=740')`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  height: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: "1rem",
+};
+
+const cardStyle = {
+  width: "100%",
+  maxWidth: "400px",
+  borderRadius: "12px",
+  backgroundColor: "rgba(255,255,255,0.95)",
 };
 
 export default VerifyOtp;

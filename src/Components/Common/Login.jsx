@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEnvelope, FaLock, FaUserTag } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaUserTag, FaEye, FaEyeSlash } from "react-icons/fa";
 
 const schema = yup.object().shape({
   role: yup.string().required("Role is required"),
@@ -20,6 +20,8 @@ const Login = ({ onClose, onLoginSuccess }) => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const showAlert = (title, text, icon) => {
@@ -33,14 +35,17 @@ const Login = ({ onClose, onLoginSuccess }) => {
 
   const onSubmit = async (data) => {
     try {
+      setLoading(true);
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/user/login`,
         data
       );
+
       if (res.data.success === true) {
         const actualRole = res.data.data.role;
 
         if (actualRole.toLowerCase() !== data.role.toLowerCase()) {
+          setLoading(false);
           return showAlert(
             "Access Denied",
             `You are registered as ${actualRole}, but selected ${data.role}`,
@@ -61,14 +66,9 @@ const Login = ({ onClose, onLoginSuccess }) => {
         await showAlert("Success", "Logged in successfully", "success");
 
         if (typeof onLoginSuccess === "function") onLoginSuccess();
-
         onClose();
-        console.log(actualRole);
-        if (actualRole === "admin") {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/employee/dashboard");
-        }
+
+        navigate(actualRole === "admin" ? "/admin/dashboard" : "/employee/dashboard");
       } else {
         showAlert("Failed", res.data.message, "error");
       }
@@ -79,6 +79,8 @@ const Login = ({ onClose, onLoginSuccess }) => {
         err.response?.data?.message || "Login failed",
         "error"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,17 +89,15 @@ const Login = ({ onClose, onLoginSuccess }) => {
       <div className="card shadow" style={modalStyle}>
         <div className="card-header d-flex justify-content-between align-items-center">
           <h5 className="mb-0">Login</h5>
-          <button
-            type="button"
-            className="btn-close"
-            onClick={onClose}
-          ></button>
+          <button type="button" className="btn-close" onClick={onClose}></button>
         </div>
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="card-body">
+            {/* Role Field */}
             <div className="mb-3">
-              <label className="form-label">
-                <FaUserTag className="me-1" /> Role
+              <label className="form-label d-flex align-items-center gap-2">
+                <FaUserTag /> <span>Role</span>
               </label>
               <select className="form-select" {...register("role")}>
                 <option value="">Select Role</option>
@@ -109,9 +109,10 @@ const Login = ({ onClose, onLoginSuccess }) => {
               )}
             </div>
 
+            {/* Email Field */}
             <div className="mb-3">
-              <label className="form-label">
-                <FaEnvelope className="me-1" /> Email
+              <label className="form-label d-flex align-items-center gap-2">
+                <FaEnvelope /> <span>Email</span>
               </label>
               <input
                 type="email"
@@ -124,21 +125,32 @@ const Login = ({ onClose, onLoginSuccess }) => {
               )}
             </div>
 
+            {/* Password Field */}
             <div className="mb-3">
-              <label className="form-label">
-                <FaLock className="me-1" /> Password
+              <label className="form-label d-flex align-items-center gap-2">
+                <FaLock /> <span>Password</span>
               </label>
-              <input
-                type="password"
-                className="form-control"
-                placeholder="Enter password"
-                {...register("password")}
-              />
+              <div className="input-group">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="form-control"
+                  placeholder="Enter password"
+                  {...register("password")}
+                />
+                <span
+                  className="input-group-text"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
               {errors.password && (
                 <small className="text-danger">{errors.password.message}</small>
               )}
             </div>
           </div>
+
           <div className="card-footer mt-3">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <p className="mb-0">
@@ -147,32 +159,24 @@ const Login = ({ onClose, onLoginSuccess }) => {
                   Signup
                 </Link>
               </p>
-              <p className="mb-0">
-                <FaLock className="me-1" />
+              <label className="form-label d-flex align-items-center gap-2">
+                <FaLock />
                 <Link
                   to="/forgot-password"
                   onClick={onClose}
-                  style={{
-                    textDecoration: "none",
-                    color: "#0d6efd",
-                    fontWeight: "500",
-                  }}
+                  style={{ textDecoration: "none", color: "#0d6efd", fontWeight: "500" }}
                 >
-                  Forgot Password?
+                  <span>Forgot Password?</span>
                 </Link>
-              </p>
+              </label>
             </div>
 
             <div className="d-flex justify-content-end gap-2">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={onClose}
-              >
+              <button type="button" className="btn btn-secondary" onClick={onClose}>
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary">
-                Login
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
               </button>
             </div>
           </div>
@@ -182,6 +186,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
   );
 };
 
+// Styles
 const backdropStyle = {
   position: "fixed",
   top: 0,
@@ -194,6 +199,10 @@ const backdropStyle = {
   alignItems: "center",
   zIndex: 9999,
 };
-const modalStyle = { width: "100%", maxWidth: "400px" };
+
+const modalStyle = {
+  width: "100%",
+  maxWidth: "400px",
+};
 
 export default Login;

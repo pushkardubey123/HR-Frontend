@@ -15,10 +15,7 @@ const Banner = () => {
     We're not here to Compete<br/>
 We are here to Lead
     </h4>
-  <input type="text" className="grow form-control border-2 border-dark" placeholder="Email" />
-  <input type="text" className="grow form-control border-2 border-dark mt-2" placeholder="Password" />
     </div>
-    <button className="mt-3 btn btn-dark text-white" >Login</button>
     </div>
     <div className='w-full md:w-1/2 order-1 md:order-2 mt-5'>
     <img src='https://stdigital.in/public/assets/front/img/ddex-gateway-img.png' alt="" className='w-92 h-92' />

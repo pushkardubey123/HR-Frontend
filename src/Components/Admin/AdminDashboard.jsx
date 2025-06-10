@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "./AdminLayout";
 import axios from "axios";
-import { MdOpacity } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import {
+  FaUsers,
+  FaBuilding,
+  FaSitemap,
+  FaClipboardList,
+  FaCalendarCheck,
+} from "react-icons/fa";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+
   const backgroundStyle = {
     backgroundImage: 'url("/images/office-bg.jpg")',
     backgroundSize: "cover",
@@ -29,6 +38,7 @@ const AdminDashboard = () => {
     position: "relative",
     zIndex: 2,
   };
+
   const [stats, setStats] = useState({
     totalEmployees: 0,
     totalDepartments: 0,
@@ -48,12 +58,8 @@ const AdminDashboard = () => {
             axios.get(`${import.meta.env.VITE_API_URL}/user/`, { headers }),
             axios.get(`${import.meta.env.VITE_API_URL}/api/departments`),
             axios.get(`${import.meta.env.VITE_API_URL}/api/designations`),
-            axios.get(`${import.meta.env.VITE_API_URL}/api/leaves`, {
-              headers,
-            }),
-            axios.get(`${import.meta.env.VITE_API_URL}/api/attendance`, {
-              headers,
-            }),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/leaves`, { headers }),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/attendance`, { headers }),
           ]);
 
         const totalEmployees = usersRes.data.data.filter(
@@ -75,22 +81,37 @@ const AdminDashboard = () => {
     fetchAllStats();
   }, []);
 
-  
-
   const cards = [
-    { label: "Total Employees", value: stats.totalEmployees, color: "dark" },
     {
-      label: "Total Departments",
+      label: "Employees",
+      value: stats.totalEmployees,
+      icon: <FaUsers size={24} />,
+      route: "/admin/employee-management",
+    },
+    {
+      label: "Departments",
       value: stats.totalDepartments,
-      color: "dark",
+      icon: <FaBuilding size={24} />,
+      route: "/admin/department",
     },
     {
-      label: "Total Designations",
+      label: "Designations",
       value: stats.totalDesignations,
-      color: "dark",
+      icon: <FaSitemap size={24} />,
+      route: "/admin/designations",
     },
-    { label: "Total Leaves", value: stats.totalLeaves, color: "dark" },
-    { label: "Total Attendance", value: stats.totalAttendance, color: "dark" },
+    {
+      label: "Leaves",
+      value: stats.totalLeaves,
+      icon: <FaClipboardList size={24} />,
+      route: "/admin/leaves",
+    },
+    {
+      label: "Attendance",
+      value: stats.totalAttendance,
+      icon: <FaCalendarCheck size={24} />,
+      route: "/admin/employee-attendence-lists",
+    },
   ];
 
   return (
@@ -99,14 +120,24 @@ const AdminDashboard = () => {
         <div style={overlayStyle}></div>
         <div style={contentStyle}>
           <div className="container mt-4">
-            <h3 className="text-center mb-4"></h3>
             <div className="row">
               {cards.map((card, i) => (
-                <div className="col-md-4 mb-3" key={i}>
-                  <div className={`card text-white bg-${card.color} shadow`}>
-                    <div className="card-body text-center">
-                      <h5 className="card-title">{card.label}</h5>
-                      <h2>{card.value}</h2>
+                <div
+                  className="col-md-4 mb-3"
+                  key={i}
+                  onClick={() => navigate(card.route)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div
+                    className="card text-white bg-dark shadow-lg"
+                    style={{ borderRadius: "12px" }}
+                  >
+                    <div className="card-body text-center py-4">
+                      <div className="d-flex justify-content-center align-items-center gap-2 mb-2">
+                        <span>{card.icon}</span>
+                        <h5 className="card-title mb-0">{card.label}</h5>
+                      </div>
+                      <h2 className="fw-bold">{card.value}</h2>
                     </div>
                   </div>
                 </div>

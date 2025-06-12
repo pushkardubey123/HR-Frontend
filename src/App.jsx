@@ -24,6 +24,7 @@ import AdminEmployeeManagement from "./Components/Admin/AdminEmployeeManagement"
 import ForgotPassword from "./Components/Common/ForgotPassword";
 import VerifyOtp from "./Components/Common/VerifyOtp";
 import ResetPassword from "./Components/Common/ResetPassword";
+import AdminApproveEmployees from "./Components/Admin/AdminApproveEmployees";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/pending-employee" element={<AdminApproveEmployees/>}/>
           <Route path="/admin/department" element={<Department />} />
           <Route path="/admin/department/:id" element={<Department />} />
           <Route
@@ -62,12 +64,14 @@ function App() {
             path="/employee/my-attendence-list"
             element={<MyAttendanceList />}
           />
+          
           <Route path="/employee/salary-slips" element={<MySalarySlips />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          
         </Routes>
         <Footer />
       </BrowserRouter>

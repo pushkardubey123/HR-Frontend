@@ -65,7 +65,7 @@ const ResetPassword = () => {
             </div>
           </div>
           <div className="card-footer text-end">
-            <button type="submit" className="btn btn-warning">
+            <button type="submit" className="btn btn-secondary">
               Reset Password
             </button>
           </div>

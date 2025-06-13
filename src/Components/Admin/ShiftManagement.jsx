@@ -1,12 +1,23 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { Button, Form, Table, Card, Container } from "react-bootstrap";
 import Swal from "sweetalert2";
+import axios from "axios";
 import AdminLayout from "./AdminLayout";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaBusinessTime } from "react-icons/fa";
+import Loader from "./Loader/Loader"; // Your reusable dot loader
+
+const schema = yup.object().shape({
+  name: yup.string().required("Shift name is required"),
+  startTime: yup.string().required("Start time is required"),
+  endTime: yup.string().required("End time is required"),
+});
 
 const ShiftManagement = () => {
   const [shifts, setShifts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [editId, setEditId] = useState(null);
 
   const {
@@ -15,7 +26,7 @@ const ShiftManagement = () => {
     reset,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: yupResolver(schema) });
 
   const token = JSON.parse(localStorage.getItem("user"))?.token;
 
@@ -24,11 +35,14 @@ const ShiftManagement = () => {
   });
 
   const fetchShifts = async () => {
+    setLoading(true);
     try {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`);
       if (res.data.success) setShifts(res.data.data);
     } catch (err) {
       console.error("Fetch Shifts Error:", err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,7 +59,7 @@ const ShiftManagement = () => {
           getTokenHeader()
         );
         if (res.data.success) {
-          Swal.fire("Updated", res.data.message, "success");
+          Swal.fire("Updated!", res.data.message, "success");
         }
       } else {
         const res = await axios.post(
@@ -54,14 +68,14 @@ const ShiftManagement = () => {
           getTokenHeader()
         );
         if (res.data.success) {
-          Swal.fire("Success", res.data.message, "success");
+          Swal.fire("Created!", res.data.message, "success");
         }
       }
       fetchShifts();
       reset();
       setEditId(null);
     } catch (err) {
-      Swal.fire("Error", "Something went wrong", "error");
+      Swal.fire("Error", err.response?.data?.message || "Something went wrong", "error");
     }
   };
 
@@ -75,102 +89,125 @@ const ShiftManagement = () => {
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
       title: "Delete Shift?",
+      text: "This action cannot be undone!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, Delete",
+      confirmButtonText: "Yes, delete it!",
     });
+
     if (confirm.isConfirmed) {
-      await axios.delete(
-        `${import.meta.env.VITE_API_URL}/api/shifts/${id}`,
-        getTokenHeader()
-      );
-      Swal.fire("Deleted!", "Shift has been deleted.", "success");
-      fetchShifts();
+      try {
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/shifts/${id}`, getTokenHeader());
+        Swal.fire("Deleted!", "Shift deleted successfully", "success");
+        fetchShifts();
+      } catch (err) {
+        Swal.fire("Error", "Failed to delete shift", "error");
+      }
     }
   };
 
   return (
     <AdminLayout>
-      <div className="container mt-4">
-        <h3 className="text-center">Shift Management</h3>
+      <Container className="mt-4">
+        <Card className="shadow-lg rounded-4">
+          <Card.Body>
+            <h3 className="text-center mb-4 d-flex justify-content-center align-items-center gap-2 text-dark">
+              <FaBusinessTime />
+              Shift Management
+            </h3>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="row g-2 mb-4">
-          <div className="col-md-4">
-            <input
-              className="form-control"
-              placeholder="Shift Name"
-              {...register("name", { required: true })}
-            />
-            {errors.name && (
-              <small className="text-danger">Name is required</small>
+            <form onSubmit={handleSubmit(onSubmit)} className="mb-4">
+              <div className="row">
+                <div className="col-md-4">
+                  <Form.Control
+                    placeholder="Shift Name"
+                    {...register("name")}
+                    className="mb-2"
+                  />
+                  {errors.name && (
+                    <small className="text-danger">{errors.name.message}</small>
+                  )}
+                </div>
+                <div className="col-md-3">
+                  <Form.Control
+                    type="time"
+                    {...register("startTime")}
+                    className="mb-2" placeholder="Start Time"
+                  />
+                  {errors.startTime && (
+                    <small className="text-danger">{errors.startTime.message}</small>
+                  )}
+                </div>
+                <div className="col-md-3">
+                  <Form.Control
+                    type="time"
+                    {...register("endTime")}
+                    className="mb-2"
+                  />
+                  {errors.endTime && (
+                    <small className="text-danger">{errors.endTime.message}</small>
+                  )}
+                </div>
+                <div className="col-md-2 d-grid">
+                  <Button type="submit" variant={editId ? "secondary" : "dark"}>
+                    {editId ? "Update" : "Add"}
+                  </Button>
+                </div>
+              </div>
+                          <hr/>
+            </form>
+            {/* 🔄 Table Section */}
+            {loading ? (
+              <div className="text-center my-5">
+                <Loader />
+              </div>
+            ) : shifts.length === 0 ? (
+              <p className="text-center text-muted fs-5">No shifts available</p>
+            ) : (
+              <div className="table-responsive">
+                <Table bordered hover responsive className="align-middle text-center shadow-sm">
+                  <thead className="table-primary">
+                    <tr>
+                      <th>S No.</th>
+                      <th>Shift Name</th>
+                      <th>Start Time</th>
+                      <th>End Time</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shifts.map((shift, index) => (
+                      <tr key={shift._id}>
+                        <td>{index + 1}</td>
+                        <td>{shift.name}</td>
+                        <td>{shift.startTime}</td>
+                        <td>{shift.endTime}</td>
+                        <td>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="me-2"
+                            onClick={() => handleEdit(shift)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDelete(shift._id)}
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
             )}
-          </div>
-
-          <div className="col-md-3">
-            <input
-              type="time"
-              className="form-control"
-              {...register("startTime", { required: true })}
-            />
-            {errors.startTime && (
-              <small className="text-danger">Start time is required</small>
-            )}
-          </div>
-
-          <div className="col-md-3">
-            <input
-              type="time"
-              className="form-control"
-              {...register("endTime", { required: true })}
-            />
-            {errors.endTime && (
-              <small className="text-danger">End time is required</small>
-            )}
-          </div>
-
-          <div className="col-md-2">
-            <button type="submit" className="btn btn-dark w-100">
-              {editId ? "Update" : "Add"}
-            </button>
-          </div>
-        </form>
-
-        <table className="table table-bordered text-center">
-          <thead className="table-dark">
-            <tr>
-              <th>S No.</th>
-              <th>Shift Name</th>
-              <th>Start Time</th>
-              <th>End Time</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {shifts.map((shift, index) => (
-              <tr key={shift._id}>
-                <td>{index + 1}</td>
-                <td>{shift.name}</td>
-                <td>{shift.startTime}</td>
-                <td>{shift.endTime}</td>
-                <td>
-                  <button
-                    className="btn btn-warning btn-sm me-2"
-                    onClick={() => handleEdit(shift)}
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => handleDelete(shift._id)}
-                  >
-                    <FaTrash />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          </Card.Body>
+        </Card>
+      </Container>
     </AdminLayout>
   );
 };

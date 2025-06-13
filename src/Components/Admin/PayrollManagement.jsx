@@ -8,6 +8,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Papa from "papaparse";
+import Loader from "./Loader/Loader";
+
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -21,6 +23,7 @@ const schema = yup.object().shape({
 });
 
 const PayrollManagement = () => {
+  const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState([]);
   const [payrolls, setPayrolls] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -41,7 +44,9 @@ const PayrollManagement = () => {
     resolver: yupResolver(schema),
   });
 
-  const fetchData = async () => {
+ const fetchData = async () => {
+  setLoading(true);
+  try {
     const [empRes, payRes] = await Promise.all([
       axios.get(`${import.meta.env.VITE_API_URL}/user/`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -53,7 +58,13 @@ const PayrollManagement = () => {
     const employeeList = empRes.data.data.filter((e) => e.role === "employee");
     setEmployees(employeeList);
     setPayrolls(payRes.data.data.reverse());
-  };
+  } catch (error) {
+    Swal.fire("Error", "Failed to fetch payroll data", "error");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchData();
@@ -333,30 +344,45 @@ const PayrollManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredPayrolls.map((p, i) => (
-              <tr key={p._id}>
-                <td>{i + 1}</td>
-                <td>{p.employeeId?.name}</td>
-                <td>{p.month}</td>
-                <td>₹{p.basicSalary}</td>
-                <td>₹{p.netSalary}</td>
-                <td>
-                  <button
-                    className="btn btn-sm btn-warning me-2"
-                    onClick={() => handleEdit(p)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => handleDelete(p._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {loading ? (
+    <tr>
+      <td colSpan="6" className="py-4">
+        <div className="d-flex justify-content-center">
+          <Loader />
+        </div>
+      </td>
+    </tr>
+  ) : filteredPayrolls.length === 0 ? (
+    <tr>
+      <td colSpan="6" className="text-muted">No payroll records found.</td>
+    </tr>
+  ) : (
+    filteredPayrolls.map((p, i) => (
+      <tr key={p._id}>
+        <td>{i + 1}</td>
+        <td>{p.employeeId?.name}</td>
+        <td>{p.month}</td>
+        <td>₹{p.basicSalary}</td>
+        <td>₹{p.netSalary}</td>
+        <td>
+          <button
+            className="btn btn-sm btn-warning me-2"
+            onClick={() => handleEdit(p)}
+          >
+            Edit
+          </button>
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={() => handleDelete(p._id)}
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
+
         </table>
       </div>
     </AdminLayout>

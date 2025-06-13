@@ -9,9 +9,12 @@ import {
   FaClipboardList,
   FaCalendarCheck,
 } from "react-icons/fa";
+import DotLoader from "./Loader/Loader"; // ✅ import loader
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+
+  const [stats, setStats] = useState(null); // set to null initially (for loader)
 
   const backgroundStyle = {
     backgroundImage: 'url("/images/office-bg.jpg")',
@@ -30,7 +33,7 @@ const AdminDashboard = () => {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     zIndex: 1,
   };
 
@@ -38,14 +41,6 @@ const AdminDashboard = () => {
     position: "relative",
     zIndex: 2,
   };
-
-  const [stats, setStats] = useState({
-    totalEmployees: 0,
-    totalDepartments: 0,
-    totalDesignations: 0,
-    totalLeaves: 0,
-    totalAttendance: 0,
-  });
 
   useEffect(() => {
     const token = JSON.parse(localStorage.getItem("user"))?.token;
@@ -59,7 +54,9 @@ const AdminDashboard = () => {
             axios.get(`${import.meta.env.VITE_API_URL}/api/departments`),
             axios.get(`${import.meta.env.VITE_API_URL}/api/designations`),
             axios.get(`${import.meta.env.VITE_API_URL}/api/leaves`, { headers }),
-            axios.get(`${import.meta.env.VITE_API_URL}/api/attendance`, { headers }),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/attendance`, {
+              headers,
+            }),
           ]);
 
         const totalEmployees = usersRes.data.data.filter(
@@ -84,32 +81,32 @@ const AdminDashboard = () => {
   const cards = [
     {
       label: "Employees",
-      value: stats.totalEmployees,
-      icon: <FaUsers size={24} />,
+      value: stats?.totalEmployees,
+      icon: <FaUsers size={22} />,
       route: "/admin/employee-management",
     },
     {
       label: "Departments",
-      value: stats.totalDepartments,
-      icon: <FaBuilding size={24} />,
+      value: stats?.totalDepartments,
+      icon: <FaBuilding size={22} />,
       route: "/admin/department",
     },
     {
       label: "Designations",
-      value: stats.totalDesignations,
-      icon: <FaSitemap size={24} />,
+      value: stats?.totalDesignations,
+      icon: <FaSitemap size={22} />,
       route: "/admin/designations",
     },
     {
       label: "Leaves",
-      value: stats.totalLeaves,
-      icon: <FaClipboardList size={24} />,
+      value: stats?.totalLeaves,
+      icon: <FaClipboardList size={22} />,
       route: "/admin/leaves",
     },
     {
       label: "Attendance",
-      value: stats.totalAttendance,
-      icon: <FaCalendarCheck size={24} />,
+      value: stats?.totalAttendance,
+      icon: <FaCalendarCheck size={22} />,
       route: "/admin/employee-attendence-lists",
     },
   ];
@@ -120,24 +117,36 @@ const AdminDashboard = () => {
         <div style={overlayStyle}></div>
         <div style={contentStyle}>
           <div className="container mt-4">
+            <h3 className="text-center mb-4">Admin Dashboard</h3>
             <div className="row">
               {cards.map((card, i) => (
                 <div
-                  className="col-md-4 mb-3"
+                  className="col-lg-4 col-md-6 mb-4"
                   key={i}
                   onClick={() => navigate(card.route)}
                   style={{ cursor: "pointer" }}
                 >
                   <div
-                    className="card text-white bg-dark shadow-lg"
-                    style={{ borderRadius: "12px" }}
+                    className="card h-100 bg-dark text-white shadow-lg border-0"
+                    style={{
+                      borderRadius: "12px",
+                      transition: "all 0.3s",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.transform = "translateY(-5px)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.transform = "translateY(0)")
+                    }
                   >
                     <div className="card-body text-center py-4">
                       <div className="d-flex justify-content-center align-items-center gap-2 mb-2">
                         <span>{card.icon}</span>
-                        <h5 className="card-title mb-0">{card.label}</h5>
+                        <h5 className="mb-0">{card.label}</h5>
                       </div>
-                      <h2 className="fw-bold">{card.value}</h2>
+                      <h2 className="fw-bold">
+                        {stats ? card.value : <DotLoader />}
+                      </h2>
                     </div>
                   </div>
                 </div>

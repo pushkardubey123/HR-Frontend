@@ -5,24 +5,38 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Papa from "papaparse";
 import AdminLayout from "./AdminLayout";
+import {
+  FaUserFriends,
+  FaFilter,
+  FaDownload,
+  FaFileCsv,
+  FaTrash,
+  FaSyncAlt,
+} from "react-icons/fa";
+import TableLoader from "./Loader/Loader";
 
 const AdminAttendancePanel = () => {
   const [attendances, setAttendances] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
+  const [loading, setLoading] = useState(false);
   const token = JSON.parse(localStorage.getItem("user"))?.token;
+
   const fetchAllAttendance = async () => {
-    const token = JSON.parse(localStorage.getItem("user"))?.token;
     try {
+      setLoading(true);
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/attendance`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (res.data.success) setAttendances(res.data.data);
-      console.log(res);
+      if (res.data.success) {
+        setAttendances(res.data.data);
+      }
     } catch (error) {
       console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,9 +58,7 @@ const AdminAttendancePanel = () => {
         const res = await axios.delete(
           `${import.meta.env.VITE_API_URL}/api/attendance/${id}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         if (res.data.success) {
@@ -63,16 +75,16 @@ const AdminAttendancePanel = () => {
     const { value: formValues } = await Swal.fire({
       title: "Update Attendance",
       html: `
-      <select id="status" class="swal2-select">
-        <option value="Present">Present</option>
-        <option value="Absent">Absent</option>
-        <option value="Late">Late</option>
-      </select>
-      <select id="type" class="swal2-select">
-        <option value="Manual">Manual</option>
-        <option value="Auto">Auto</option>
-      </select>
-    `,
+        <select id="status" class="swal2-select">
+          <option value="Present">Present</option>
+          <option value="Absent">Absent</option>
+          <option value="Late">Late</option>
+        </select>
+        <select id="type" class="swal2-select">
+          <option value="Manual">Manual</option>
+          <option value="Auto">Auto</option>
+        </select>
+      `,
       focusConfirm: false,
       preConfirm: () => {
         return {
@@ -88,9 +100,7 @@ const AdminAttendancePanel = () => {
           `${import.meta.env.VITE_API_URL}/api/attendance/${id}`,
           formValues,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         if (res.data.success) {
@@ -151,10 +161,14 @@ const AdminAttendancePanel = () => {
   return (
     <AdminLayout>
       <div className="container mt-4">
-        <h4 className="text-center">📊 Admin Attendance Monitoring</h4>
+        <h4 className="text-center mb-4 d-flex justify-content-center align-items-center gap-2">
+          <FaUserFriends />
+          <span>Admin Attendance Monitoring</span>
+        </h4>
 
-        <div className="d-flex justify-content-between mb-3">
-          <div>
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
+          <div className="d-flex align-items-center mb-2 mb-md-0 gap-2">
+            <FaFilter />
             <select
               className="form-select"
               style={{ width: "200px" }}
@@ -167,11 +181,14 @@ const AdminAttendancePanel = () => {
               <option value="Late">Late</option>
             </select>
           </div>
-          <div>
-            <button className="btn btn-success me-2" onClick={exportToPDF}>
+
+          <div className="d-flex gap-2">
+            <button className="btn btn-success d-flex align-items-center" onClick={exportToPDF}>
+              <FaDownload className="me-2" />
               Export PDF
             </button>
-            <button className="btn btn-primary" onClick={exportToCSV}>
+            <button className="btn btn-primary d-flex align-items-center" onClick={exportToCSV}>
+              <FaFileCsv className="me-2" />
               Export CSV
             </button>
           </div>
@@ -193,7 +210,13 @@ const AdminAttendancePanel = () => {
               </tr>
             </thead>
             <tbody>
-              {filtered.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan="9">
+                    <TableLoader />
+                  </td>
+                </tr>
+              ) : filtered.length > 0 ? (
                 filtered.map((a, i) => (
                   <tr key={a._id}>
                     <td>{i + 1}</td>
@@ -217,17 +240,19 @@ const AdminAttendancePanel = () => {
                     <td>{a.statusType}</td>
                     <td>
                       <button
-                        className="btn btn-warning btn-sm"
+                        className="btn btn-warning btn-sm d-flex align-items-center"
                         onClick={() => handleStatusUpdate(a._id)}
                       >
+                        <FaSyncAlt className="me-1" />
                         Update
                       </button>
                     </td>
                     <td>
                       <button
-                        className="btn btn-danger btn-sm"
+                        className="btn btn-danger btn-sm d-flex align-items-center"
                         onClick={() => handleDelete(a._id)}
                       >
+                        <FaTrash className="me-1" />
                         Delete
                       </button>
                     </td>

@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import AdminLayout from "./AdminLayout";
 import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
 import { Modal, Button } from "react-bootstrap";
+import "./EmployeeManagement.css";
+import Loader from "./Loader/Loader";
 
 const EmployeeManagement = () => {
   const [employees, setEmployees] = useState([]);
@@ -12,21 +14,12 @@ const EmployeeManagement = () => {
   const [shifts, setShifts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "employee",
-    phone: "",
-    gender: "",
-    dob: "",
-    address: "",
-    departmentId: "",
-    designationId: "",
-    shiftId: "",
-    doj: "",
-    emergencyContact: { name: "", phone: "", relation: "" },
+    name: "", email: "", password: "", role: "employee", phone: "",
+    gender: "", dob: "", address: "", departmentId: "", designationId: "",
+    shiftId: "", doj: "", emergencyContact: { name: "", phone: "", relation: "" },
     profilePic: null,
   });
 
@@ -34,16 +27,22 @@ const EmployeeManagement = () => {
   const getHeaders = () => ({ headers: { Authorization: `Bearer ${token}` } });
 
   const fetchData = async () => {
-    const [empRes, deptRes, desigRes, shiftRes] = await Promise.all([
-      axios.get(`${import.meta.env.VITE_API_URL}/user`, getHeaders()),
-      axios.get(`${import.meta.env.VITE_API_URL}/api/departments`),
-      axios.get(`${import.meta.env.VITE_API_URL}/api/designations`),
-      axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`),
-    ]);
-    setEmployees(empRes.data.data.reverse());
-    setDepartments(deptRes.data.data);
-    setDesignations(desigRes.data.data);
-    setShifts(shiftRes.data.data);
+    try {
+      const [empRes, deptRes, desigRes, shiftRes] = await Promise.all([
+        axios.get(`${import.meta.env.VITE_API_URL}/user`, getHeaders()),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/departments`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/designations`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`),
+      ]);
+      setEmployees(empRes.data.data.reverse());
+      setDepartments(deptRes.data.data);
+      setDesignations(desigRes.data.data);
+      setShifts(shiftRes.data.data);
+    } catch (err) {
+      Swal.fire("Error", "Failed to fetch data", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -67,20 +66,9 @@ const EmployeeManagement = () => {
 
   const resetForm = () => {
     setFormData({
-      name: "",
-      email: "",
-      password: "",
-      role: "employee",
-      phone: "",
-      gender: "",
-      dob: "",
-      address: "",
-      departmentId: "",
-      designationId: "",
-      shiftId: "",
-      doj: "",
-      emergencyContact: { name: "", phone: "", relation: "" },
-      profilePic: null,
+      name: "", email: "", password: "", role: "employee", phone: "", gender: "",
+      dob: "", address: "", departmentId: "", designationId: "", shiftId: "",
+      doj: "", emergencyContact: { name: "", phone: "", relation: "" }, profilePic: null,
     });
     setEditId(null);
   };
@@ -101,7 +89,7 @@ const EmployeeManagement = () => {
         await axios.put(`${import.meta.env.VITE_API_URL}/employeeget/${editId}`, formData, getHeaders());
         Swal.fire("Updated", "Employee updated successfully", "success");
       } else {
-        const posting = await axios.post("https://backend-hrms-k73a.onrender.com/user/register", data, getHeaders());
+        const posting = await axios.post(`${import.meta.env.VITE_API_URL}/user/register`, data, getHeaders());
         if (posting.data.success) {
           Swal.fire("Success", posting.data.message, "success");
         } else {
@@ -135,7 +123,6 @@ const EmployeeManagement = () => {
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
     });
-
     if (confirm.isConfirmed) {
       await axios.delete(`${import.meta.env.VITE_API_URL}/employeedelete/${id}`, getHeaders());
       fetchData();
@@ -145,125 +132,93 @@ const EmployeeManagement = () => {
 
   return (
     <AdminLayout>
-      <div className="container mt-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4 className="mb-0 d-flex align-items-center gap-2">
-            <FaUserPlus /> Employee Management
-          </h4>
-          <button className="btn btn-dark" onClick={() => { resetForm(); setShowModal(true); }}>
+      <div className="employee-container">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h4 className="section-heading"><FaUserPlus /> Employee Management</h4>
+          <button className="btn add-btn" onClick={() => { resetForm(); setShowModal(true); }}>
             + Add Employee
           </button>
         </div>
 
-        <table className="table table-bordered text-center">
-          <thead className="table-dark">
-            <tr>
-              <th>S No.</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Department</th>
-              <th>Designation</th>
-              <th>Shift</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {employees.length > 0 ? (
-              employees.map((emp, i) => (
-                <tr key={emp._id}>
-                  <td>{i + 1}</td>
-                  <td>{emp.name}</td>
-                  <td>{emp.email}</td>
-                  <td>{emp.departmentId?.name || "N/A"}</td>
-                  <td>{emp.designationId?.name || "N/A"}</td>
-                  <td>{emp.shiftId?.name || "N/A"}</td>
-                  <td>
-                    <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(emp)}><FaEdit /></button>
-                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(emp._id)}><FaTrash /></button>
-                  </td>
+        <div className="custom-table-wrapper">
+          {loading ? (
+            <Loader />
+          ) : (
+            <table className="table custom-table">
+              <thead>
+                <tr>
+                  <th>S No.</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Shift</th>
+                  <th>Actions</th>
                 </tr>
-              ))
-            ) : (
-              <tr><td colSpan="7">No employees found</td></tr>
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {employees.length > 0 ? (
+                  employees.map((emp, i) => (
+                    <tr key={emp._id}>
+                      <td>{i + 1}</td>
+                      <td>{emp.name}</td>
+                      <td>{emp.email}</td>
+                      <td>{emp.departmentId?.name || "N/A"}</td>
+                      <td>{emp.designationId?.name || "N/A"}</td>
+                      <td>{emp.shiftId?.name || "N/A"}</td>
+                      <td>
+                        <button className="action-btn edit" onClick={() => handleEdit(emp)}><FaEdit /></button>
+                        <button className="action-btn delete" onClick={() => handleDelete(emp._id)}><FaTrash /></button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr><td colSpan="7">No employees found</td></tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
+      {/* Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered>
         <Modal.Header closeButton>
           <Modal.Title>{editId ? "Edit Employee" : "Add Employee"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={handleSubmit} className="row g-2">
-            <div className="col-md-4">
-              <input className="form-control" name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
-            </div>
-            <div className="col-md-4">
-              <input className="form-control" name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
-            </div>
-            <div className="col-md-4">
-              <input className="form-control" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone" />
-            </div>
+            {[["name", "Name"], ["email", "Email"], ["phone", "Phone"],
+              ["gender", "Gender", "select"], ["dob", "Date of Birth", "date"],
+              ["address", "Address"], ["departmentId", "Department", "select", departments],
+              ["designationId", "Designation", "select", designations],
+              ["shiftId", "Shift", "select", shifts],
+              ["doj", "Joining Date", "date"]
+            ].map(([name, placeholder, type = "text", list]) => (
+              <div className="col-md-4" key={name}>
+                {type === "select" ? (
+                  <select name={name} className="form-select" value={formData[name]} onChange={handleChange}>
+                    <option value="">Select {placeholder}</option>
+                    {list?.map((item) => (
+                      <option value={item._id} key={item._id}>{item.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input type={type} name={name} className="form-control" value={formData[name]} onChange={handleChange} placeholder={placeholder} />
+                )}
+              </div>
+            ))}
             {!editId && (
               <div className="col-md-4">
-                <input className="form-control" name="password" value={formData.password} onChange={handleChange} placeholder="Password" />
+                <input type="password" className="form-control" name="password" value={formData.password} onChange={handleChange} placeholder="Password" />
               </div>
             )}
-            <div className="col-md-4">
-              <select className="form-select" name="gender" value={formData.gender} onChange={handleChange}>
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </div>
-            <div className="col-md-4">
-              <input type="date" className="form-control" name="dob" value={formData.dob} onChange={handleChange} />
-            </div>
-            <div className="col-md-4">
-              <input className="form-control" name="address" value={formData.address} onChange={handleChange} placeholder="Address" />
-            </div>
-            <div className="col-md-4">
-              <select className="form-select" name="departmentId" value={formData.departmentId} onChange={handleChange}>
-                <option value="">Select Department</option>
-                {departments.map((d) => (
-                  <option value={d._id} key={d._id}>{d.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="col-md-4">
-              <select className="form-select" name="designationId" value={formData.designationId} onChange={handleChange}>
-                <option value="">Select Designation</option>
-                {designations.map((d) => (
-                  <option value={d._id} key={d._id}>{d.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="col-md-4">
-              <select className="form-select" name="shiftId" value={formData.shiftId} onChange={handleChange}>
-                <option value="">Select Shift</option>
-                {shifts.map((s) => (
-                  <option value={s._id} key={s._id}>{s.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="col-md-4">
-              <input type="date" className="form-control" name="doj" value={formData.doj} onChange={handleChange} />
-            </div>
-            <div className="col-md-4">
-              <input type="file" className="form-control" name="profilePic" onChange={handleChange} />
-            </div>
-            <div className="col-md-4">
-              <input className="form-control" name="emergency.name" value={formData.emergencyContact.name} onChange={handleChange} placeholder="Emergency Contact Name" />
-            </div>
-            <div className="col-md-4">
-              <input className="form-control" name="emergency.phone" value={formData.emergencyContact.phone} onChange={handleChange} placeholder="Emergency Contact Phone" />
-            </div>
-            <div className="col-md-4">
-              <input className="form-control" name="emergency.relation" value={formData.emergencyContact.relation} onChange={handleChange} placeholder="Relation" />
-            </div>
-            <div className="col-12 text-end">
-              <Button variant="primary" type="submit">{editId ? "Update" : "Add"} Employee</Button>
+            <div className="col-md-4"><input type="file" className="form-control" name="profilePic" onChange={handleChange} /></div>
+            <div className="col-md-4"><input className="form-control" name="emergency.name" value={formData.emergencyContact.name} onChange={handleChange} placeholder="Emergency Contact Name" /></div>
+            <div className="col-md-4"><input className="form-control" name="emergency.phone" value={formData.emergencyContact.phone} onChange={handleChange} placeholder="Emergency Contact Phone" /></div>
+            <div className="col-md-4"><input className="form-control" name="emergency.relation" value={formData.emergencyContact.relation} onChange={handleChange} placeholder="Relation" /></div>
+            <div className="col-12 text-end mt-3">
+              <Button type="submit" variant="primary">{editId ? "Update" : "Add"} Employee</Button>
             </div>
           </form>
         </Modal.Body>

@@ -11,21 +11,12 @@ import { FcLeave } from "react-icons/fc";
 import { IoListCircle } from "react-icons/io5";
 import { BsFillShiftFill } from "react-icons/bs";
 import { TbCalendarDollar } from "react-icons/tb";
-import { RxHamburgerMenu, RxCross2 } from "react-icons/rx"; // NEW ICONS
+import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 
 const AdminLayout = ({ children }) => {
-  const [toggle, setToggle] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const location = useLocation();
-
-  // Collapse sidebar on smaller screens
-  useEffect(() => {
-    const handleResize = () => {
-      setToggle(window.innerWidth > 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const arr = [
     { name: "Dashboard", to: "/admin/dashboard", icon: <BiSolidDashboard /> },
@@ -39,98 +30,112 @@ const AdminLayout = ({ children }) => {
     { name: "Payrolls", to: "/admin/payroll", icon: <TbCalendarDollar /> },
   ];
 
-  return (
-    <div className="d-flex" style={{ minHeight: "100vh", overflow: "hidden" }}>
-      <div
-        className={`bg-dark text-white p-3 sidebar ${
-          toggle ? "expanded" : "collapsed"
-        }`}
-      >
-        <div className="d-flex justify-content-end toggle-header">
-          {toggle ? (
-            <>
-            <RxCross2
-              onClick={() => setToggle(false)}
-              size={24}
-              style={{ cursor: "pointer" }}
-            />
-            </>
-          ) : (
-            <RxHamburgerMenu
-              onClick={() => setToggle(true)}
-              size={24}
-              style={{ cursor: "pointer" }}
-            />
-          )}
-        </div>
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      setSidebarOpen(!mobile); // Desktop: open, Mobile: hidden
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
+  return (
+    <div className="layout-wrapper">
+      {/* Sidebar */}
+      <div className={`sidebar bg-dark text-white p-3 shadow ${sidebarOpen ? "show" : ""} ${isMobile ? "mobile" : ""}`}>
+        {isMobile && (
+          <div className="d-flex justify-content-end mb-3">
+            <RxCross2 onClick={() => setSidebarOpen(false)} size={24} style={{ cursor: "pointer" }} />
+          </div>
+        )}
         {arr.map((item, index) => {
           const isActive = location.pathname === item.to;
           return (
             <Link
               key={index}
               to={item.to}
-              style={{ textDecoration: "none" }}
-              className={`sidebar-link d-flex align-items-center ${
-                toggle ? "justify-content-start" : "justify-content-center"
-              } ${isActive ? "active" : ""}`}
+              onClick={() => isMobile && setSidebarOpen(false)}
+              className={`sidebar-link d-flex align-items-center ${isActive ? "active" : ""}`}
             >
               <span className="icon fs-5">{item.icon}</span>
-              {toggle && <span className="label ps-1">{item.name}</span>}
+              <span className="label ps-2 text-white">{item.name}</span>
             </Link>
           );
         })}
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow-1 p-3 bg-light">
-        <div className="bg-white shadow-sm p-4 rounded">{children}</div>
+      <div className="main-content flex-grow-1">
+        {/* Top Bar with Hamburger */}
+        {isMobile && (
+          <div className="top-bar d-flex justify-content-between align-items-center p-2 bg-white shadow-sm">
+            <RxHamburgerMenu onClick={() => setSidebarOpen(true)} size={24} style={{ cursor: "pointer" }} />
+            <h5 className="m-auto">Admin Panel</h5>
+          </div>
+        )}
+
+        {/* Actual Page Content */}
+        <div className="p-3 bg-light min-vh-100">
+          <div className="bg-white shadow-sm p-4 rounded">{children}</div>
+        </div>
       </div>
 
       {/* CSS */}
       <style>{`
+        .layout-wrapper {
+          display: flex;
+          min-height: 40vh;
+          overflow-x: hidden;
+        }
+
         .sidebar {
-          transition: width 0.3s ease;
-        }
-        .sidebar.expanded {
           width: 220px;
+          transition: all 0.3s ease-in-out;
         }
-        .sidebar.collapsed {
-          width: 70px;
+
+        .sidebar.mobile {
+          position: fixed;
+          top: 0;
+          left: -250px;
+          width: 220px;
+          height: 100vh;
+          z-index: 1000;
         }
+
+        .sidebar.mobile.show {
+          left: 0;
+          background-color: #212529;
+        }
+
         .sidebar-link {
-          padding: 10px 15px;
+          display: flex;
+          align-items: center;
+          padding: 10px;
           color: white;
-          border-radius: 6px;
+          text-decoration: none;
           margin-bottom: 8px;
-          transition: all 0.2s ease-in-out;
+          border-radius: 5px;
         }
+
         .sidebar-link:hover {
           background-color: #495057;
         }
+
         .sidebar-link.active {
           background-color: #dc3545;
-          color: white;
         }
-        .sidebar-link .icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+
+        .top-bar {
+          position: sticky;
+          top: 0;
+          z-index: 500;
         }
-        .sidebar-link .label {
-          font-size: 16px;
-        }
-        .toggle-header {
-          height: 40px;
-          padding: 0 5px;
-        }
-        @media (max-width: 768px) {
-          .sidebar.expanded {
-            width: 170px;
-          }
-          .sidebar-link .label {
-            font-size: 14px;
-          }
+
+        .main-content {
+          flex-grow: 1;
+          width: 100%;
         }
       `}</style>
     </div>

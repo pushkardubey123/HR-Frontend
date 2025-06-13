@@ -39,7 +39,7 @@ const DesignationManagement = () => {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/designations`);
       if (res.data.success) setDesignations(res.data.data);
     } catch (err) {
-      console.error("Error fetching designations:", err);
+      Swal.fire("Error", "Error fetching designations:",err);
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ const DesignationManagement = () => {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/departments`);
       if (res.data.success) setDepartments(res.data.data);
     } catch (err) {
-      console.error("Error fetching departments:", err);
+            Swal.fire("Error", "No fetching departments",err);
     }
   };
 
@@ -86,7 +86,6 @@ const DesignationManagement = () => {
       reset();
       fetchDesignations();
     } catch (err) {
-      console.error(err);
       Swal.fire("Error", "Something went wrong", "error");
     }
   };

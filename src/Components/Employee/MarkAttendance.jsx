@@ -58,7 +58,7 @@ const MarkAttendance = () => {
         }
       }
     } catch (err) {
-      console.error("Fetch logs failed:", err);
+      Swal.fire("Error", "Fetch logs failed", err);
     }
   };
 

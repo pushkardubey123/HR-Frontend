@@ -30,14 +30,13 @@ const MyAttendanceList = () => {
             },
           }
         );
-        console.log(res);
         if (res.data.success) {
           const reversed = res.data.data.reverse();
           setAttendances(reversed);
           setOriginalAttendance(reversed);
         }
       } catch (error) {
-        console.error("Failed to fetch attendance:", error.message);
+        Swal.fire("Error", "Failed to fetch attendance", error.message);
       }
     };
 

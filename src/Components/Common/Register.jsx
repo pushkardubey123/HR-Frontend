@@ -47,7 +47,7 @@ const EmployeeRegister = () => {
         setDesignations(ds.data.data || []);
         setShifts(s.data.data || []);
       } catch (error) {
-        console.error("Dropdown fetch error", error);
+        Swal.fire("Error", "Dropdown fetch error", error);
       }
     };
     fetchDropdowns();
@@ -75,7 +75,6 @@ const EmployeeRegister = () => {
       formData.append("profilePic", data.profilePic[0]);
 
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/register`, formData);
-      console.log(res.data)
       if (res.data.success) {
         Swal.fire("Success", res.data.message, "success");
         reset();

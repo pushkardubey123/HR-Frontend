@@ -25,7 +25,7 @@ const MyLeaveList = () => {
         setLeaves(res.data.data);
       }
     } catch (error) {
-      console.error("Failed to fetch leaves:", error);
+      Swal.fire("Error", "Failed to fetch leaves",error);
     } finally {
       setLoading(false);
     }

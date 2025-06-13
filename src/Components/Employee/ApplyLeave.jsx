@@ -51,7 +51,6 @@ const ApplyLeave = () => {
         Swal.fire("Error", response.data.message, "error");
       }
     } catch (error) {
-      console.error("Apply Leave Error:", error.message);
       Swal.fire("Error", "Something went wrong", "error");
     }
   };

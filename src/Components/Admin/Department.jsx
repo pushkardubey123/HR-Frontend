@@ -40,7 +40,7 @@ const Department = () => {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/departments`);
       setDepartments(res.data.data || []);
     } catch (err) {
-      console.error("Error fetching departments", err);
+      Swal.fire("Error", "No fetching departments", err);
     } finally {
       setLoading(false);
     }

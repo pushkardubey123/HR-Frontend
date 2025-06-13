@@ -39,9 +39,7 @@ const ShiftManagement = () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`);
       if (res.data.success) setShifts(res.data.data);
-    } catch (err) {
-      console.error("Fetch Shifts Error:", err.message);
-    } finally {
+    }finally {
       setLoading(false);
     }
   };

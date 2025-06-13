@@ -21,7 +21,6 @@ const AdminLeavePanel = () => {
       });
       setLeaves(res.data.data || []);
     } catch (err) {
-      console.error("Fetch error:", err);
       Swal.fire("Error", "Failed to load leave data", "error");
     } finally {
       setLoading(false);
@@ -44,7 +43,6 @@ const AdminLeavePanel = () => {
       Swal.fire("Updated", `Leave ${status}`, "success");
       fetchLeaves();
     } catch (err) {
-      console.error("Update error:", err);
       Swal.fire("Error", "Could not update status", "error");
     }
   };
@@ -57,7 +55,6 @@ const AdminLeavePanel = () => {
       Swal.fire("Deleted", "Leave removed", "success");
       fetchLeaves();
     } catch (err) {
-      console.error("Delete error:", err);
       Swal.fire("Error", "Could not delete", "error");
     }
   };

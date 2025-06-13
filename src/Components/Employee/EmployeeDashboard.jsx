@@ -44,7 +44,7 @@ const EmployeeDashboard = () => {
         setLeaveStats(stats);
         setLatestLeaves(myLeaves.slice(-5).reverse());
       } catch (error) {
-        console.error("Error loading employee dashboard:", error.message);
+        .error("Error loading employee dashboard:", error.message);
       }
     };
 

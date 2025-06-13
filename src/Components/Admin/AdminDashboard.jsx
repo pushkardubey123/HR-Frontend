@@ -9,38 +9,11 @@ import {
   FaClipboardList,
   FaCalendarCheck,
 } from "react-icons/fa";
-import DotLoader from "./Loader/Loader"; // ✅ import loader
+import DotLoader from "./Loader/Loader";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-
-  const [stats, setStats] = useState(null); // set to null initially (for loader)
-
-  const backgroundStyle = {
-    backgroundImage: 'url("/images/office-bg.jpg")',
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    minHeight: "85vh",
-    padding: "30px",
-    color: "#fff",
-    position: "relative",
-  };
-
-  const overlayStyle = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.65)",
-    zIndex: 1,
-  };
-
-  const contentStyle = {
-    position: "relative",
-    zIndex: 2,
-  };
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
     const token = JSON.parse(localStorage.getItem("user"))?.token;
@@ -54,9 +27,7 @@ const AdminDashboard = () => {
             axios.get(`${import.meta.env.VITE_API_URL}/api/departments`),
             axios.get(`${import.meta.env.VITE_API_URL}/api/designations`),
             axios.get(`${import.meta.env.VITE_API_URL}/api/leaves`, { headers }),
-            axios.get(`${import.meta.env.VITE_API_URL}/api/attendance`, {
-              headers,
-            }),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/attendance`, { headers }),
           ]);
 
         const totalEmployees = usersRes.data.data.filter(
@@ -71,7 +42,7 @@ const AdminDashboard = () => {
           totalAttendance: attendRes.data.data.length,
         });
       } catch (error) {
-        console.error("Dashboard Load Error:", error.message);
+        Swal.fire("Error", "Dashboard Load Error: ", error.message);
       }
     };
 
@@ -111,17 +82,43 @@ const AdminDashboard = () => {
     },
   ];
 
+  const backgroundStyle = {
+    backgroundImage: 'url("/images/office-bg.jpg")',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    minHeight: "85vh",
+    padding: "20px 10px",
+    color: "#fff",
+    position: "relative",
+  };
+
+  const overlayStyle = {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    zIndex: 1,
+  };
+
+  const contentStyle = {
+    position: "relative",
+    zIndex: 2,
+  };
+
   return (
     <AdminLayout>
       <div style={backgroundStyle}>
         <div style={overlayStyle}></div>
         <div style={contentStyle}>
-          <div className="container mt-4">
+          <div className="container mt-3">
             <h3 className="text-center mb-4">Admin Dashboard</h3>
-            <div className="row">
+            <div className="row justify-content-center">
               {cards.map((card, i) => (
                 <div
-                  className="col-lg-4 col-md-6 mb-4"
+                  className="col-xl-4 col-md-6 col-sm-10 mb-4"
                   key={i}
                   onClick={() => navigate(card.route)}
                   style={{ cursor: "pointer" }}
@@ -130,7 +127,7 @@ const AdminDashboard = () => {
                     className="card h-100 bg-dark text-white shadow-lg border-0"
                     style={{
                       borderRadius: "12px",
-                      transition: "all 0.3s",
+                      transition: "transform 0.3s ease",
                     }}
                     onMouseEnter={(e) =>
                       (e.currentTarget.style.transform = "translateY(-5px)")

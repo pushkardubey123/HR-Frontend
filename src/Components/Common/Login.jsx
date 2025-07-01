@@ -73,6 +73,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
         showAlert("Failed", res.data.message, "error");
       }
     } catch (err) {
+      console.log(err)
       showAlert(
         "Error",
         err.response?.data?.message || "Login failed",

@@ -7,3 +7,17 @@
   position: fixed !important;
 }
 
+.document-bg {
+  background: linear-gradient(to right, #f8f9fa, #eaf4f4);
+}
+
+/* in your CSS file or styled-components */
+.employee-card {
+  background: linear-gradient(135deg, #1596bd, #f6f9ff);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.employee-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(19, 3, 3, 0.08);
+}

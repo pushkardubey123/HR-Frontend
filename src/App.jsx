@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.js";
-import Navbar from "./Components/Common/Navbar";
 import Home from "./Components/Home/Home";
 import AdminDashboard from "./Components/Admin/AdminDashboard";
 import EmployeeDashboard from "./Components/Employee/EmployeeDashboard";
@@ -25,18 +24,26 @@ import ForgotPassword from "./Components/Common/ForgotPassword";
 import VerifyOtp from "./Components/Common/VerifyOtp";
 import ResetPassword from "./Components/Common/ResetPassword";
 import AdminApproveEmployees from "./Components/Admin/AdminApproveEmployees";
+import ProjectManagement from "./Components/Admin/ProjectManagement";
+import EmployeePanel from "./Components/Employee/EmployeePanel";
+import Document from "./Components/Admin/Document";
+import EmployeeDocument from "./Components/Employee/EmployeeDocument";
+import EmployeeExit from "./Components/Employee/EmployeeExit";
+import AdminExit from "./Components/Admin/AdminExit";
+import AdminReport from "./Components/Admin/AdminReports";
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/pending-employee" element={<AdminApproveEmployees/>}/>
           <Route path="/admin/department" element={<Department />} />
           <Route path="/admin/department/:id" element={<Department />} />
+          <Route path="/admin/employee-exit-lists" element={<AdminExit />} />
+          <Route path="/admin/employee-reports" element={<AdminReport/>} />
           <Route
             path="/admin/designations"
             element={<DesignationManagement />}
@@ -52,6 +59,14 @@ function App() {
             path="/admin/employee-management"
             element={<AdminEmployeeManagement />}
           />
+          <Route
+            path="/admin/project-management"
+            element={<ProjectManagement />}
+          />
+          <Route
+            path="/admin/documents"
+            element={<Document />}
+          />
 
           <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
           <Route path="/employee/apply-leave" element={<ApplyLeave />} />
@@ -64,8 +79,14 @@ function App() {
             path="/employee/my-attendence-list"
             element={<MyAttendanceList />}
           />
+          <Route
+            path="/employee/my-documents"
+            element={<EmployeeDocument />}
+          />
           
           <Route path="/employee/salary-slips" element={<MySalarySlips />} />
+          <Route path="/employee/exit-request" element={<EmployeeExit/>} />
+          <Route path="/employee/tasks" element={<EmployeePanel />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

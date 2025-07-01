@@ -9,6 +9,7 @@ const Home = () => {
 }, []);
   return (
     <>
+    <Navbar/>
    <Banner/>
     </>
   )

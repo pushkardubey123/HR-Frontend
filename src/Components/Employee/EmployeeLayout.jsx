@@ -1,78 +1,78 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { BiSolidDashboard } from "react-icons/bi";
+import {
+  BiExit,
+  BiSolidDashboard
+} from "react-icons/bi";
 import { FcLeave } from "react-icons/fc";
 import { VscGitStashApply } from "react-icons/vsc";
 import { MdCoPresent } from "react-icons/md";
 import { CiBoxList } from "react-icons/ci";
-import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
+import { CgEditMask } from "react-icons/cg";
+import { IoDocuments } from "react-icons/io5";
+import EmployeeNavbar from "./EmployeeNavbar";
 
 const EmployeeLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const location = useLocation();
 
-  const arr = [
+  const navItems = [
     { name: "Dashboard", to: "/employee/dashboard", icon: <BiSolidDashboard /> },
     { name: "Apply Leave", to: "/employee/apply-leave", icon: <VscGitStashApply /> },
     { name: "My Leave List", to: "/employee/my-leaves", icon: <FcLeave /> },
     { name: "Attendence", to: "/employee/mark-attendence", icon: <MdCoPresent /> },
     { name: "Attendence List", to: "/employee/my-attendence-list", icon: <CiBoxList /> },
     { name: "Salary List", to: "/employee/salary-slips", icon: <CiBoxList /> },
+    { name: "Tasks", to: "/employee/tasks", icon: <CgEditMask /> },
+    { name: "Documents", to: "/employee/my-documents", icon: <IoDocuments /> },
+    { name: "Exit", to: "/employee/exit-request", icon: <BiExit /> },
   ];
 
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      setSidebarOpen(!mobile); // open on desktop, hidden on mobile
+      setSidebarOpen(!mobile); // open by default on desktop
     };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const toggleSidebar = () => setSidebarOpen(prev => !prev);
+
   return (
-    <div className="layout-wrapper">
-      {/* Sidebar */}
-      <div className={`sidebar bg-dark text-white p-3 shadow ${sidebarOpen ? "show" : ""} ${isMobile ? "mobile" : ""}`}>
-        {isMobile && (
-          <div className="d-flex justify-content-end mb-3">
-            <RxCross2 onClick={() => setSidebarOpen(false)} size={24} style={{ cursor: "pointer" }} />
-          </div>
-        )}
-        <h5 className="text-white mb-4">Employee Panel</h5>
-        {arr.map((item, index) => {
-          const isActive = location.pathname === item.to;
-          return (
-            <Link
-              key={index}
-              to={item.to}
-              onClick={() => isMobile && setSidebarOpen(false)}
-              className={`sidebar-link d-flex align-items-center ${isActive ? "active" : ""}`}
-            >
-              <span className="icon fs-5">{item.icon}</span>
-              <span className="label ps-2 text-white">{item.name}</span>
-            </Link>
-          );
-        })}
-      </div>
+    <>
+      <EmployeeNavbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
 
-      {/* Main Content */}
-      <div className="main-content flex-grow-1">
-        {isMobile && (
-          <div className="top-bar d-flex justify-content-between align-items-center p-2 bg-white shadow-sm">
-            <RxHamburgerMenu onClick={() => setSidebarOpen(true)} size={24} style={{ cursor: "pointer" }} />
-            <h5 className="m-auto">Employee Panel</h5>
-          </div>
-        )}
+      <div className="layout-wrapper">
+        <div
+          className={`sidebar bg-dark text-white p-3 shadow ${sidebarOpen ? "show" : ""} ${isMobile ? "mobile" : ""}`}
+        >
+          {navItems.map((item, index) => {
+            const isActive = location.pathname === item.to;
+            return (
+              <Link
+                key={index}
+                to={item.to}
+                onClick={() => isMobile && setSidebarOpen(false)}
+                className={`sidebar-link d-flex align-items-center ${isActive ? "active" : ""}`}
+              >
+                <span className="icon fs-5">{item.icon}</span>
+                <span className="label ps-2 text-white">{item.name}</span>
+              </Link>
+            );
+          })}
+        </div>
 
-        <div className="p-3 bg-light min-vh-100">
-          <div className="bg-white shadow-sm p-4 rounded">{children}</div>
+        <div className="main-content flex-grow-1">
+          <div className="p-3 bg-light min-vh-100">
+            <div className="bg-white shadow-sm p-4 rounded">{children}</div>
+          </div>
         </div>
       </div>
 
-      {/* CSS */}
       <style>{`
         .layout-wrapper {
           display: flex;
@@ -87,16 +87,14 @@ const EmployeeLayout = ({ children }) => {
 
         .sidebar.mobile {
           position: fixed;
-          top: 0;
+          top: 56px;
           left: -250px;
-          width: 220px;
-          height: 100vh;
+          height: calc(100vh - 56px);
           z-index: 1000;
         }
 
         .sidebar.mobile.show {
           left: 0;
-          background-color: #212529;
         }
 
         .sidebar-link {
@@ -117,18 +115,12 @@ const EmployeeLayout = ({ children }) => {
           background-color: #dc3545;
         }
 
-        .top-bar {
-          position: sticky;
-          top: 0;
-          z-index: 500;
-        }
-
         .main-content {
           flex-grow: 1;
           width: 100%;
         }
       `}</style>
-    </div>
+    </>
   );
 };
 

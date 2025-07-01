@@ -4,17 +4,17 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage
 import { combineReducers } from "redux";
 import pendingUserReducer from "./Slices/pendingUserSlice"
-// import other slices...
+import projectReducer from "./Slices/projectSlice";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["pending"], // ✅ Add slice names you want to persist
+  whitelist: ["pending","project"], // ✅ Add slice names you want to persist
 };
 
 const rootReducer = combineReducers({
-  pendingUsers: pendingUserReducer  
-  // add more reducers here
+  pendingUsers: pendingUserReducer ,
+  project: projectReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

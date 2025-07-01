@@ -1,156 +1,163 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "./AdminLayout";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Card, Row, Col } from "react-bootstrap";
+import Swal from "sweetalert2";
+import Loader from "./Loader/Loader";
 import {
   FaUsers,
+  FaCalendarAlt,
+  FaUserClock,
+  FaUserCheck,
+  FaDoorOpen,
+  FaProjectDiagram,
   FaBuilding,
   FaSitemap,
   FaClipboardList,
-  FaCalendarCheck,
 } from "react-icons/fa";
-import DotLoader from "./Loader/Loader";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
+
+  const axiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_API_URL,
+  });
+
+  axiosInstance.interceptors.request.use((config) => {
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  });
+
+  const fetchDashboardStats = async () => {
+    try {
+      setLoading(true);
+      const res = await axiosInstance.get("/api/reports/dashboard");
+      setStats(res.data?.data);
+    } catch {
+      Swal.fire("Error", "Failed to fetch analytics", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem("user"))?.token;
-    const headers = { Authorization: `Bearer ${token}` };
-
-    const fetchAllStats = async () => {
-      try {
-        const [usersRes, deptRes, desigRes, leavesRes, attendRes] =
-          await Promise.all([
-            axios.get(`${import.meta.env.VITE_API_URL}/user/`, { headers }),
-            axios.get(`${import.meta.env.VITE_API_URL}/api/departments`),
-            axios.get(`${import.meta.env.VITE_API_URL}/api/designations`),
-            axios.get(`${import.meta.env.VITE_API_URL}/api/leaves`, { headers }),
-            axios.get(`${import.meta.env.VITE_API_URL}/api/attendance`, { headers }),
-          ]);
-
-        const totalEmployees = usersRes.data.data.filter(
-          (u) => u.role === "employee"
-        ).length;
-
-        setStats({
-          totalEmployees,
-          totalDepartments: deptRes.data.data.length,
-          totalDesignations: desigRes.data.data.length,
-          totalLeaves: leavesRes.data.data.length,
-          totalAttendance: attendRes.data.data.length,
-        });
-      } catch (error) {
-        Swal.fire("Error", "Dashboard Load Error: ", error.message);
-      }
-    };
-
-    fetchAllStats();
+    fetchDashboardStats();
   }, []);
 
-  const cards = [
+  const dashboardCards = [
     {
       label: "Employees",
-      value: stats?.totalEmployees,
+      value: stats?.totalEmployees || 0,
       icon: <FaUsers size={22} />,
+      color: "#007bff",
       route: "/admin/employee-management",
     },
     {
-      label: "Departments",
-      value: stats?.totalDepartments,
-      icon: <FaBuilding size={22} />,
-      route: "/admin/department",
-    },
-    {
-      label: "Designations",
-      value: stats?.totalDesignations,
-      icon: <FaSitemap size={22} />,
-      route: "/admin/designations",
-    },
-    {
       label: "Leaves",
-      value: stats?.totalLeaves,
-      icon: <FaClipboardList size={22} />,
+      value: stats?.totalLeaves || 0,
+      icon: <FaCalendarAlt size={22} />,
+      color: "#28a745",
       route: "/admin/leaves",
     },
     {
-      label: "Attendance",
-      value: stats?.totalAttendance,
-      icon: <FaCalendarCheck size={22} />,
+      label: "Attendance Records",
+      value: stats?.totalAttendance || 0,
+      icon: <FaUserCheck size={22} />,
+      color: "#17a2b8",
       route: "/admin/employee-attendence-lists",
+    },
+    {
+      label: "Today's Attendance",
+      value: stats?.todayAttendance || 0,
+      icon: <FaUserClock size={22} />,
+      color: "#ffc107",
+      route: "/admin/employee-attendence-lists",
+    },
+    {
+      label: "Projects",
+      value: stats?.totalProjects || 0,
+      icon: <FaProjectDiagram size={22} />,
+      color: "#6610f2",
+      route: "/admin/project-management",
+    },
+    {
+      label: "Exit Requests",
+      value: stats?.exitRequests || 0,
+      icon: <FaDoorOpen size={22} />,
+      color: "#dc3545",
+      route: "/admin/employee-exit-lists",
     },
   ];
 
-  const backgroundStyle = {
-    backgroundImage: 'url("/images/office-bg.jpg")',
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    minHeight: "85vh",
-    padding: "20px 10px",
-    color: "#fff",
-    position: "relative",
-  };
-
-  const overlayStyle = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.65)",
-    zIndex: 1,
-  };
-
-  const contentStyle = {
-    position: "relative",
-    zIndex: 2,
-  };
-
   return (
     <AdminLayout>
-      <div style={backgroundStyle}>
-        <div style={overlayStyle}></div>
-        <div style={contentStyle}>
-          <div className="container mt-3">
-            <h3 className="text-center mb-4">Admin Dashboard</h3>
-            <div className="row justify-content-center">
-              {cards.map((card, i) => (
-                <div
-                  className="col-xl-4 col-md-6 col-sm-10 mb-4"
-                  key={i}
-                  onClick={() => navigate(card.route)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <div
-                    className="card h-100 bg-dark text-white shadow-lg border-0"
-                    style={{
-                      borderRadius: "12px",
-                      transition: "transform 0.3s ease",
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.transform = "translateY(-5px)")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.transform = "translateY(0)")
-                    }
-                  >
-                    <div className="card-body text-center py-4">
-                      <div className="d-flex justify-content-center align-items-center gap-2 mb-2">
-                        <span>{card.icon}</span>
-                        <h5 className="mb-0">{card.label}</h5>
-                      </div>
-                      <h2 className="fw-bold">
-                        {stats ? card.value : <DotLoader />}
-                      </h2>
-                    </div>
-                  </div>
-                </div>
-              ))}
+      <div
+        className="py-5 d-flex justify-content-center align-items-center"
+        style={{
+          minHeight: "80vh",
+          background: "linear-gradient(120deg, #f5f7fa, #c3cfe2)",
+        }}
+      >
+        <Card
+          className="p-4 rounded-5 shadow-lg border-0 w-100"
+          style={{
+            maxWidth: "1150px",
+            background: "rgba(255,255,255,0.7)",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(255,255,255,0.3)",
+          }}
+        >
+          <h4 className="mb-4 fw-bold text-primary">Admin Dashboard Overview</h4>
+
+          {loading ? (
+            <div className="text-center py-5">
+              <Loader />
             </div>
-          </div>
-        </div>
+          ) : (
+            <Row className="g-4">
+              {dashboardCards.map((card, idx) => (
+                <Col md={6} lg={4} key={idx}>
+                  <Card
+                    onClick={() => navigate(card.route)}
+                    className="h-100 border-0 shadow-sm rounded-4 cursor-pointer"
+                    style={{
+                      background: "rgba(255,255,255,0.9)",
+                      backdropFilter: "blur(5px)",
+                      borderLeft: `6px solid ${card.color}`,
+                      transition: "transform 0.2s ease-in-out",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                  >
+                    <Card.Body className="d-flex flex-column align-items-start justify-content-between p-4">
+                      <div className="d-flex align-items-center gap-3 mb-3">
+                        <div
+                          className="fs-2 text-white d-flex align-items-center justify-content-center"
+                          style={{
+                            backgroundColor: card.color,
+                            borderRadius: "50%",
+                            width: "48px",
+                            height: "48px",
+                          }}
+                        >
+                          {card.icon}
+                        </div>
+                        <h6 className="text-secondary fw-semibold mb-0">{card.label}</h6>
+                      </div>
+                      <h3 className="fw-bold text-dark mb-0">{card.value}</h3>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          )}
+        </Card>
       </div>
     </AdminLayout>
   );

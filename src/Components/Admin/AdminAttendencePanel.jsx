@@ -12,29 +12,28 @@ import {
   FaFileCsv,
   FaTrash,
   FaSyncAlt,
+  FaSearch,
 } from "react-icons/fa";
 import TableLoader from "./Loader/Loader";
 
 const AdminAttendancePanel = () => {
-  const [attendances, setAttendances] = useState([]);
+  const [groupedAttendance, setGroupedAttendance] = useState({});
+  const [filteredAttendance, setFilteredAttendance] = useState({});
   const [filterStatus, setFilterStatus] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const token = JSON.parse(localStorage.getItem("user"))?.token;
 
   const fetchAllAttendance = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/attendance`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (res.data.success) {
-        setAttendances(res.data.data);
+        setGroupedAttendance(res.data.data);
+        setFilteredAttendance(res.data.data);
       }
-    } catch (error) {
-      console.error("Fetch error:", error);
     } finally {
       setLoading(false);
     }
@@ -43,6 +42,24 @@ const AdminAttendancePanel = () => {
   useEffect(() => {
     fetchAllAttendance();
   }, []);
+
+  useEffect(() => {
+    const filtered = {};
+    Object.keys(groupedAttendance).forEach((date) => {
+      const filteredRecords = groupedAttendance[date].filter((record) => {
+        const matchesStatus = filterStatus ? record.status === filterStatus : true;
+        const matchesSearch =
+          record.employeeId?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          record.employeeId?.email.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesStatus && matchesSearch;
+      });
+
+      if (filteredRecords.length > 0) {
+        filtered[date] = filteredRecords;
+      }
+    });
+    setFilteredAttendance(filtered);
+  }, [filterStatus, searchQuery, groupedAttendance]);
 
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
@@ -57,9 +74,7 @@ const AdminAttendancePanel = () => {
       try {
         const res = await axios.delete(
           `${import.meta.env.VITE_API_URL}/api/attendance/${id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         if (res.data.success) {
           Swal.fire("Deleted", "Attendance deleted successfully", "success");
@@ -86,12 +101,10 @@ const AdminAttendancePanel = () => {
         </select>
       `,
       focusConfirm: false,
-      preConfirm: () => {
-        return {
-          status: document.getElementById("status").value,
-          statusType: document.getElementById("type").value,
-        };
-      },
+      preConfirm: () => ({
+        status: document.getElementById("status").value,
+        statusType: document.getElementById("type").value,
+      }),
     });
 
     if (formValues) {
@@ -99,9 +112,7 @@ const AdminAttendancePanel = () => {
         const res = await axios.put(
           `${import.meta.env.VITE_API_URL}/api/attendance/${id}`,
           formValues,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         if (res.data.success) {
           Swal.fire("Updated", "Attendance updated successfully", "success");
@@ -113,21 +124,21 @@ const AdminAttendancePanel = () => {
     }
   };
 
-  const filtered = filterStatus
-    ? attendances.filter((a) => a.status === filterStatus)
-    : attendances;
-
   const exportToCSV = () => {
-    const csvData = filtered.map((a, index) => ({
-      S_No: index + 1,
-      Name: a.employeeId.name,
-      Email: a.employeeId.email,
-      Date: new Date(a.date).toLocaleDateString(),
-      Time: a.inTime,
-      Status: a.status,
-      Type: a.statusType,
-    }));
-    const csv = Papa.unparse(csvData);
+    const rows = [];
+    Object.keys(filteredAttendance).forEach((date) => {
+      filteredAttendance[date].forEach((a) => {
+        rows.push({
+          Date: date,
+          Name: a.employeeId?.name,
+          Email: a.employeeId?.email,
+          Status: a.status,
+          Type: a.statusType,
+          InOutLogs: a.inOutLogs.map((log) => `IN: ${log.inTime} | OUT: ${log.outTime || "N/A"}`).join(" | "),
+        });
+      });
+    });
+    const csv = Papa.unparse(rows);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -140,21 +151,23 @@ const AdminAttendancePanel = () => {
   const exportToPDF = () => {
     const doc = new jsPDF();
     doc.text("Employee Attendance Report", 14, 10);
-    const tableData = filtered.map((a, i) => [
-      i + 1,
-      a.employeeId.name,
-      a.employeeId.email,
-      new Date(a.date).toLocaleDateString(),
-      a.inTime,
-      a.status,
-      a.statusType,
-    ]);
-
-    autoTable(doc, {
-      head: [["S No", "Name", "Email", "Date", "Time", "Status", "Type"]],
-      body: tableData,
+    const rows = [];
+    Object.keys(filteredAttendance).forEach((date) => {
+      filteredAttendance[date].forEach((a) => {
+        rows.push([
+          date,
+          a.employeeId?.name,
+          a.employeeId?.email,
+          a.status,
+          a.statusType,
+          a.inOutLogs.map((log) => `IN: ${log.inTime} OUT: ${log.outTime || "N/A"}`).join("\n"),
+        ]);
+      });
     });
-
+    autoTable(doc, {
+      head: [["Date", "Name", "Email", "Status", "Type", "In/Out Logs"]],
+      body: rows,
+    });
     doc.save("attendance.pdf");
   };
 
@@ -166,8 +179,8 @@ const AdminAttendancePanel = () => {
           <span>Admin Attendance Monitoring</span>
         </h4>
 
-        <div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
-          <div className="d-flex align-items-center mb-2 mb-md-0 gap-2">
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+          <div className="d-flex align-items-center gap-2">
             <FaFilter />
             <select
               className="form-select"
@@ -182,6 +195,18 @@ const AdminAttendancePanel = () => {
             </select>
           </div>
 
+          <div className="d-flex align-items-center gap-2">
+            <FaSearch />
+            <input
+              type="text"
+              className="form-control"
+              style={{ width: "250px" }}
+              placeholder="Search by name or email"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
           <div className="d-flex gap-2">
             <button className="btn btn-success d-flex align-items-center" onClick={exportToPDF}>
               <FaDownload className="me-2" />
@@ -194,78 +219,88 @@ const AdminAttendancePanel = () => {
           </div>
         </div>
 
-        <div className="table-responsive">
-          <table className="table table-bordered text-center table-hover">
-            <thead className="table-dark">
-              <tr>
-                <th>S No.</th>
-                <th>Employee</th>
-                <th>Email</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th>Type</th>
-                <th>Update</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="9">
-                    <TableLoader />
-                  </td>
-                </tr>
-              ) : filtered.length > 0 ? (
-                filtered.map((a, i) => (
-                  <tr key={a._id}>
-                    <td>{i + 1}</td>
-                    <td>{a.employeeId?.name}</td>
-                    <td>{a.employeeId?.email}</td>
-                    <td>{new Date(a.date).toLocaleDateString()}</td>
-                    <td>{a.inTime}</td>
-                    <td>
-                      <span
-                        className={`badge bg-${
-                          a.status === "Present"
-                            ? "success"
-                            : a.status === "Late"
-                            ? "warning"
-                            : "danger"
-                        }`}
-                      >
-                        {a.status}
-                      </span>
-                    </td>
-                    <td>{a.statusType}</td>
-                    <td>
-                      <button
-                        className="btn btn-warning btn-sm d-flex align-items-center"
-                        onClick={() => handleStatusUpdate(a._id)}
-                      >
-                        <FaSyncAlt className="me-1" />
-                        Update
-                      </button>
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-danger btn-sm d-flex align-items-center"
-                        onClick={() => handleDelete(a._id)}
-                      >
-                        <FaTrash className="me-1" />
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="9">No attendance records</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        {loading ? (
+          <TableLoader />
+        ) : Object.keys(filteredAttendance).length === 0 ? (
+          <div className="text-center">No attendance records found.</div>
+        ) : (
+          Object.keys(filteredAttendance)
+            .sort((a, b) => new Date(b) - new Date(a))
+            .map((date, idx) => (
+              <div key={idx} className="mb-5">
+                <h5 className="bg-dark text-white p-2 rounded">{date}</h5>
+                <div className="table-responsive">
+                  <table className="table table-bordered text-center table-hover">
+                    <thead className="table-secondary">
+                      <tr>
+                        <th>#</th>
+                        <th>Employee</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>In/Out Logs</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredAttendance[date].map((a, i) => (
+                        <tr key={a._id}>
+                          <td>{i + 1}</td>
+                          <td>{a.employeeId?.name}</td>
+                          <td>{a.employeeId?.email}</td>
+                          <td>
+                            <span
+                              className={`badge bg-${
+                                a.status === "Present"
+                                  ? "success"
+                                  : a.status === "Late"
+                                  ? "warning"
+                                  : "danger"
+                              }`}
+                            >
+                              {a.status}
+                            </span>
+                          </td>
+                          <td>{a.statusType}</td>
+                          <td className="text-start">
+                            {a.inOutLogs.length > 0 ? (
+                              a.inOutLogs.map((log, idx) => (
+                                <div key={idx}>
+                                  <strong>IN:</strong> {log.inTime || "N/A"} &nbsp;
+                                  <strong>OUT:</strong> {log.outTime || "N/A"}
+                                </div>
+                              ))
+                            ) : (
+                              <span>No logs</span>
+                            )}
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-warning btn-sm d-flex align-items-center"
+                              onClick={() => handleStatusUpdate(a._id)}
+                            >
+                              <FaSyncAlt className="me-1" />
+                              Update
+                            </button>
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-danger btn-sm d-flex align-items-center"
+                              onClick={() => handleDelete(a._id)}
+                            >
+                              <FaTrash className="me-1" />
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))
+        )}
       </div>
     </AdminLayout>
   );

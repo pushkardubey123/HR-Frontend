@@ -5,7 +5,7 @@ import Footer from './Footer'
 
 const Home = () => {
   useEffect(() => {
-  fetch("https://backend-hrms-k73a.onrender.com/");
+  fetch("https://hr-backend-bogs.onrender.com");
 }, []);
   return (
     <>

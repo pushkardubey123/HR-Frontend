@@ -31,7 +31,7 @@ const AdminNavbar = ({ sidebarOpen, toggleSidebar }) => {
 
   return (
     <nav
-      className="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top"
+      className="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top px-1"
       style={{
         background: "linear-gradient(to right, #232526, #414345)",
         zIndex: 1050,

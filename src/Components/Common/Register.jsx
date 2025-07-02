@@ -1,9 +1,18 @@
+// Employee Register - 3 column layout with compact spacing and dynamic dropdowns
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Swal from "sweetalert2";
+import "bootstrap/dist/css/bootstrap.min.css";
+import {
+  FaUser, FaEnvelope, FaLock, FaPhone, FaVenusMars, FaMapMarkerAlt,
+  FaCalendar, FaBuilding, FaBriefcase, FaClock, FaUserPlus,
+  FaPhoneAlt, FaUsers, FaImage
+} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const schema = yup.object({
   name: yup.string().required("Name is required"),
@@ -27,12 +36,14 @@ const EmployeeRegister = () => {
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [shifts, setShifts] = useState([]);
+  const [genderOptions] = useState(["Male", "Female", "Other"]);
+  const navigate=useNavigate()
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
   useEffect(() => {
@@ -41,13 +52,13 @@ const EmployeeRegister = () => {
         const [d, ds, s] = await Promise.all([
           axios.get(`${import.meta.env.VITE_API_URL}/api/departments`),
           axios.get(`${import.meta.env.VITE_API_URL}/api/designations`),
-          axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`)
+          axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`),
         ]);
         setDepartments(d.data.data || []);
         setDesignations(ds.data.data || []);
         setShifts(s.data.data || []);
       } catch (error) {
-        Swal.fire("Error", "Dropdown fetch error", error);
+        Swal.fire("Error", "Dropdown fetch error", "error");
       }
     };
     fetchDropdowns();
@@ -70,7 +81,7 @@ const EmployeeRegister = () => {
       formData.append("emergencyContact", JSON.stringify({
         name: data.emergencyName,
         phone: data.emergencyPhone,
-        relation: data.emergencyRelation
+        relation: data.emergencyRelation,
       }));
       formData.append("profilePic", data.profilePic[0]);
 
@@ -78,6 +89,8 @@ const EmployeeRegister = () => {
       if (res.data.success) {
         Swal.fire("Success", res.data.message, "success");
         reset();
+        navigate("/")
+
       } else {
         Swal.fire("Error", res.data.message || "Something went wrong", "error");
       }
@@ -86,77 +99,81 @@ const EmployeeRegister = () => {
     }
   };
 
+  const fields = [
+    { label: "Name", icon: <FaUser />, name: "name" },
+    { label: "Email", icon: <FaEnvelope />, name: "email" },
+    { label: "Password", icon: <FaLock />, name: "password", type: "password" },
+    { label: "Phone", icon: <FaPhone />, name: "phone" },
+    { label: "Gender", icon: <FaVenusMars />, name: "gender", type: "select", options: genderOptions },
+    { label: "Date of Birth", icon: <FaCalendar />, name: "dob", type: "date" },
+    { label: "Date of Joining", icon: <FaCalendar />, name: "doj", type: "date" },
+    { label: "Address", icon: <FaMapMarkerAlt />, name: "address" },
+    { label: "Department", icon: <FaBuilding />, name: "departmentId", type: "select", options: departments },
+    { label: "Designation", icon: <FaBriefcase />, name: "designationId", type: "select", options: designations },
+    { label: "Shift", icon: <FaClock />, name: "shiftId", type: "select", options: shifts },
+    { label: "Emergency Name", icon: <FaUserPlus />, name: "emergencyName" },
+    { label: "Emergency Phone", icon: <FaPhoneAlt />, name: "emergencyPhone" },
+    { label: "Emergency Relation", icon: <FaUsers />, name: "emergencyRelation" },
+    { label: "Profile Picture", icon: <FaImage />, name: "profilePic", type: "file" },
+  ];
+
   return (
-    <div className="container py-4">
-      <div className="card p-4 shadow-lg" style={{ maxWidth: 700, margin: "auto" }}>
-        <h4 className="text-center mb-4">Employee Registration</h4>
-        <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-          <div className="row">
-            <div className="col-md-6">
-              <input className="form-control mb-2" placeholder="Name" {...register("name")} />
-              <p className="text-danger">{errors.name?.message}</p>
-
-              <input className="form-control mb-2" placeholder="Email" {...register("email")} />
-              <p className="text-danger">{errors.email?.message}</p>
-
-              <input className="form-control mb-2" placeholder="Password" type="password" {...register("password")} />
-              <p className="text-danger">{errors.password?.message}</p>
-
-              <input className="form-control mb-2" placeholder="Phone" {...register("phone")} />
-              <p className="text-danger">{errors.phone?.message}</p>
-
-              <select className="form-control mb-2" {...register("gender")}>
-                <option value="">Select Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-              </select>
-              <p className="text-danger">{errors.gender?.message}</p>
-
-              <input type="date" className="form-control mb-2" {...register("dob")} />
-              <p className="text-danger">{errors.dob?.message}</p>
-
-              <input type="date" className="form-control mb-2" {...register("doj")} />
-              <p className="text-danger">{errors.doj?.message}</p>
-
-              <input className="form-control mb-2" placeholder="Address" {...register("address")} />
-              <p className="text-danger">{errors.address?.message}</p>
-            </div>
-
-            <div className="col-md-6">
-              <select className="form-control mb-2" {...register("departmentId")}>
-                <option value="">Select Department</option>
-                {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
-              </select>
-              <p className="text-danger">{errors.departmentId?.message}</p>
-
-              <select className="form-control mb-2" {...register("designationId")}>
-                <option value="">Select Designation</option>
-                {designations.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
-              </select>
-              <p className="text-danger">{errors.designationId?.message}</p>
-
-              <select className="form-control mb-2" {...register("shiftId")}>
-                <option value="">Select Shift</option>
-                {shifts.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
-              </select>
-              <p className="text-danger">{errors.shiftId?.message}</p>
-
-              <input className="form-control mb-2" placeholder="Emergency Name" {...register("emergencyName")} />
-              <p className="text-danger">{errors.emergencyName?.message}</p>
-
-              <input className="form-control mb-2" placeholder="Emergency Phone" {...register("emergencyPhone")} />
-              <p className="text-danger">{errors.emergencyPhone?.message}</p>
-
-              <input className="form-control mb-2" placeholder="Relation" {...register("emergencyRelation")} />
-              <p className="text-danger">{errors.emergencyRelation?.message}</p>
-
-              <input className="form-control mb-2" type="file" {...register("profilePic")} />
-              <p className="text-danger">{errors.profilePic?.message}</p>
-            </div>
+    <div className="animated-bg" style={{ fontFamily: "'Poppins', sans-serif", minHeight: "100vh", paddingTop: 40 }}>
+      <div className="container">
+        <div className="row bg-white rounded shadow-lg overflow-hidden">
+          <div className="col-md-4 d-none d-md-block text-white p-4" style={{ background: '#007bff' }}>
+            <h2 className="fw-bold">Welcome</h2>
+            <p className="text-light">Join the team and let's grow together.</p>
+            <img src="https://static.vecteezy.com/system/resources/previews/003/689/228/non_2x/online-registration-or-sign-up-login-for-account-on-smartphone-app-user-interface-with-secure-password-mobile-application-for-ui-web-banner-access-cartoon-people-illustration-vector.jpg" alt="register" className="img-fluid rounded" />
           </div>
-          <button type="submit" className="btn btn-dark w-100 mt-3">Submit for Approval</button>
-        </form>
+
+          <div className="col-md-8 p-4">
+            <h4 className="text-center text-primary mb-4 fw-bold">Employee Registration</h4>
+            <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+              <div className="row g-3">
+                {fields.map((field, index) => (
+                  <div className="col-md-4" key={index}>
+                    <label className="form-label d-flex align-items-center">
+                      <span className="me-2">{field.icon}</span> {field.label}
+                    </label>
+                    {field.type === "select" ? (
+                      <select className="form-control" {...register(field.name)}>
+                        <option value="">Select {field.label}</option>
+                        {field.options.map((opt, i) => (
+                          typeof opt === "string" ? (
+                            <option key={i} value={opt}>{opt}</option>
+                          ) : (
+                            <option key={opt._id} value={opt._id}>{opt.name}</option>
+                          )
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type={field.type || "text"}
+                        className="form-control"
+                        {...register(field.name)}
+                      />
+                    )}
+                    <p className="text-danger small">{errors[field.name]?.message}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="text-center mt-4">
+                <button
+                  type="submit"
+                  className="btn btn-lg fw-bold"
+                  style={{
+                    background: "#0d6efd",
+                    color: "white",
+                    boxShadow: "0 0 10px #0d6efd, 0 0 20px #0d6efd",
+                  }}
+                >
+                  Register
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );

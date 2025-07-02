@@ -21,3 +21,14 @@
   transform: translateY(-5px);
   box-shadow: 0 6px 18px rgba(19, 3, 3, 0.08);
 }
+.animated-bg {
+  background: linear-gradient(-45deg, #dfe9f3, #f9f9f9, #e3f2fd, #fff);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

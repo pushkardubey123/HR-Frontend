@@ -1,40 +1,59 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPendingUsers, approveUser, rejectUser } from "../Redux/Slices/pendingUserSlice";
+import { fetchPendingUsers, rejectUser } from "../Redux/Slices/pendingUserSlice";
 import Swal from "sweetalert2";
 import {
   Container,
   Card,
   Table,
   Button,
+  Modal,
+  Form,
 } from "react-bootstrap";
-import {
-  FaUserClock,
-  FaCheckCircle,
-  FaTimesCircle,
-} from "react-icons/fa";
+import { FaUserClock, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import AdminLayout from "./AdminLayout";
-import Loader from "./Loader/Loader"; // ✅ Import dot-loader
+import Loader from "./Loader/Loader";
+import axios from "axios";
 
 const AdminApproveEmployees = () => {
   const dispatch = useDispatch();
   const { data = [], loading = false } = useSelector((state) => state.pendingUsers);
 
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [basicSalary, setBasicSalary] = useState("");
+
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
+
   useEffect(() => {
     dispatch(fetchPendingUsers());
   }, [dispatch]);
 
-  const handleApprove = async (id) => {
-    const confirm = await Swal.fire({
-      title: "Approve User?",
-      text: "This will create an official employee record.",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Approve",
-    });
-    if (confirm.isConfirmed) {
-      await dispatch(approveUser(id));
-      Swal.fire("Approved!", "User has been added.", "success");
+  const handleApproveClick = (userId) => {
+    setSelectedUserId(userId);
+    setShowModal(true);
+  };
+
+  const handleApproveConfirm = async () => {
+    if (!basicSalary) {
+      Swal.fire("Error", "Please enter basic salary", "error");
+      return;
+    }
+
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/user/approve-user/${selectedUserId}`,
+        { basicSalary },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      Swal.fire("Approved!", "User approved with basic salary", "success");
+      setShowModal(false);
+      setBasicSalary("");
+      dispatch(fetchPendingUsers());
+    } catch (err) {
+      Swal.fire("Error", "Failed to approve user", "error");
     }
   };
 
@@ -62,7 +81,6 @@ const AdminApproveEmployees = () => {
               <h3 className="m-0 text-primary">Pending Employee Approvals</h3>
             </div>
 
-            {/* Loading State */}
             {loading ? (
               <div className="my-5">
                 <Loader />
@@ -71,7 +89,7 @@ const AdminApproveEmployees = () => {
               <p className="text-center text-muted fs-5">No pending registrations</p>
             ) : (
               <div className="table-responsive">
-                <Table bordered hover responsive className="text-center align-middle shadow-sm">
+                <Table bordered hover className="text-center align-middle shadow-sm">
                   <thead className="table-primary">
                     <tr>
                       <th>#</th>
@@ -90,23 +108,23 @@ const AdminApproveEmployees = () => {
                         <td>{emp.email}</td>
                         <td>{emp.phone}</td>
                         <td>{emp.departmentId?.name || "N/A"}</td>
-                        <td>
+                        <td className="d-flex align-items-center justify-content-center ">
                           <Button
                             variant="success"
                             size="sm"
-                            className="me-2 rounded-pill px-3 d-inline-flex align-items-center"
-                            onClick={() => handleApprove(emp._id)}
+                            className="me-2 rounded-pill d-flex align-items-center"
+                            onClick={() => handleApproveClick(emp._id)}
                           >
-                            <FaCheckCircle className="me-1" />
+                            <FaCheckCircle />
                             Approve
                           </Button>
                           <Button
                             variant="danger"
                             size="sm"
-                            className="rounded-pill px-3 d-inline-flex align-items-center"
+                            className="rounded-pill d-flex align-items-center"
                             onClick={() => handleReject(emp._id)}
                           >
-                            <FaTimesCircle className="me-1" />
+                            <FaTimesCircle />
                             Reject
                           </Button>
                         </td>
@@ -119,6 +137,32 @@ const AdminApproveEmployees = () => {
           </Card.Body>
         </Card>
       </Container>
+
+      {/* 🧾 Modal to Enter Basic Salary */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Enter Basic Salary</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>Basic Salary (₹)</Form.Label>
+            <Form.Control
+              type="number"
+              value={basicSalary}
+              onChange={(e) => setBasicSalary(e.target.value)}
+              placeholder="Enter basic salary"
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleApproveConfirm}>
+            Approve
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </AdminLayout>
   );
 };

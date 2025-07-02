@@ -1,84 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEnvelope, FaLock, FaUserTag, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaLock } from "react-icons/fa";
 
 const schema = yup.object().shape({
-  role: yup.string().required("Role is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup.string().required("Password is required"),
+  captcha: yup.string().required("Captcha is required"),
 });
 
 const Login = ({ onClose, onLoginSuccess }) => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [captcha, setCaptcha] = useState("otutg");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const showAlert = (title, text, icon) => {
-    Swal.fire({
-      title,
-      text,
-      icon,
-      customClass: { container: "custom-swal-zindex" },
-    });
+  const refreshCaptcha = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let newCaptcha = "";
+    for (let i = 0; i < 5; i++) {
+      newCaptcha += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setCaptcha(newCaptcha);
   };
 
+  useEffect(() => {
+    refreshCaptcha();
+  }, []);
+
   const onSubmit = async (data) => {
+    if (data.captcha !== captcha) {
+      refreshCaptcha();
+      setError("captcha", { message: "Captcha doesn't match" });
+      return;
+    }
+
     try {
       setLoading(true);
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/user/login`,
-        data
-      );
-
-      if (res.data.success === true) {
-        const actualRole = res.data.data.role;
-
-        if (actualRole.toLowerCase() !== data.role.toLowerCase()) {
-          setLoading(false);
-          return showAlert(
-            "Access Denied",
-            `You are registered as ${actualRole}, but selected ${data.role}`,
-            "error"
-          );
-        }
-
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/login`, data);
+      if (res.data.success) {
         localStorage.setItem(
           "user",
           JSON.stringify({
-            role: actualRole,
+            role: res.data.data.role,
             token: res.data.token,
             id: res.data.data.id,
             username: res.data.data.name,
           })
         );
 
-        await showAlert("Success", "Logged in successfully", "success");
-
+        Swal.fire("Success", "Logged in successfully", "success");
         if (typeof onLoginSuccess === "function") onLoginSuccess();
         onClose();
-
-        navigate(actualRole === "admin" ? "/admin/dashboard" : "/employee/dashboard");
+        navigate(res.data.data.role === "admin" ? "/admin/dashboard" : "/employee/dashboard");
       } else {
-        showAlert("Failed", res.data.message, "error");
+        Swal.fire("Error", res.data.message, "error");
       }
     } catch (err) {
-      console.log(err)
-      showAlert(
-        "Error",
-        err.response?.data?.message || "Login failed",
-        "error"
-      );
+      Swal.fire("Error", err.response?.data?.message || "Login failed", "error");
     } finally {
       setLoading(false);
     }
@@ -86,101 +75,82 @@ const Login = ({ onClose, onLoginSuccess }) => {
 
   return (
     <div style={backdropStyle}>
-      <div className="card shadow" style={modalStyle}>
-        <div className="card-header d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Login</h5>
-          <button type="button" className="btn-close" onClick={onClose}></button>
+      <div className="d-flex w-100 flex-column flex-md-row" style={modalContainerStyle}>
+        {/* Left image (hidden on mobile) */}
+        <div className="w-50 d-none d-md-block">
+          <img
+            src="https://hrms.indianhr.in/assets/images/login-img.png"
+            alt="login-img"
+            style={{ height: "100%", width: "100%", objectFit: "cover" }}
+          />
         </div>
+        <div className="w-100 w-md-50 bg-white d-flex flex-column justify-content-center align-items-center p-4" style={{ maxWidth: 400 }}>
+          <h4 className="fw-bold text-center mb-4">LOGIN</h4>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="card-body">
-            {/* Role Field */}
-            <div className="mb-3">
-              <label className="form-label d-flex align-items-center gap-2">
-                <FaUserTag /> <span>Role</span>
-              </label>
-              <select className="form-select" {...register("role")}>
-                <option value="">Select Role</option>
-                <option value="Admin">Admin</option>
-                <option value="Employee">Employee</option>
-              </select>
-              {errors.role && (
-                <small className="text-danger">{errors.role.message}</small>
-              )}
-            </div>
+          <form className="w-100" onSubmit={handleSubmit(onSubmit)}>
+            <input
+              className="form-control rounded-pill mb-2"
+              placeholder="Please enter the Email"
+              {...register("email")}
+            />
+            {errors.email && <small className="text-danger d-block mb-2">{errors.email.message}</small>}
 
-            {/* Email Field */}
-            <div className="mb-3">
-              <label className="form-label d-flex align-items-center gap-2">
-                <FaEnvelope /> <span>Email</span>
-              </label>
-              <input
-                type="email"
-                className="form-control"
-                placeholder="Enter email"
-                {...register("email")}
-              />
-              {errors.email && (
-                <small className="text-danger">{errors.email.message}</small>
-              )}
-            </div>
+            <input
+              type="password"
+              className="form-control rounded-pill mb-2"
+              placeholder="Please enter the Password"
+              {...register("password")}
+            />
+            {errors.password && <small className="text-danger d-block mb-2">{errors.password.message}</small>}
 
-            {/* Password Field */}
-            <div className="mb-3">
-              <label className="form-label d-flex align-items-center gap-2">
-                <FaLock /> <span>Password</span>
-              </label>
-              <div className="input-group">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="form-control"
-                  placeholder="Enter password"
-                  {...register("password")}
-                />
-                <span
-                  className="input-group-text"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  style={{ cursor: "pointer" }}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
+            <input
+              className="form-control rounded-pill mb-2"
+              placeholder="Please enter the captcha"
+              {...register("captcha")}
+            />
+            <div className="d-flex align-items-center justify-content-between mb-2">
+              <div
+                className="border rounded-pill px-3 py-1"
+                style={{ fontFamily: "monospace", background: "#f9f9f9", fontSize: "1rem" }}
+              >
+                {captcha}
               </div>
-              {errors.password && (
-                <small className="text-danger">{errors.password.message}</small>
-              )}
+              <span
+                onClick={refreshCaptcha}
+                style={{ color: "#007bff", cursor: "pointer", fontSize: 14 }}
+              >
+                Refresh here
+              </span>
             </div>
-          </div>
+            {errors.captcha && <small className="text-danger d-block mb-2">{errors.captcha.message}</small>}
 
-          <div className="card-footer mt-3">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <p className="mb-0">
-                Not registered?{" "}
-                <Link to="/register" onClick={onClose}>
-                  Signup
-                </Link>
-              </p>
-              <label className="form-label d-flex align-items-center gap-2">
-                <FaLock />
-                <Link
-                  to="/forgot-password"
-                  onClick={onClose}
-                  style={{ textDecoration: "none", color: "#0d6efd", fontWeight: "500" }}
-                >
-                  <span>Forgot Password?</span>
-                </Link>
+            {/* Remember me */}
+            <div className="form-check mb-3">
+              <input className="form-check-input" type="checkbox" id="rememberMe" />
+              <label className="form-check-label" htmlFor="rememberMe">
+                Remember me
               </label>
             </div>
 
-            <div className="d-flex justify-content-end gap-2">
-              <button type="button" className="btn btn-secondary" onClick={onClose}>
-                Cancel
-              </button>
-              <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? "Logging in..." : "Login"}
-              </button>
+            {/* Sign in */}
+            <button
+              type="submit"
+              className="btn btn-dark w-100 rounded-pill fw-bold"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "SIGN IN"}
+            </button>
+
+            {/* Forgot password */}
+            <div className="text-center mt-3 d-flex align-items-center justify-evenly">
+              <FaLock />
+              <Link to="/forgot-password" onClick={onClose} className="text-decoration-none text-primary me-2">
+                Forgot password?
+              </Link>
+              <p className="mb-0">Not registered? <Link to="/register" onClick={onClose}>Signup</Link></p>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
@@ -193,16 +163,21 @@ const backdropStyle = {
   left: 0,
   width: "100vw",
   height: "100vh",
-  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  backgroundColor: "rgba(0, 0, 0, 0.4)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   zIndex: 9999,
 };
 
-const modalStyle = {
-  width: "100%",
-  maxWidth: "400px",
+const modalContainerStyle = {
+  width: "90%",
+  maxWidth: "900px",
+  height: "500px",
+  backgroundColor: "#fff",
+  borderRadius: "10px",
+  overflow: "hidden",
+  boxShadow: "0 10px 25px rgba(0, 0, 0, 0.2)",
 };
 
 export default Login;

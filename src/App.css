@@ -32,3 +32,8 @@
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
+/* Force Swal on top of custom modal */
+.swal2-container {
+  z-index: 10010 !important;
+}

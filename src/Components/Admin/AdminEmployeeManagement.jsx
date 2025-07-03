@@ -2,10 +2,29 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import AdminLayout from "./AdminLayout";
-import { FaEdit, FaTrash, FaUserPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaUserPlus, FaEye } from "react-icons/fa";
 import { Modal, Button } from "react-bootstrap";
-import "./EmployeeManagement.css";
 import Loader from "./Loader/Loader";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const schema = yup.object().shape({
+  name: yup.string().required("Name is required"),
+  email: yup.string().email().required("Email is required"),
+  phone: yup.string().required("Phone is required"),
+  gender: yup.string().required("Gender is required"),
+  dob: yup.string().required("DOB is required"),
+  address: yup.string().required("Address is required"),
+  departmentId: yup.string().required("Department is required"),
+  designationId: yup.string().required("Designation is required"),
+  shiftId: yup.string().required("Shift is required"),
+  doj: yup.string().required("DOJ is required"),
+  password: yup.string().when("isEdit", {
+    is: false,
+    then: yup.string().required("Password is required"),
+  }),
+});
 
 const EmployeeManagement = () => {
   const [employees, setEmployees] = useState([]);
@@ -15,13 +34,9 @@ const EmployeeManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profilePic, setProfilePic] = useState(null);
 
-  const [formData, setFormData] = useState({
-    name: "", email: "", password: "", role: "employee", phone: "",
-    gender: "", dob: "", address: "", departmentId: "", designationId: "",
-    shiftId: "", doj: "", emergencyContact: { name: "", phone: "", relation: "" },
-    profilePic: null,
-  });
+
 
   const token = JSON.parse(localStorage.getItem("user"))?.token;
   const getHeaders = () => ({ headers: { Authorization: `Bearer ${token}` } });
@@ -49,70 +64,80 @@ const EmployeeManagement = () => {
     fetchData();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name.startsWith("emergency")) {
-      const key = name.split(".")[1];
-      setFormData((prev) => ({
-        ...prev,
-        emergencyContact: { ...prev.emergencyContact, [key]: value },
-      }));
-    } else if (name === "profilePic") {
-      setFormData((prev) => ({ ...prev, profilePic: files[0] }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      name: "", email: "", password: "", role: "employee", phone: "", gender: "",
-      dob: "", address: "", departmentId: "", designationId: "", shiftId: "",
-      doj: "", emergencyContact: { name: "", phone: "", relation: "" }, profilePic: null,
-    });
-    setEditId(null);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = new FormData();
-    for (let key in formData) {
+const {
+  register,
+  handleSubmit,
+  reset,
+  setValue,
+  watch, // ✅ add this here
+  formState: { errors },
+} = useForm({
+    resolver: yupResolver(schema),
+  });
+    const selectedDepartmentId = watch("departmentId");
+const filteredDesignations = selectedDepartmentId
+  ? designations.filter((d) => d.departmentId?._id === selectedDepartmentId)
+  : [];
+  const onSubmit = async (data) => {
+    const formDataToSend = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
       if (key === "emergencyContact") {
-        data.append("emergencyContact", JSON.stringify(formData.emergencyContact));
+        formDataToSend.append(key, JSON.stringify(value));
       } else {
-        data.append(key, formData[key]);
+        formDataToSend.append(key, value);
       }
-    }
+    });
+    if (profilePic) formDataToSend.append("profilePic", profilePic);
 
     try {
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/employeeget/${editId}`, formData, getHeaders());
+        await axios.put(`${import.meta.env.VITE_API_URL}/employeeget/${editId}`, data, getHeaders());
         Swal.fire("Updated", "Employee updated successfully", "success");
       } else {
-        const posting = await axios.post(`${import.meta.env.VITE_API_URL}/user/register`, data, getHeaders());
-        if (posting.data.success) {
-          Swal.fire("Success", posting.data.message, "success");
-        } else {
-          Swal.fire("Error", posting.data.message, "error");
-        }
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/register`, formDataToSend, getHeaders());
+        Swal.fire(res.data.success ? "Success" : "Error", res.data.message, res.data.success ? "success" : "error");
       }
       fetchData();
-      resetForm();
       setShowModal(false);
+      reset();
+      setProfilePic(null);
+      setEditId(null);
     } catch (err) {
-      Swal.fire("Error", "Something went wrong", "error");
+      Swal.fire("Error", err.response?.data?.message || "Something went wrong", "error");
     }
   };
 
   const handleEdit = (emp) => {
     setEditId(emp._id);
-    setFormData({
-      ...emp,
-      password: "",
-      profilePic: null,
-      emergencyContact: emp.emergencyContact || { name: "", phone: "", relation: "" },
-    });
+    Object.entries(emp).forEach(([key, value]) => setValue(key, value));
+    setValue("password", "");
     setShowModal(true);
+  };
+
+  const handleViewDetails = (emp) => {
+    const profileUrl = emp.profilePic ? `${import.meta.env.VITE_API_URL}/static/${emp.profilePic}` : null;
+    Swal.fire({
+      title: `<h3>${emp.name}</h3>`,
+      html: `
+        <div style="text-align:left; max-height:500px; overflow-y:auto">
+          ${profileUrl ? `<img src='${profileUrl}' alt='profile' style='height:120px;width:120px;border-radius:8px;object-fit:cover;margin:0 auto 10px;display:block'/>` : ''}
+          <table class='table table-bordered'>
+            <tr><td><b>Email</b></td><td>${emp.email}</td></tr>
+            <tr><td><b>Phone</b></td><td>${emp.phone || 'N/A'}</td></tr>
+            <tr><td><b>Gender</b></td><td>${emp.gender || 'N/A'}</td></tr>
+            <tr><td><b>Date of Birth</b></td><td>${emp.dob?.substring(0,10) || 'N/A'}</td></tr>
+            <tr><td><b>Department</b></td><td>${emp.departmentId?.name || 'N/A'}</td></tr>
+            <tr><td><b>Designation</b></td><td>${emp.designationId?.name || 'N/A'}</td></tr>
+            <tr><td><b>Shift</b></td><td>${emp.shiftId?.name || 'N/A'}</td></tr>
+            <tr><td><b>Joining Date</b></td><td>${emp.doj?.substring(0,10) || 'N/A'}</td></tr>
+            <tr><td><b>Address</b></td><td>${emp.address || 'N/A'}</td></tr>
+            <tr><td><b>Emergency Contact</b></td><td>${emp.emergencyContact?.name || '-'} (${emp.emergencyContact?.relation || '-'}) - ${emp.emergencyContact?.phone || '-'}</td></tr>
+          </table>
+        </div>`,
+      width: "700px",
+      showCloseButton: true,
+      confirmButtonText: "Close",
+    });
   };
 
   const handleDelete = async (id) => {
@@ -132,20 +157,16 @@ const EmployeeManagement = () => {
 
   return (
     <AdminLayout>
-      <div className="employee-container">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h4 className="section-heading"><FaUserPlus /> Employee Management</h4>
-          <button className="btn add-btn" onClick={() => { resetForm(); setShowModal(true); }}>
-            + Add Employee
-          </button>
+      <div className="employee-container px-2">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+          <h4 className="section-heading d-flex align-items-center gap-2"><FaUserPlus /> Employee Management</h4>
+          <button className="btn btn-success" onClick={() => { reset(); setEditId(null); setShowModal(true); }}>+ Add Employee</button>
         </div>
 
-        <div className="custom-table-wrapper">
-          {loading ? (
-            <Loader />
-          ) : (
-            <table className="table custom-table">
-              <thead>
+        <div className="table-responsive custom-table-wrapper">
+          {loading ? <Loader /> : (
+            <table className="table table-bordered text-center">
+              <thead className="table-light">
                 <tr>
                   <th>S No.</th>
                   <th>Name</th>
@@ -166,9 +187,10 @@ const EmployeeManagement = () => {
                       <td>{emp.departmentId?.name || "N/A"}</td>
                       <td>{emp.designationId?.name || "N/A"}</td>
                       <td>{emp.shiftId?.name || "N/A"}</td>
-                      <td>
-                        <button className="action-btn edit" onClick={() => handleEdit(emp)}><FaEdit /></button>
-                        <button className="action-btn delete" onClick={() => handleDelete(emp._id)}><FaTrash /></button>
+                      <td className="d-flex align-items-center justify-content-center">
+                        <button className="btn btn-sm btn-info me-2" onClick={() => handleViewDetails(emp)}><FaEye /></button>
+                        <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(emp)}><FaEdit /></button>
+                        <button className="btn btn-sm btn-danger" onClick={() => handleDelete(emp._id)}><FaTrash /></button>
                       </td>
                     </tr>
                   ))
@@ -181,42 +203,57 @@ const EmployeeManagement = () => {
         </div>
       </div>
 
-      {/* Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered>
         <Modal.Header closeButton>
           <Modal.Title>{editId ? "Edit Employee" : "Add Employee"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form onSubmit={handleSubmit} className="row g-2">
-            {[["name", "Name"], ["email", "Email"], ["phone", "Phone"],
-              ["gender", "Gender", "select"], ["dob", "Date of Birth", "date"],
-              ["address", "Address"], ["departmentId", "Department", "select", departments],
-              ["designationId", "Designation", "select", designations],
-              ["shiftId", "Shift", "select", shifts],
-              ["doj", "Joining Date", "date"]
-            ].map(([name, placeholder, type = "text", list]) => (
-              <div className="col-md-4" key={name}>
-                {type === "select" ? (
-                  <select name={name} className="form-select" value={formData[name]} onChange={handleChange}>
-                    <option value="">Select {placeholder}</option>
-                    {list?.map((item) => (
-                      <option value={item._id} key={item._id}>{item.name}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <input type={type} name={name} className="form-control" value={formData[name]} onChange={handleChange} placeholder={placeholder} />
-                )}
-              </div>
-            ))}
+          <form onSubmit={handleSubmit(onSubmit)} className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+            <div><input {...register("name")} className="form-control" placeholder="Name" /><p className="text-danger small">{errors.name?.message}</p></div>
+            <div><input {...register("email")} type="email" className="form-control" placeholder="Email" /><p className="text-danger small">{errors.email?.message}</p></div>
+            <div><input {...register("phone")} className="form-control" placeholder="Phone" /><p className="text-danger small">{errors.phone?.message}</p></div>
+            <div>
+              <select {...register("gender")} className="form-select">
+                <option value="">Select Gender</option>
+                <option value="Men">Men</option>
+                <option value="Women">Women</option>
+                <option value="Other">Other</option>
+              </select>
+              <p className="text-danger small">{errors.gender?.message}</p>
+            </div>
+            <div><input {...register("dob")} type="date" className="form-control" placeholder="DOB" /><p className="text-danger small">{errors.dob?.message}</p></div>
+            <div><input {...register("address")} className="form-control" placeholder="Address" /><p className="text-danger small">{errors.address?.message}</p></div>
+            <div>
+              <select {...register("departmentId")} className="form-select">
+                <option value="">Select Department</option>
+                {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
+              </select>
+              <p className="text-danger small">{errors.departmentId?.message}</p>
+            </div>
+            <div>
+              <select {...register("designationId")} className="form-select">
+  <option value="">Select Designation</option>
+  {filteredDesignations.map((d) => (
+    <option key={d._id} value={d._id}>{d.name}</option>
+  ))}
+</select>
+              <p className="text-danger small">{errors.designationId?.message}</p>
+            </div>
+            <div>
+              <select {...register("shiftId")} className="form-select">
+                <option value="">Select Shift</option>
+                {shifts.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
+              </select>
+              <p className="text-danger small">{errors.shiftId?.message}</p>
+            </div>
+            <div><input {...register("doj")} type="date" className="form-control" placeholder="Joining Date" /><p className="text-danger small">{errors.doj?.message}</p></div>
             {!editId && (
-              <div className="col-md-4">
-                <input type="password" className="form-control" name="password" value={formData.password} onChange={handleChange} placeholder="Password" />
-              </div>
+              <div><input {...register("password")} type="password" className="form-control" placeholder="Password" /><p className="text-danger small">{errors.password?.message}</p></div>
             )}
-            <div className="col-md-4"><input type="file" className="form-control" name="profilePic" onChange={handleChange} /></div>
-            <div className="col-md-4"><input className="form-control" name="emergency.name" value={formData.emergencyContact.name} onChange={handleChange} placeholder="Emergency Contact Name" /></div>
-            <div className="col-md-4"><input className="form-control" name="emergency.phone" value={formData.emergencyContact.phone} onChange={handleChange} placeholder="Emergency Contact Phone" /></div>
-            <div className="col-md-4"><input className="form-control" name="emergency.relation" value={formData.emergencyContact.relation} onChange={handleChange} placeholder="Relation" /></div>
+            <div><input type="file" className="form-control" onChange={(e) => setProfilePic(e.target.files[0])} /></div>
+            <div><input {...register("emergencyContact.name")} className="form-control" placeholder="Emergency Contact Name" /></div>
+            <div><input {...register("emergencyContact.phone")} className="form-control" placeholder="Emergency Contact Phone" /></div>
+            <div><input {...register("emergencyContact.relation")} className="form-control" placeholder="Relation" /></div>
             <div className="col-12 text-end mt-3">
               <Button type="submit" variant="primary">{editId ? "Update" : "Add"} Employee</Button>
             </div>

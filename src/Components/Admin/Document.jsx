@@ -86,7 +86,7 @@ const fetchEmployees = async () => {
 
   const handleUpload = async () => {
     if (!uploadFile || !documentType || !selectedEmployee?._id) {
-      return toast.warn("All fields are required");
+      return Swal.fire("Document", "All fields are required", "error");
     }
 
     const formData = new FormData();
@@ -98,7 +98,7 @@ const fetchEmployees = async () => {
       await axiosInstance.post("/api/documents/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("Document uploaded successfully");
+      Swal.fire("Document", "Document uploaded successfully", "success");
       setUploadFile(null);
       setDocumentType("");
       fetchDocuments(selectedEmployee);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
@@ -7,7 +7,9 @@ import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { FaLock } from "react-icons/fa";
 
+// ✅ Validation Schema
 const schema = yup.object().shape({
+  role: yup.string().required("Role is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup.string().required("Password is required"),
   captcha: yup.string().required("Captcha is required"),
@@ -17,42 +19,50 @@ const Login = ({ onClose, onLoginSuccess }) => {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  const [captcha, setCaptcha] = useState("otutg");
+  const [captcha, setCaptcha] = useState(generateCaptcha());
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const refreshCaptcha = () => {
+  // ✅ Generate new captcha
+  function generateCaptcha() {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-    let newCaptcha = "";
-    for (let i = 0; i < 5; i++) {
-      newCaptcha += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    setCaptcha(newCaptcha);
-  };
+    return Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  }
 
-  useEffect(() => {
-    refreshCaptcha();
-  }, []);
+  const refreshCaptcha = () => setCaptcha(generateCaptcha());
 
+  // ✅ Submit Handler
   const onSubmit = async (data) => {
     if (data.captcha !== captcha) {
       refreshCaptcha();
-      setError("captcha", { message: "Captcha doesn't match" });
-      return;
+      return Swal.fire("Error", "Captcha doesn't match", "error");
     }
 
     try {
       setLoading(true);
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/login`, data);
+
       if (res.data.success) {
+        const actualRole = res.data.data.role;
+
+        // ✅ Role mismatch check
+        if (actualRole.toLowerCase() !== data.role.toLowerCase()) {
+          refreshCaptcha();
+          setLoading(false);
+          return Swal.fire(
+            "Access Denied",
+            `You are registered as ${actualRole}, but selected ${data.role}`,
+            "error"
+          );
+        }
+
         localStorage.setItem(
           "user",
           JSON.stringify({
-            role: res.data.data.role,
+            role: actualRole,
             token: res.data.token,
             id: res.data.data.id,
             username: res.data.data.name,
@@ -62,12 +72,14 @@ const Login = ({ onClose, onLoginSuccess }) => {
         Swal.fire("Success", "Logged in successfully", "success");
         if (typeof onLoginSuccess === "function") onLoginSuccess();
         onClose();
-        navigate(res.data.data.role === "admin" ? "/admin/dashboard" : "/employee/dashboard");
+        navigate(actualRole === "admin" ? "/admin/dashboard" : "/employee/dashboard");
       } else {
         Swal.fire("Error", res.data.message, "error");
+        refreshCaptcha();
       }
     } catch (err) {
       Swal.fire("Error", err.response?.data?.message || "Login failed", "error");
+      refreshCaptcha();
     } finally {
       setLoading(false);
     }
@@ -76,18 +88,29 @@ const Login = ({ onClose, onLoginSuccess }) => {
   return (
     <div style={backdropStyle}>
       <div className="d-flex w-100 flex-column flex-md-row" style={modalContainerStyle}>
-        {/* Left image (hidden on mobile) */}
-        <div className="w-50 d-none d-md-block">
+        {/* Left Side Image */}
+        <div className="w-100 w-md-50 d-none d-md-block">
           <img
             src="https://hrms.indianhr.in/assets/images/login-img.png"
-            alt="login-img"
+            alt="login-banner"
             style={{ height: "100%", width: "100%", objectFit: "cover" }}
           />
         </div>
-        <div className="w-100 w-md-50 bg-white d-flex flex-column justify-content-center align-items-center p-4" style={{ maxWidth: 400 }}>
-          <h4 className="fw-bold text-center mb-4">LOGIN</h4>
 
+        {/* Right Side Form */}
+        <div className="w-100 w-md-50 bg-white d-flex flex-column justify-content-center align-items-center p-4" style={{ maxWidth: 400 }}>
+          <h4 className="fw-bold text-center mb-4">HRMS LOGIN</h4>
           <form className="w-100" onSubmit={handleSubmit(onSubmit)}>
+
+            {/* Role Field */}
+            <select className="form-control rounded-pill mb-2" {...register("role")}>
+              <option value="">Select Role</option>
+              <option value="Admin">Admin</option>
+              <option value="Employee">Employee</option>
+            </select>
+            {errors.role && <small className="text-danger d-block mb-2">{errors.role.message}</small>}
+
+            {/* Email */}
             <input
               className="form-control rounded-pill mb-2"
               placeholder="Please enter the Email"
@@ -95,6 +118,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
             />
             {errors.email && <small className="text-danger d-block mb-2">{errors.email.message}</small>}
 
+            {/* Password */}
             <input
               type="password"
               className="form-control rounded-pill mb-2"
@@ -103,28 +127,28 @@ const Login = ({ onClose, onLoginSuccess }) => {
             />
             {errors.password && <small className="text-danger d-block mb-2">{errors.password.message}</small>}
 
+            {/* Captcha Input */}
             <input
               className="form-control rounded-pill mb-2"
               placeholder="Please enter the captcha"
               {...register("captcha")}
             />
+            {errors.captcha && <small className="text-danger d-block mb-2">{errors.captcha.message}</small>}
+
+            {/* Captcha Display */}
             <div className="d-flex align-items-center justify-content-between mb-2">
-              <div
-                className="border rounded-pill px-3 py-1"
-                style={{ fontFamily: "monospace", background: "#f9f9f9", fontSize: "1rem" }}
-              >
+              <div className="border rounded-pill px-3 py-1" style={{ fontFamily: "monospace", background: "#f0f0f0" }}>
                 {captcha}
               </div>
               <span
                 onClick={refreshCaptcha}
-                style={{ color: "#007bff", cursor: "pointer", fontSize: 14 }}
+                style={{ cursor: "pointer", color: "#007bff", fontSize: 14 }}
               >
-                Refresh here
+                Refresh Captcha
               </span>
             </div>
-            {errors.captcha && <small className="text-danger d-block mb-2">{errors.captcha.message}</small>}
 
-            {/* Remember me */}
+            {/* Remember Me */}
             <div className="form-check mb-3">
               <input className="form-check-input" type="checkbox" id="rememberMe" />
               <label className="form-check-label" htmlFor="rememberMe">
@@ -132,22 +156,30 @@ const Login = ({ onClose, onLoginSuccess }) => {
               </label>
             </div>
 
-            {/* Sign in */}
+            {/* Submit Button */}
             <button
               type="submit"
-              className="btn btn-dark w-100 rounded-pill fw-bold"
+              className="btn btn-primary w-100 rounded-pill fw-bold"
               disabled={loading}
             >
               {loading ? "Signing in..." : "SIGN IN"}
             </button>
 
-            {/* Forgot password */}
-            <div className="text-center mt-3 d-flex align-items-center justify-evenly">
-              <FaLock />
-              <Link to="/forgot-password" onClick={onClose} className="text-decoration-none text-primary me-2">
-                Forgot password?
+            {/* Footer Links */}
+            <div className="text-center mt-3 d-flex align-items-center justify-content-between">
+              <Link to="/register" onClick={onClose} className="text-decoration-none">
+                Not Registered?
               </Link>
-              <p className="mb-0">Not registered? <Link to="/register" onClick={onClose}>Signup</Link></p>
+              <div className="d-flex align-items-center gap-1">
+                <FaLock />
+                <Link
+                  to="/forgot-password"
+                  onClick={onClose}
+                  className="text-decoration-none text-primary"
+                >
+                  Forgot password?
+                </Link>
+              </div>
             </div>
           </form>
         </div>
@@ -156,7 +188,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
   );
 };
 
-// Styles
+// ✅ Styles
 const backdropStyle = {
   position: "fixed",
   top: 0,

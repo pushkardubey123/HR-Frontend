@@ -10,7 +10,12 @@ import {
   Modal,
   Form,
 } from "react-bootstrap";
-import { FaUserClock, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import {
+  FaUserClock,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaUser,
+} from "react-icons/fa";
 import AdminLayout from "./AdminLayout";
 import Loader from "./Loader/Loader";
 import axios from "axios";
@@ -71,6 +76,37 @@ const AdminApproveEmployees = () => {
     }
   };
 
+  const handleViewDetails = (emp) => {
+    const profileUrl = emp.profilePic
+      ? `${import.meta.env.VITE_API_URL}/static/${emp.profilePic}`
+      : null;
+
+    Swal.fire({
+      title: `<h3>${emp.name}</h3>`,
+      html: `
+        <div style="text-align:left; max-height:500px; overflow-y:auto">
+          ${profileUrl ? `<img src='${profileUrl}' alt='profile' style='height:120px;width:120px;border-radius:8px;object-fit:cover;margin:0 auto 10px;display:block'/>` : ''}
+          <table class='table table-bordered'>
+            <tr><td><b>Email</b></td><td>${emp.email}</td></tr>
+            <tr><td><b>Phone</b></td><td>${emp.phone || 'N/A'}</td></tr>
+            <tr><td><b>Gender</b></td><td>${emp.gender || 'N/A'}</td></tr>
+            <tr><td><b>Date of Birth</b></td><td>${emp.dob?.substring(0,10) || 'N/A'}</td></tr>
+            <tr><td><b>Department</b></td><td>${emp.departmentId?.name || 'N/A'}</td></tr>
+            <tr><td><b>Designation</b></td><td>${emp.designationId?.name || 'N/A'}</td></tr>
+            <tr><td><b>Shift</b></td><td>${emp.shiftId?.name || 'N/A'}</td></tr>
+            <tr><td><b>Joining Date</b></td><td>${emp.doj?.substring(0,10) || 'N/A'}</td></tr>
+            <tr><td><b>Address</b></td><td>${emp.address || 'N/A'}</td></tr>
+            <tr><td><b>Emergency Contact</b></td>
+                <td>${emp.emergencyContact?.name || '-'} (${emp.emergencyContact?.relation || '-'}) - ${emp.emergencyContact?.phone || '-'}</td></tr>
+          </table>
+        </div>
+      `,
+      width: "700px",
+      showCloseButton: true,
+      confirmButtonText: "Close",
+    });
+  };
+
   return (
     <AdminLayout>
       <Container className="mt-5">
@@ -108,15 +144,22 @@ const AdminApproveEmployees = () => {
                         <td>{emp.email}</td>
                         <td>{emp.phone}</td>
                         <td>{emp.departmentId?.name || "N/A"}</td>
-                        <td className="d-flex align-items-center justify-content-center ">
+                        <td className="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                          <Button
+                            variant="info"
+                            size="sm"
+                            className="rounded-pill d-flex align-items-center"
+                            onClick={() => handleViewDetails(emp)}
+                          >
+                            <FaUser className="me-1" /> View
+                          </Button>
                           <Button
                             variant="success"
                             size="sm"
-                            className="me-2 rounded-pill d-flex align-items-center"
+                            className="rounded-pill d-flex align-items-center"
                             onClick={() => handleApproveClick(emp._id)}
                           >
-                            <FaCheckCircle />
-                            Approve
+                            <FaCheckCircle className="me-1" /> Approve
                           </Button>
                           <Button
                             variant="danger"
@@ -124,8 +167,7 @@ const AdminApproveEmployees = () => {
                             className="rounded-pill d-flex align-items-center"
                             onClick={() => handleReject(emp._id)}
                           >
-                            <FaTimesCircle />
-                            Reject
+                            <FaTimesCircle className="me-1" /> Reject
                           </Button>
                         </td>
                       </tr>
@@ -138,7 +180,6 @@ const AdminApproveEmployees = () => {
         </Card>
       </Container>
 
-      {/* 🧾 Modal to Enter Basic Salary */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Enter Basic Salary</Modal.Title>

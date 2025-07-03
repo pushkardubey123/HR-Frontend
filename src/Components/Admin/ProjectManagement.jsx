@@ -22,7 +22,7 @@ import Loader from "./Loader/Loader";
 
 const ProjectManagement = () => {
   const dispatch = useDispatch();
-  const projects = useSelector((state) => state.project.list);
+  const projects = useSelector((state) => state?.project?.list);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");

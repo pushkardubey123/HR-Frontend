@@ -32,19 +32,24 @@ const schema = yup.object({
   profilePic: yup.mixed().required("Profile picture is required"),
 });
 
+// ...imports remain the same...
+
 const EmployeeRegister = () => {
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [shifts, setShifts] = useState([]);
   const [genderOptions] = useState(["Male", "Female", "Other"]);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
+
+  const selectedDepartmentId = watch("departmentId"); // 👈 watch department selection
 
   useEffect(() => {
     const fetchDropdowns = async () => {
@@ -89,8 +94,7 @@ const EmployeeRegister = () => {
       if (res.data.success) {
         Swal.fire("Success", res.data.message, "success");
         reset();
-        navigate("/")
-
+        navigate("/");
       } else {
         Swal.fire("Error", res.data.message || "Something went wrong", "error");
       }
@@ -99,23 +103,31 @@ const EmployeeRegister = () => {
     }
   };
 
-  const fields = [
-    { label: "Name", icon: <FaUser />, name: "name" },
-    { label: "Email", icon: <FaEnvelope />, name: "email" },
-    { label: "Password", icon: <FaLock />, name: "password", type: "password" },
-    { label: "Phone", icon: <FaPhone />, name: "phone" },
-    { label: "Gender", icon: <FaVenusMars />, name: "gender", type: "select", options: genderOptions },
-    { label: "Date of Birth", icon: <FaCalendar />, name: "dob", type: "date" },
-    { label: "Date of Joining", icon: <FaCalendar />, name: "doj", type: "date" },
-    { label: "Address", icon: <FaMapMarkerAlt />, name: "address" },
-    { label: "Department", icon: <FaBuilding />, name: "departmentId", type: "select", options: departments },
-    { label: "Designation", icon: <FaBriefcase />, name: "designationId", type: "select", options: designations },
-    { label: "Shift", icon: <FaClock />, name: "shiftId", type: "select", options: shifts },
-    { label: "Emergency Name", icon: <FaUserPlus />, name: "emergencyName" },
-    { label: "Emergency Phone", icon: <FaPhoneAlt />, name: "emergencyPhone" },
-    { label: "Emergency Relation", icon: <FaUsers />, name: "emergencyRelation" },
-    { label: "Profile Picture", icon: <FaImage />, name: "profilePic", type: "file" },
-  ];
+const filteredDesignations = selectedDepartmentId
+  ? designations.filter((d) => d.departmentId?._id === selectedDepartmentId)
+  : [];
+
+
+const fields = [
+  { label: "Name", icon: <FaUser />, name: "name" },
+  { label: "Email", icon: <FaEnvelope />, name: "email" },
+  { label: "Password", icon: <FaLock />, name: "password", type: "password" },
+  { label: "Phone", icon: <FaPhone />, name: "phone" },
+  { label: "Gender", icon: <FaVenusMars />, name: "gender", type: "select", options: genderOptions },
+  { label: "Date of Birth", icon: <FaCalendar />, name: "dob", type: "date" },
+  { label: "Date of Joining", icon: <FaCalendar />, name: "doj", type: "date" },
+  { label: "Address", icon: <FaMapMarkerAlt />, name: "address" },
+  { label: "Department", icon: <FaBuilding />, name: "departmentId", type: "select", options: departments },
+  {
+    label: "Designation", icon: <FaBriefcase />, name: "designationId", type: "select",
+    options: filteredDesignations,
+  },
+  { label: "Shift", icon: <FaClock />, name: "shiftId", type: "select", options: shifts },
+  { label: "Emergency Name", icon: <FaUserPlus />, name: "emergencyName" },
+  { label: "Emergency Phone", icon: <FaPhoneAlt />, name: "emergencyPhone" },
+  { label: "Emergency Relation", icon: <FaUsers />, name: "emergencyRelation" },
+  { label: "Profile Picture", icon: <FaImage />, name: "profilePic", type: "file" },
+];
 
   return (
     <div className="animated-bg" style={{ fontFamily: "'Poppins', sans-serif", minHeight: "100vh", paddingTop: 40 }}>
@@ -180,3 +192,4 @@ const EmployeeRegister = () => {
 };
 
 export default EmployeeRegister;
+

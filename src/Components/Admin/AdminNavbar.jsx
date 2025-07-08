@@ -37,7 +37,6 @@ const AdminNavbar = ({ sidebarOpen, toggleSidebar }) => {
         zIndex: 1050,
       }}
     >
-      {/* Mobile: Toggle Icon */}
       <div className="d-md-none" onClick={toggleSidebar} style={{ cursor: "pointer" }}>
         {sidebarOpen ? (
           <RxCross2 size={24} color="white" />
@@ -46,7 +45,6 @@ const AdminNavbar = ({ sidebarOpen, toggleSidebar }) => {
         )}
       </div>
 
-      {/* Logo */}
       <div
         className="navbar-brand d-flex align-items-center"
         onClick={() => navigate("/admin/dashboard")}
@@ -59,8 +57,13 @@ const AdminNavbar = ({ sidebarOpen, toggleSidebar }) => {
         />
       </div>
 
-      {/* Right Actions */}
       <div className="ms-auto d-flex align-items-center gap-3">
+        <button
+          className="btn btn-sm btn-outline-light"
+          onClick={() => navigate("/mail")}
+        >
+          📨 Mail
+        </button>
         <NotificationBell />
         <button className="btn btn-sm btn-danger d-flex align-items-center gap-2" onClick={handleLogout}>
           <FaSignOutAlt /> Logout

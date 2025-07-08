@@ -31,6 +31,11 @@ import EmployeeDocument from "./Components/Employee/EmployeeDocument";
 import EmployeeExit from "./Components/Employee/EmployeeExit";
 import AdminExit from "./Components/Admin/AdminExit";
 import AdminReport from "./Components/Admin/AdminReports";
+import MailLayout from "./Components/Mail_Module/MailLayout";
+import ComposeMail from "./Components/Mail_Module/ComposeMail";
+import Inbox from "./Components/Mail_Module/Inbox";
+import SentMails from "./Components/Mail_Module/SentMails";
+import Trash from "./Components/Mail_Module/Trash";
 
 function App() {
   return (
@@ -38,6 +43,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/mail" element={<MailLayout/>}>
+  <Route path="compose" element={<ComposeMail />} />
+  <Route path="inbox" element={<Inbox />} />
+  <Route path="sent" element={<SentMails />} />
+  <Route path="trash" element={<Trash/>} />
+</Route>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/pending-employee" element={<AdminApproveEmployees/>}/>
           <Route path="/admin/department" element={<Department />} />

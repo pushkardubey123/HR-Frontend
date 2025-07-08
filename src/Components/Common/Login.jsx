@@ -43,7 +43,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
 
     try {
       setLoading(true);
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/login`, data);
+      const res = await axios.post("http://localhost:3003/user/login", data);
 
       if (res.data.success) {
         const actualRole = res.data.data.role;
@@ -66,6 +66,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
             token: res.data.token,
             id: res.data.data.id,
             username: res.data.data.name,
+            email:res.data.data.email,
           })
         );
 

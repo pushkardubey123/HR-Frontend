@@ -1,3 +1,4 @@
+// src/components/EmployeeNavbar.jsx
 import React, { useEffect, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
@@ -54,6 +55,12 @@ const EmployeeNavbar = ({ sidebarOpen, toggleSidebar }) => {
       </div>
 
       <div className="ms-auto d-flex align-items-center gap-3">
+        <button
+          className="btn btn-sm btn-outline-light"
+          onClick={() => navigate("/employee/mail")}
+        >
+          📨 Mail
+        </button>
         <NotificationBell />
         <button className="btn btn-sm btn-danger d-flex align-items-center gap-1" onClick={handleLogout}>
           <FaSignOutAlt size={16} /> Logout

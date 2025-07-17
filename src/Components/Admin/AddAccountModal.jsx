@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddAccountModal = ({ show, handleClose }) => {
   const [formData, setFormData] = useState({

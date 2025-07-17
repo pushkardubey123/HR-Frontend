@@ -73,7 +73,6 @@ function App() {
           <Route path="/admin/shifts" element={<ShiftManagement />} />
           <Route path="/admin/leaves" element={<AdminLeavePanel />} />
           <Route path="/admin/office-timming" element={<OfficeTiming />} />
-          <Route path="/admin/office-timming" element={<OfficeTiming />} />
           <Route path="/admin/MonthlyAttendance" element={<MonthlyAttendance />} />
           <Route path="/admin/fullandfinal" element={<FullAndFinalSalary/>} />
           <Route path="/admin/AccountList" element={<AccountList/>} />

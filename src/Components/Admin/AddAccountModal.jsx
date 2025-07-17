@@ -1,58 +1,97 @@
-// src/components/Finance/AddAccountModal.jsx
-import React from "react";
+import React, { useState } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
 
-const AddAccountModal = ({ fetchAccounts }) => {
+const AddAccountModal = ({ show, handleClose }) => {
+  const [formData, setFormData] = useState({
+    accountName: "",
+    accountNumber: "",
+    bankName: "",
+    accountType: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Account Added:", formData);
+    handleClose(); // Close modal after submission
+  };
+
   return (
-    <div
-      className="modal fade"
-      id="add_account_modal"
-      tabIndex="-1"
-      aria-labelledby="addAccountLabel"
-      aria-hidden="true"
-    >
-      <div className="modal-dialog modal-dialog-centered modal-lg">
-        <div className="modal-content rounded-4 shadow">
-          <div className="modal-header bg-primary text-white">
-            <h5 className="modal-title" id="addAccountLabel">➕ Add New Account</h5>
-            <button
-              type="button"
-              className="btn-close btn-close-white"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+    <Modal show={show} onHide={handleClose} centered backdrop="static">
+      <Modal.Header closeButton>
+        <Modal.Title>Add New Account</Modal.Title>
+      </Modal.Header>
+
+      <Modal.Body>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Label>Account Name</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter account name"
+              name="accountName"
+              value={formData.accountName}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Account Number</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter account number"
+              name="accountNumber"
+              value={formData.accountNumber}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Bank Name</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter bank name"
+              name="bankName"
+              value={formData.bankName}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Account Type</Form.Label>
+            <Form.Select
+              name="accountType"
+              value={formData.accountType}
+              onChange={handleChange}
+              required
+            >
+              <option value="">-- Select Type --</option>
+              <option value="savings">Savings</option>
+              <option value="current">Current</option>
+            </Form.Select>
+          </Form.Group>
+
+          <div className="d-flex justify-content-end">
+            <Button variant="secondary" onClick={handleClose} className="me-2">
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit">
+              Add Account
+            </Button>
           </div>
-          <div className="modal-body">
-            {/* Add your form here */}
-            <form>
-              <div className="mb-3">
-                <label className="form-label">Account Name</label>
-                <input type="text" className="form-control" />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Account Number</label>
-                <input type="text" className="form-control" />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Type</label>
-                <select className="form-select">
-                  <option>Savings</option>
-                  <option>Current</option>
-                  <option>Cash</option>
-                </select>
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Balance</label>
-                <input type="number" className="form-control" />
-              </div>
-              <div className="d-flex justify-content-end">
-                <button type="button" className="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" className="btn btn-primary">Add Account</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+        </Form>
+      </Modal.Body>
+    </Modal>
   );
 };
 

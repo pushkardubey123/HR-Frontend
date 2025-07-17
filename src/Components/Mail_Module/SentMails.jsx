@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Loader from "../Admin/Loader/Loader";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal } from "react-bootstrap";
 import { FaPaperclip } from "react-icons/fa";
 import { BsFileEarmarkPdfFill, BsFileEarmarkImage } from "react-icons/bs";

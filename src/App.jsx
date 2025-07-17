@@ -36,6 +36,15 @@ import ComposeMail from "./Components/Mail_Module/ComposeMail";
 import Inbox from "./Components/Mail_Module/Inbox";
 import SentMails from "./Components/Mail_Module/SentMails";
 import Trash from "./Components/Mail_Module/Trash";
+import OfficeTiming from "./Components/Admin/OfficeTimmings";
+import Timesheet from "./Components/Admin/Attendence/Timesheet";
+import EmployeeTimesheet from "./Components/Employee/Attendence/TimeSheetEmployee";
+import BulkAttendancePanel from "./Components/Admin/BulkAttendance";
+import MonthlyAttendance from "./Components/Admin/MonthlyAttendance";
+import LeaveReport from "./Components/Admin/LeaveReport";
+import PayrollReport from "./Components/Admin/PayrollReport";
+import FullAndFinalSalary from "./Components/Admin/FullAndFinalSalary";
+import AccountList from "./Components/Admin/AccountList";
 
 function App() {
   return (
@@ -51,6 +60,8 @@ function App() {
 </Route>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/pending-employee" element={<AdminApproveEmployees/>}/>
+          <Route path="admin/leave-report" element={<LeaveReport/>}/>
+          <Route path="admin/payroll-report" element={<PayrollReport/>}/>
           <Route path="/admin/department" element={<Department />} />
           <Route path="/admin/department/:id" element={<Department />} />
           <Route path="/admin/employee-exit-lists" element={<AdminExit />} />
@@ -61,6 +72,11 @@ function App() {
           />
           <Route path="/admin/shifts" element={<ShiftManagement />} />
           <Route path="/admin/leaves" element={<AdminLeavePanel />} />
+          <Route path="/admin/office-timming" element={<OfficeTiming />} />
+          <Route path="/admin/office-timming" element={<OfficeTiming />} />
+          <Route path="/admin/MonthlyAttendance" element={<MonthlyAttendance />} />
+          <Route path="/admin/fullandfinal" element={<FullAndFinalSalary/>} />
+          <Route path="/admin/AccountList" element={<AccountList/>} />
           <Route
             path="/admin/employee-attendence-lists"
             element={<AdminAttendancePanel />}
@@ -97,12 +113,15 @@ function App() {
           
           <Route path="/employee/salary-slips" element={<MySalarySlips />} />
           <Route path="/employee/exit-request" element={<EmployeeExit/>} />
+          <Route path="/employee/exit-request" element={<EmployeeExit/>} />
           <Route path="/employee/tasks" element={<EmployeePanel />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/employee/timesheet" element={<EmployeeTimesheet />} />
+          <Route path="/admin/bulk-attendance" element={<BulkAttendancePanel />} />
           
         </Routes>
         <Footer />

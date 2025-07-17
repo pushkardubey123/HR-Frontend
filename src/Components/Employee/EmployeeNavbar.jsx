@@ -5,6 +5,7 @@ import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
 import NotificationBell from "./NotificationBell";
 import Swal from "sweetalert2";
+import { MdOutlineEmail } from "react-icons/md";
 
 const EmployeeNavbar = ({ sidebarOpen, toggleSidebar }) => {
   const [user, setUser] = useState(null);
@@ -56,13 +57,13 @@ const EmployeeNavbar = ({ sidebarOpen, toggleSidebar }) => {
 
       <div className="ms-auto d-flex align-items-center gap-3">
         <button
-          className="btn btn-sm btn-outline-light"
-          onClick={() => navigate("/employee/mail")}
+          className="btn btn-sm bg-white"
+          onClick={() => navigate("/mail/inbox")}
         >
-          📨 Mail
+         <MdOutlineEmail size={33} className="pb-2"/>
         </button>
         <NotificationBell />
-        <button className="btn btn-sm btn-danger d-flex align-items-center gap-1" onClick={handleLogout}>
+        <button className="btn btn-sm btn-danger d-flex align-items-center gap-1 me-1" onClick={handleLogout}>
           <FaSignOutAlt size={16} /> Logout
         </button>
       </div>

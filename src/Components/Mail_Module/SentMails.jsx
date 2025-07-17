@@ -114,9 +114,9 @@ const SentMails = () => {
                       href={`${import.meta.env.VITE_API_URL}/mail/download/${att}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-decoration-none"
+                      className="text-decoration-none d-flex align-item-center"
                     >
-                      <FaPaperclip className="me-2 text-primary" />
+                      <FaPaperclip className="me-2 mt-1 text-primary" />
                       {att}
                     </a>
                   </li>

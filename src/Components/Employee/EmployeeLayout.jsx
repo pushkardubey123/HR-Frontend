@@ -10,19 +10,38 @@ import { MdCoPresent } from "react-icons/md";
 import { CiBoxList } from "react-icons/ci";
 import { CgEditMask } from "react-icons/cg";
 import { IoDocuments } from "react-icons/io5";
+import { TbReportAnalytics } from "react-icons/tb";
 import EmployeeNavbar from "./EmployeeNavbar";
 
 const EmployeeLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [openMenus, setOpenMenus] = useState({});
   const location = useLocation();
+
+  const toggleMenu = (name) => {
+    setOpenMenus((prev) => ({ ...prev, [name]: !prev[name] }));
+  };
 
   const navItems = [
     { name: "Dashboard", to: "/employee/dashboard", icon: <BiSolidDashboard /> },
-    { name: "Apply Leave", to: "/employee/apply-leave", icon: <VscGitStashApply /> },
-    { name: "My Leave List", to: "/employee/my-leaves", icon: <FcLeave /> },
-    { name: "Attendence", to: "/employee/mark-attendence", icon: <MdCoPresent /> },
-    { name: "Attendence List", to: "/employee/my-attendence-list", icon: <CiBoxList /> },
+    {
+      name: "Leave Panel",
+      icon: <FcLeave />,
+      submenu: [
+        { name: "Apply Leave", to: "/employee/apply-leave" },
+        { name: "My Leave List", to: "/employee/my-leaves" },
+      ]
+    },
+    {
+      name: "Attendance",
+      icon: <MdCoPresent />,
+      submenu: [
+        { name: "Mark Attendance", to: "/employee/mark-attendence" },
+        { name: "My Attendance List", to: "/employee/my-attendence-list" },
+        { name: "My Timesheet", to: "/employee/timesheet" },
+      ]
+    },
     { name: "Salary List", to: "/employee/salary-slips", icon: <CiBoxList /> },
     { name: "Tasks", to: "/employee/tasks", icon: <CgEditMask /> },
     { name: "Documents", to: "/employee/my-documents", icon: <IoDocuments /> },
@@ -33,35 +52,56 @@ const EmployeeLayout = ({ children }) => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      setSidebarOpen(!mobile); // open by default on desktop
+      setSidebarOpen(!mobile); // default open in desktop
     };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const toggleSidebar = () => setSidebarOpen(prev => !prev);
-
   return (
     <>
-      <EmployeeNavbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
+      <EmployeeNavbar toggleSidebar={() => setSidebarOpen((prev) => !prev)} sidebarOpen={sidebarOpen} />
 
       <div className="layout-wrapper">
-        <div
-          className={`sidebar bg-dark text-white p-3 shadow ${sidebarOpen ? "show" : ""} ${isMobile ? "mobile" : ""}`}
-        >
+        <div className={`sidebar bg-dark text-white p-3 shadow ${sidebarOpen ? "show" : ""} ${isMobile ? "mobile" : ""}`}>
           {navItems.map((item, index) => {
-            const isActive = location.pathname === item.to;
+            const isActive =
+              location.pathname === item.to ||
+              item.submenu?.some(sub => location.pathname === sub.to);
+
             return (
-              <Link
-                key={index}
-                to={item.to}
-                onClick={() => isMobile && setSidebarOpen(false)}
-                className={`sidebar-link d-flex align-items-center ${isActive ? "active" : ""}`}
-              >
-                <span className="icon fs-5">{item.icon}</span>
-                <span className="label ps-2 text-white">{item.name}</span>
-              </Link>
+              <div key={index}>
+                <div
+                  onClick={() => item.submenu ? toggleMenu(item.name) : null}
+                  className={`sidebar-link d-flex align-items-center justify-content-between ${isActive ? "active" : ""}`}
+                  style={{ cursor: item.submenu ? "pointer" : "default" }}
+                >
+                  <div className="d-flex align-items-center">
+                    <span className="icon fs-5">{item.icon}</span>
+                    <span className="label ps-2 text-white">{item.name}</span>
+                  </div>
+                  {item.submenu && (
+                    <span className="text-white">{openMenus[item.name] ? "▲" : "▼"}</span>
+                  )}
+                </div>
+
+                {/* SUBMENU RENDERING */}
+                {item.submenu && openMenus[item.name] && (
+                  <div className="ps-4">
+                    {item.submenu.map((sub, i) => (
+                      <Link
+                        key={i}
+                        to={sub.to}
+                        onClick={() => isMobile && setSidebarOpen(false)}
+                        className={`sidebar-link d-flex align-items-center ${location.pathname === sub.to ? "active" : ""}`}
+                      >
+                        <span className="label ps-2 text-white">• {sub.name}</span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>

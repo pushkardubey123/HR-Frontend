@@ -64,6 +64,7 @@ const PayrollManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
+      console.log(payRes)
       const employeeList = empRes.data.data.filter((e) => e.role === "employee");
       setEmployees(employeeList);
       setPayrolls(payRes.data.data.reverse());
@@ -167,12 +168,14 @@ const PayrollManagement = () => {
     const doc = new jsPDF();
     doc.text("Payroll Report", 14, 10);
     autoTable(doc, {
-      head: [["#", "Employee", "Month", "Basic", "Net"]],
+      head: [["#","Employee", "Month", "Basic", "Allowances", "Deductions", "Net"]],
       body: filteredPayrolls.map((p, i) => [
         i + 1,
         p.employeeId?.name,
         p.month,
         p.basicSalary,
+        p.allowances?.map((a) => `${a.title}: ₹${a.amount}`).join("\n") || "-",
+        p.deductions?.map((d) => `${d.title}: ₹${d.amount}`).join("\n") || "-",
         p.netSalary,
       ]),
     });
@@ -185,6 +188,8 @@ const PayrollManagement = () => {
       Employee: p.employeeId?.name,
       Month: p.month,
       Basic: p.basicSalary,
+      Allowances: p.allowances?.map((a) => `${a.title}: ₹${a.amount}`).join(", ") || "-",
+    Deductions: p.deductions?.map((d) => `${d.title}: ₹${d.amount}`).join(", ") || "-",
       Net: p.netSalary,
     }));
     const csv = Papa.unparse(csvData);
@@ -361,6 +366,8 @@ const PayrollManagement = () => {
               <th>Employee</th>
               <th>Month</th>
               <th>Basic</th>
+              <th>Allowances</th>
+              <th>Deduction</th>
               <th>Net</th>
               <th>Actions</th>
             </tr>
@@ -383,6 +390,20 @@ const PayrollManagement = () => {
                   <td>{p.employeeId?.name}</td>
                   <td>{p.month}</td>
                   <td>₹{p.basicSalary}</td>
+                          <td>
+          {p.allowances?.map((a, idx) => (
+            <div key={idx}>
+              {a.title}: ₹{a.amount}
+            </div>
+          ))}
+        </td>
+        <td>
+          {p.deductions?.map((d, idx) => (
+            <div key={idx}>
+              {d.title}: ₹{d.amount}
+            </div>
+          ))}
+        </td>
                   <td>₹{p.netSalary}</td>
                   <td>
                     <button

@@ -19,17 +19,14 @@ import {
 } from "react-bootstrap";
 
 const Inbox = () => {
-  // ─────────────────────────────── state ────────────────────────────────
   const [mails, setMails] = useState([]);
   const [selectedMail, setSelectedMail] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // ─────────────────────────── auth details ─────────────────────────────
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const { token, role } = user;
 
-  // ────────────────────────── fetch inbox ───────────────────────────────
   const fetchInbox = async () => {
     setLoading(true);
     try {
@@ -41,13 +38,12 @@ const Inbox = () => {
       );
       setMails(res.data.data);
     } catch (err) {
-      console.error("❌ Inbox load error", err);
+      console.error("Inbox load error", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // ────────────────────────── move to trash ─────────────────────────────
   const moveToTrash = async (id) => {
     try {
       await axios.put(
@@ -62,19 +58,15 @@ const Inbox = () => {
     }
   };
 
-  // ────────────────────────── open preview ──────────────────────────────
   const openModal = (mail) => {
     setSelectedMail(mail);
     setShowPreview(true);
   };
 
-  // ─────────────────────────── on mount ─────────────────────────────────
   useEffect(() => {
     fetchInbox();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ─────────────────────────── render ───────────────────────────────────
   return (
     <Container className="my-3">
       <h5 className="text-success fw-bold">📥 Inbox</h5>
@@ -93,14 +85,17 @@ const Inbox = () => {
               onClick={() => openModal(mail)}
             >
               <div className="d-flex align-items-center gap-3">
-                <FaRegEnvelope className="text-primary" />
+                <FaRegEnvelope className="text-primary fs-5" />
                 <div>
-                  <div className="fw-semibold">
-                    {mail.sender?.email || "Unknown"}
+                  <div className="fw-semibold text-dark">
+                    <strong>From:</strong> {mail.sender?.email || "Unknown"}
                   </div>
                   <div className="text-muted small">
-                    <strong>{mail.subject}</strong> —{" "}
-                    {mail.message.slice(0, 60)}...
+                    <strong>To:</strong> {mail.recipients?.join(", ")}
+                  </div>
+                  <div className="fw-medium">{mail.subject}</div>
+                  <div className="text-muted small">
+                    {mail.message?.slice(0, 60)}...
                   </div>
                 </div>
               </div>
@@ -125,8 +120,6 @@ const Inbox = () => {
           ))}
         </ListGroup>
       )}
-
-      {/* ──────────────────────── Preview Modal ─────────────────────────── */}
       <Modal
         show={showPreview}
         onHide={() => setShowPreview(false)}
@@ -150,8 +143,7 @@ const Inbox = () => {
               >
                 <h5 className="text-dark">{selectedMail.subject}</h5>
                 <p className="text-muted small mb-1">
-                  <strong>To:</strong>{" "}
-                  {selectedMail.recipients?.join(", ")}
+                  <strong>To:</strong> {selectedMail.recipients?.join(", ")}
                 </p>
                 <div
                   className="p-3 bg-light rounded"

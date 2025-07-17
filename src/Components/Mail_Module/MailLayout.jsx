@@ -3,12 +3,15 @@ import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { BsInbox, BsPencilSquare, BsSend } from "react-icons/bs";
 import { FaArrowLeft, FaTrashAlt } from "react-icons/fa";
+import MailNavbar from "./MailNavbar"
 
 const MailLayout = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="container-fluid py-4" style={{ minHeight: "100vh", background: "#f5f7fa" }}>
+    <>
+    <MailNavbar/>
+        <div className="container-fluid" style={{ minHeight: "100vh", background: "#f5f7fa" }}>
       <div className="row shadow-lg rounded-4 overflow-hidden" style={{ background: "#fff" }}>
         {/* Sidebar */}
         <div className="col-md-3 col-lg-2 p-3 border-end bg-light">
@@ -64,6 +67,7 @@ const MailLayout = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

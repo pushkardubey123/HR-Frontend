@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import AdminNavbar from "./AdminNavbar";
 import {
-  BiSolidDashboard, BiExit
+  BiSolidDashboard, BiExit,
+  BiNotification
 } from "react-icons/bi";
 import {
   FaUsers, FaQuestionCircle, FaAddressCard, FaRegHandPointRight,
   FaMoneyCheckAlt
 } from "react-icons/fa";
-import { MdOutlineDesignServices } from "react-icons/md";
+import { MdEvent, MdOutlineAddHome, MdOutlineDesignServices } from "react-icons/md";
 import { FcLeave } from "react-icons/fc";
 import { IoListCircle, IoDocuments } from "react-icons/io5";
 import { BsFillShiftFill } from "react-icons/bs";
@@ -59,34 +60,27 @@ const navItems = [
     submenu: [{ name: "Leave Applications", to: "/admin/leaves" }]
   },
   {
+    name: "Notification", icon: <BiNotification />,
+    submenu: [
+      { name: "Notification Template", to: "/admin/send-notification" },
+      { name: "Notification History", to: "/admin/notification-history" },
+    ]
+  },
+  {
     name: "Payroll", icon: <TbCalendarDollar />,
     submenu: [
       { name: "Set Salary", to: "/admin/payroll" },
       { name: "Full & Final", to: "/admin/fullandfinal" },
     ]
   },
-  {
-    name: "Finance", icon: <FaMoneyCheckAlt />,
-    submenu: [
-      { name: "Account List", to: "/admin/AccountList" },
-      { name: "Account Balance", to: "/admin/finance/balance" },
-      { name: "Payees", to: "/admin/finance/payees" },
-      { name: "Payers", to: "/admin/finance/payers" },
-      { name: "Deposit", to: "/admin/finance/deposit" },
-      { name: "Company Expense", to: "/admin/finance/company-expense" },
-      { name: "Transfer Balance", to: "/admin/finance/transfer" },
-      { name: "Employee Expense", to: "/admin/finance/employee-expense" },
-    ]
-  },
   { name: "Department", to: "/admin/department", icon: <FaAddressCard /> },
-  { name: "Designation", to: "/admin/designations", icon: <MdOutlineDesignServices /> },
+  { name: "WFH Requests", to: "/admin/wfh/requests", icon: <MdOutlineAddHome /> },
+  { name: "Event", to: "/admin/events", icon: <MdEvent /> },
   { name: "Shifts", to: "/admin/shifts", icon: <BsFillShiftFill /> },
   { name: "Project", to: "/admin/project-management", icon: <TbDeviceProjector /> },
   { name: "Documents", to: "/admin/documents", icon: <IoDocuments /> },
   { name: "Employee Exit Lists", to: "/admin/employee-exit-lists", icon: <BiExit /> },
 ];
-
-
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;

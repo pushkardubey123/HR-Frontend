@@ -1,0 +1,71 @@
+.wfh-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.wfh-title {
+  font-size: 24px;
+  color: #2b6cb0;
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+
+.wfh-form .form-group {
+  margin-bottom: 18px;
+}
+
+.wfh-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.wfh-form input,
+.wfh-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border 0.3s ease;
+}
+
+.wfh-form input:focus,
+.wfh-form textarea:focus {
+  border-color: #2b6cb0;
+  outline: none;
+}
+
+.error {
+  color: #e53e3e;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.form-actions button {
+  background-color: #2b6cb0;
+  color: white;
+  padding: 10px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.form-actions button:hover {
+  background-color: #225ea8;
+}

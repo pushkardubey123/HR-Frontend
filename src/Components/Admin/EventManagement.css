@@ -1,0 +1,147 @@
+.calendar-container {
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+  background: #f4f6f9;
+}
+
+.calendar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-top h2 {
+  font-size: 24px;
+  color: #2c3e50;
+}
+
+.calendar-buttons button {
+  margin-left: 10px;
+  padding: 7px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background: #3498db;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.calendar-buttons button:hover {
+  background: #2c80b4;
+}
+
+.calendar-layout {
+  display: flex;
+  gap: 20px;
+}
+
+.calendar-main {
+  flex: 3;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar-table th,
+.calendar-table td {
+  border: 1px solid #e0e0e0;
+  width: 14.28%;
+  height: 100px;
+  padding: 6px;
+  vertical-align: top;
+  position: relative;
+}
+
+.calendar-table th {
+  background: #ecf0f1;
+  font-weight: 600;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+
+.calendar-cell {
+  padding: 5px;
+}
+
+.date-number {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #2c3e50;
+}
+
+.today {
+  background-color: #e8f5e9 !important;
+  border: 2px solid #4caf50 !important;
+}
+
+.events-container {
+  margin-top: 5px;
+}
+
+.event-chip {
+  background: #d6eaff;
+  color: #1c7ed6;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calendar-sidebar {
+  flex: 1;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.08);
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.calendar-sidebar h3 {
+  font-size: 16px;
+  margin-bottom: 15px;
+  color: #34495e;
+}
+
+.upcoming-card {
+  background: #f0f3f5;
+  padding: 10px;
+  border-left: 4px solid #3498db;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.upcoming-card p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.no-event {
+  font-size: 14px;
+  color: #888;
+}
+
+.swal2-event-popup {
+  border-radius: 10px !important;
+  padding: 20px !important;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.swal2-popup h2 {
+  font-size: 22px !important;
+  color: #2c3e50 !important;
+}

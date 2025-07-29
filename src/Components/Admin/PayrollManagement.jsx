@@ -9,6 +9,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Papa from "papaparse";
 import Loader from "./Loader/Loader";
+import { generateSalarySlipPDF } from "./generateSalarySlipPDF";
 
 const schema = yup.object().shape({
   employeeId: yup.string().required("Employee is required"),
@@ -29,6 +30,7 @@ const PayrollManagement = () => {
   const [deductions, setDeductions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [editable, setEditable] = useState(false);
+  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState(null);
 
   const token = JSON.parse(localStorage.getItem("user"))?.token;
 
@@ -42,16 +44,23 @@ const PayrollManagement = () => {
   } = useForm({ resolver: yupResolver(schema) });
 
   const selectedEmployeeId = watch("employeeId");
+  console.log("EMP", selectedEmployeeDetails);
 
   useEffect(() => {
     if (selectedEmployeeId && !editingId) {
       const emp = employees.find((e) => e._id === selectedEmployeeId);
-      if (emp?.basicSalary) {
-        setValue("basicSalary", emp.basicSalary);
-        setEditable(false);
+      if (emp) {
+
+        setSelectedEmployeeDetails(emp);
+        if (emp.basicSalary) {
+          setValue("basicSalary", emp.basicSalary);
+          setEditable(false);
+        }
       }
+    } else {
+      setSelectedEmployeeDetails(null);
     }
-  }, [selectedEmployeeId]);
+  }, [selectedEmployeeId, employees]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -64,7 +73,6 @@ const PayrollManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
-      console.log(payRes)
       const employeeList = empRes.data.data.filter((e) => e.role === "employee");
       setEmployees(employeeList);
       setPayrolls(payRes.data.data.reverse());
@@ -86,15 +94,29 @@ const PayrollManagement = () => {
     return basic + totalAllowances - totalDeductions;
   };
 
-  const addItem = (type) => {
-    const title = prompt(`Enter ${type} Title`);
-    const amount = parseFloat(prompt(`Enter ${type} Amount`));
-    if (title && !isNaN(amount)) {
-      const newItem = { title, amount };
-      if (type === "allowances") setAllowances([...allowances, newItem]);
-      else setDeductions([...deductions, newItem]);
-    }
-  };
+const allowanceTitles = [
+  "House Rent Allowance",
+  "Conveyance Allowance",
+  "Special Allowance",
+  "Performance Bonus",
+];
+
+const deductionTitles = [
+  "Provident Fund (PF)",
+  "Professional Tax",
+  "TDS",
+];
+
+const addItem = (type) => {
+  if (type === "allowances") {
+    const items = allowanceTitles.map((title) => ({ title, amount: 0 }));
+    setAllowances(items); // overwrite with fixed titles
+  } else {
+    const items = deductionTitles.map((title) => ({ title, amount: 0 }));
+    setDeductions(items);
+  }
+};
+
 
   const removeItem = (type, index) => {
     if (type === "allowances") setAllowances(allowances.filter((_, i) => i !== index));
@@ -168,7 +190,7 @@ const PayrollManagement = () => {
     const doc = new jsPDF();
     doc.text("Payroll Report", 14, 10);
     autoTable(doc, {
-      head: [["#","Employee", "Month", "Basic", "Allowances", "Deductions", "Net"]],
+      head: [["#", "Employee", "Month", "Basic", "Allowances", "Deductions", "Net"]],
       body: filteredPayrolls.map((p, i) => [
         i + 1,
         p.employeeId?.name,
@@ -189,7 +211,7 @@ const PayrollManagement = () => {
       Month: p.month,
       Basic: p.basicSalary,
       Allowances: p.allowances?.map((a) => `${a.title}: ₹${a.amount}`).join(", ") || "-",
-    Deductions: p.deductions?.map((d) => `${d.title}: ₹${d.amount}`).join(", ") || "-",
+      Deductions: p.deductions?.map((d) => `${d.title}: ₹${d.amount}`).join(", ") || "-",
       Net: p.netSalary,
     }));
     const csv = Papa.unparse(csvData);
@@ -211,25 +233,33 @@ const PayrollManagement = () => {
       <div className="container mt-4">
         <h3 className="text-center">Payroll Management</h3>
 
-        {/* --- Form --- */}
-<form className="mt-3" onSubmit={handleSubmit(onSubmit)}>
-  <div className="row align-items-end">
-    {/* Employee */}
-    <div className="col-md-4 mb-2">
-      <label className="form-label mb-1">Employee</label>
-      <select
-        className={`form-select form-select-sm ${errors.employeeId ? "is-invalid" : ""}`}
-        {...register("employeeId")}
-      >
-        <option value="">Select Employee</option>
-        {employees.map((emp) => (
-          <option key={emp._id} value={emp._id}>
-            {emp.name} ({emp.email})
-          </option>
-        ))}
-      </select>
-      <div className="invalid-feedback">{errors.employeeId?.message}</div>
-    </div>
+        <form className="mt-3" onSubmit={handleSubmit(onSubmit)}>
+          <div className="row align-items-end">
+            <div className="col-md-4 mb-2">
+              <label className="form-label mb-1">Employee</label>
+              <select
+                className={`form-select form-select-sm ${errors.employeeId ? "is-invalid" : ""}`}
+                {...register("employeeId")}
+              >
+                <option value="">Select Employee</option>
+                {employees.map((emp) => (
+                  <option key={emp._id} value={emp._id}>
+                    {emp.name} ({emp.email})
+                  </option>
+                ))}
+              </select>
+              <div className="invalid-feedback">{errors.employeeId?.message}</div>
+
+              {selectedEmployeeDetails && (
+  <div className="small mt-1 mb-2">
+    <div><strong>PAN:</strong> {selectedEmployeeDetails.pan || "N/A"}</div>
+    <div><strong>Bank A/C:</strong> {selectedEmployeeDetails.bankAccount || "N/A"}</div>
+    <div><strong>Department:</strong> {selectedEmployeeDetails.departmentId?.name || "N/A"}</div>
+    <div><strong>Designation:</strong> {selectedEmployeeDetails.designationId?.name || "N/A"}</div>
+  </div>
+)}
+
+            </div>
 
     {/* Month */}
     <div className="col-md-4 mb-2">
@@ -241,6 +271,23 @@ const PayrollManagement = () => {
       />
       <div className="invalid-feedback">{errors.month?.message}</div>
     </div>
+    <div className="col-md-3 mb-2">
+  <label className="form-label mb-1">Working Days</label>
+  <input
+    type="number"
+    className="form-control form-control-sm"
+    {...register("workingDays")}
+  />
+</div>
+
+<div className="col-md-3 mb-2">
+  <label className="form-label mb-1">Paid Days</label>
+  <input
+    type="number"
+    className="form-control form-control-sm"
+    {...register("paidDays")}
+  />
+</div>
 
     {/* Basic Salary + Toggle */}
     <div className="col-md-4 mb-2">
@@ -268,56 +315,80 @@ const PayrollManagement = () => {
 
   {/* Allowances */}
   <div className="row mt-3">
-    <div className="col-md-6">
-      <h6>Allowances</h6>
-      <ul className="ps-3">
-        {allowances.map((item, i) => (
-          <li key={i}>
-            {item.title}: ₹{item.amount}
-            <button
-              type="button"
-              className="btn btn-sm btn-danger ms-2"
-              onClick={() => removeItem("allowances", i)}
-            >
-              x
-            </button>
-          </li>
-        ))}
-      </ul>
-      <button
-        type="button"
-        className="btn btn-sm btn-outline-success"
-        onClick={() => addItem("allowances")}
-      >
-        + Add Allowance
-      </button>
-    </div>
+<div className="col-md-6">
+  <h6>Earnings</h6>
+  <ul className="ps-3">
+    {allowances.map((item, i) => (
+      <li key={i} className="d-flex align-items-center mb-1">
+        <input
+          type="text"
+          value={item.title}
+          disabled
+          className="form-control form-control-sm me-2"
+          style={{ maxWidth: "220px" }}
+        />
+        <input
+          type="number"
+          value={item.amount}
+          onChange={(e) => {
+            const updated = [...allowances];
+            updated[i].amount = Number(e.target.value);
+            setAllowances(updated);
+          }}
+          className="form-control form-control-sm"
+          placeholder="Amount (₹)"
+          style={{ maxWidth: "120px" }}
+        />
+      </li>
+    ))}
+  </ul>
+  <button
+    type="button"
+    className="btn btn-sm btn-outline-success"
+    onClick={() => addItem("allowances")}
+  >
+    + Add Allowance
+  </button>
+</div>
+
 
     {/* Deductions */}
-    <div className="col-md-6">
-      <h6>Deductions</h6>
-      <ul className="ps-3">
-        {deductions.map((item, i) => (
-          <li key={i}>
-            {item.title}: ₹{item.amount}
-            <button
-              type="button"
-              className="btn btn-sm btn-danger ms-2"
-              onClick={() => removeItem("deductions", i)}
-            >
-              x
-            </button>
-          </li>
-        ))}
-      </ul>
-      <button
-        type="button"
-        className="btn btn-sm btn-outline-warning"
-        onClick={() => addItem("deductions")}
-      >
-        + Add Deduction
-      </button>
-    </div>
+<div className="col-md-6">
+  <h6>Deductions</h6>
+  <ul className="ps-3">
+    {deductions.map((item, i) => (
+      <li key={i} className="d-flex align-items-center mb-1">
+        <input
+          type="text"
+          value={item.title}
+          disabled
+          className="form-control form-control-sm me-2"
+          style={{ maxWidth: "220px" }}
+        />
+        <input
+          type="number"
+          value={item.amount}
+          onChange={(e) => {
+            const updated = [...deductions];
+            updated[i].amount = Number(e.target.value);
+            setDeductions(updated);
+          }}
+          className="form-control form-control-sm"
+          placeholder="Amount (₹)"
+          style={{ maxWidth: "120px" }}
+        />
+      </li>
+    ))}
+  </ul>
+  <button
+    type="button"
+    className="btn btn-sm btn-outline-warning"
+    onClick={() => addItem("deductions")}
+  >
+    + Add Deduction
+  </button>
+</div>
+
   </div>
 
   {/* Submit */}
@@ -418,6 +489,12 @@ const PayrollManagement = () => {
                     >
                       Delete
                     </button>
+                     <button
+        className="btn btn-sm btn-info"
+        onClick={() => generateSalarySlipPDF(p)}
+      >
+        PDF
+      </button>
                   </td>
                 </tr>
               ))

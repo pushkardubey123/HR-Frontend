@@ -19,6 +19,8 @@ const schema = yup.object().shape({
   departmentId: yup.string().required("Department is required"),
   designationId: yup.string().required("Designation is required"),
   shiftId: yup.string().required("Shift is required"),
+  pan: yup.string().required("PAN is required"),
+bankAccount: yup.string().required("Bank A/C is required"),
   doj: yup.string().required("DOJ is required"),
   password: yup.string().when("isEdit", {
     is: false,
@@ -69,7 +71,7 @@ const {
   handleSubmit,
   reset,
   setValue,
-  watch, // ✅ add this here
+  watch,
   formState: { errors },
 } = useForm({
     resolver: yupResolver(schema),
@@ -212,6 +214,9 @@ const filteredDesignations = selectedDepartmentId
             <div><input {...register("name")} className="form-control" placeholder="Name" /><p className="text-danger small">{errors.name?.message}</p></div>
             <div><input {...register("email")} type="email" className="form-control" placeholder="Email" /><p className="text-danger small">{errors.email?.message}</p></div>
             <div><input {...register("phone")} className="form-control" placeholder="Phone" /><p className="text-danger small">{errors.phone?.message}</p></div>
+            <div><input {...register("pan")} className="form-control" placeholder="PAN Number" /><p className="text-danger small">{errors.pan?.message}</p></div>
+<div><input {...register("bankAccount")} className="form-control" placeholder="Bank A/C Number" /><p className="text-danger small">{errors.bankAccount?.message}</p></div>
+
             <div>
               <select {...register("gender")} className="form-select">
                 <option value="">Select Gender</option>

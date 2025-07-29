@@ -44,7 +44,14 @@ import MonthlyAttendance from "./Components/Admin/MonthlyAttendance";
 import LeaveReport from "./Components/Admin/LeaveReport";
 import PayrollReport from "./Components/Admin/PayrollReport";
 import FullAndFinalSalary from "./Components/Admin/FullAndFinalSalary";
-import AccountList from "./Components/Admin/AccountList";
+import ApplyWFHForm from "./Components/Employee/ApplyWFHForm";
+import MyWFHRequests from "./Components/Employee/MyWFHRequests";
+import AdminWFHList from "./Components/Admin/AdminWFHList";
+import SendNotification from "./Components/Admin/SendNotification";
+import NotificationHistory from "./Components/Admin/NotificationHistory";
+import EmployeeNotifications from "./Components/Employee/EmployeeNotifications";
+import EventManagement from "./Components/Admin/EventManagement";
+import EmployeeEvents from "./Components/Employee/EmployeeEvents";
 
 function App() {
   return (
@@ -73,9 +80,14 @@ function App() {
           <Route path="/admin/shifts" element={<ShiftManagement />} />
           <Route path="/admin/leaves" element={<AdminLeavePanel />} />
           <Route path="/admin/office-timming" element={<OfficeTiming />} />
+          <Route path="/wfh/apply" element={<ApplyWFHForm/>} />
+          <Route path="/wfh/mine" element={<MyWFHRequests />} />
+          <Route path="/admin/wfh/requests" element={<AdminWFHList />} />
           <Route path="/admin/MonthlyAttendance" element={<MonthlyAttendance />} />
           <Route path="/admin/fullandfinal" element={<FullAndFinalSalary/>} />
-          <Route path="/admin/AccountList" element={<AccountList/>} />
+          <Route path="/admin/send-notification" element={<SendNotification/>} />
+          <Route path="/admin/notification-history" element={<NotificationHistory/>} />
+          <Route path="/admin/events" element={<EventManagement/>} />
           <Route
             path="/admin/employee-attendence-lists"
             element={<AdminAttendancePanel />}
@@ -112,7 +124,7 @@ function App() {
           
           <Route path="/employee/salary-slips" element={<MySalarySlips />} />
           <Route path="/employee/exit-request" element={<EmployeeExit/>} />
-          <Route path="/employee/exit-request" element={<EmployeeExit/>} />
+          <Route path="/employee/notification" element={<EmployeeNotifications/>} />
           <Route path="/employee/tasks" element={<EmployeePanel />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
@@ -121,7 +133,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/employee/timesheet" element={<EmployeeTimesheet />} />
           <Route path="/admin/bulk-attendance" element={<BulkAttendancePanel />} />
-          
+          <Route path="/employee/events" element={<EmployeeEvents/>} />
         </Routes>
         <Footer />
       </BrowserRouter>

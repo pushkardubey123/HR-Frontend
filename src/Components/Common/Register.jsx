@@ -10,7 +10,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import {
   FaUser, FaEnvelope, FaLock, FaPhone, FaVenusMars, FaMapMarkerAlt,
   FaCalendar, FaBuilding, FaBriefcase, FaClock, FaUserPlus,
-  FaPhoneAlt, FaUsers, FaImage
+  FaPhoneAlt, FaUsers, FaImage,
+  FaUniversity,
+  FaIdCard
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -30,6 +32,8 @@ const schema = yup.object({
   emergencyPhone: yup.string().matches(/^\d{10}$/, "10 digit required").required(),
   emergencyRelation: yup.string().required("Relation required"),
   profilePic: yup.mixed().required("Profile picture is required"),
+  pan: yup.string().required("PAN is required"),
+bankAccount: yup.string().required("Bank A/C is required"),
 });
 
 // ...imports remain the same...
@@ -89,6 +93,8 @@ const EmployeeRegister = () => {
         relation: data.emergencyRelation,
       }));
       formData.append("profilePic", data.profilePic[0]);
+      formData.append("pan", data.pan);
+      formData.append("bankAccount", data.bankAccount);
 
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/register`, formData);
       if (res.data.success) {
@@ -116,6 +122,8 @@ const fields = [
   { label: "Gender", icon: <FaVenusMars />, name: "gender", type: "select", options: genderOptions },
   { label: "Date of Birth", icon: <FaCalendar />, name: "dob", type: "date" },
   { label: "Date of Joining", icon: <FaCalendar />, name: "doj", type: "date" },
+  { label: "PAN Number", icon: <FaIdCard />, name: "pan" },
+{ label: "Bank A/C Number", icon: <FaUniversity />, name: "bankAccount" },
   { label: "Address", icon: <FaMapMarkerAlt />, name: "address" },
   { label: "Department", icon: <FaBuilding />, name: "departmentId", type: "select", options: departments },
   {

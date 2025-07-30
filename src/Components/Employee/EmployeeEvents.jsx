@@ -24,7 +24,7 @@ const EmployeeEvents = () => {
   const fetchEvents = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3003/api/events/employee/${employeeId}`
+        `${import.meta.env.VITE_API_URL}/api/events/employee/${employeeId}`
       );
       setEvents(res.data || []);
     } catch (error) {

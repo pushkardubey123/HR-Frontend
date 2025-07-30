@@ -41,7 +41,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
 
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:3003/user/login", data);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/login`, data);
 
       if (res.data.success) {
         const actualRole = res.data.data.role;

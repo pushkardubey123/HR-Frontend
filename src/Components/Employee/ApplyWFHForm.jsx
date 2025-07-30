@@ -29,7 +29,7 @@ const EmployeeWFHForm = () => {
   const onSubmit = async (data) => {
     try {
       const token = JSON.parse(localStorage.getItem("user"))?.token;
-      const res = await axios.post("http://localhost:3003/api/wfh/apply", data, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/wfh/apply`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

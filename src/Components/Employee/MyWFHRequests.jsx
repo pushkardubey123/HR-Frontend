@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaRegClock, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { MdPendingActions } from "react-icons/md";
-import Loader from "../Admin/Loader/Loader"; // optional loader
+import Loader from "../Admin/Loader/Loader"; 
 import EmployeeLayout from "./EmployeeLayout";
 
 const statusIcon = {
@@ -18,7 +18,7 @@ const EmployeeWFHList = () => {
   const getWFHRequests = async () => {
     try {
       const token = JSON.parse(localStorage.getItem("user"))?.token;
-      const res = await axios.get("http://localhost:3003/api/wfh/my", {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/wfh/my`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setWfhList(res.data.data || []);

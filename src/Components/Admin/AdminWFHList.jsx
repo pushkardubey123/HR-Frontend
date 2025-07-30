@@ -35,7 +35,7 @@ const AdminWFHList = () => {
   const fetchWFH = async () => {
     try {
       const token = JSON.parse(localStorage.getItem("user"))?.token;
-      const res = await axios.get("http://localhost:3003/api/wfh/all", {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/wfh/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setWfhList(res.data.data || []);
@@ -71,7 +71,7 @@ const AdminWFHList = () => {
       try {
         const token = JSON.parse(localStorage.getItem("user"))?.token;
         await axios.put(
-          `http://localhost:3003/api/wfh/status/${id}`,
+          `${import.meta.env.VITE_API_URL}/api/wfh/status/${id}`,
           { status: actionType, adminRemarks },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -113,7 +113,7 @@ const AdminWFHList = () => {
       try {
         const token = JSON.parse(localStorage.getItem("user"))?.token;
 await axios.post(
-  "http://localhost:3003/api/admin/assign-wfh",
+  `${import.meta.env.VITE_API_URL}/api/admin/assign-wfh`,
   {
     employeeId: formValues.employee,
     fromDate: formValues.fromDate,

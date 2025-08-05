@@ -1,0 +1,96 @@
+body {
+  background-color: #e6f2f8;
+}
+
+.meeting-container {
+  max-width: 100%;
+  margin:auto;
+  background-color: #ffffff;
+  /* padding: 50px; */
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.meeting-header {
+  background: url("https://images.pexels.com/photos/1181396/pexels-photo-1181396.jpeg") center/cover no-repeat;
+  height: 250px;
+  /* border-radius: 12px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ee9f00;
+  font-family:Arial, Helvetica, sans-serif;
+  font-size: 50px;
+  font-weight:bolder;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.meeting-section {
+  background: #f9f9f9;
+  padding: 30px;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  row-gap: 20px;
+  column-gap: 30px;
+  font-size: 16px;
+}
+
+.meeting-section label {
+  font-weight: 600;
+  align-self: center;
+}
+
+.form-input,
+textarea,
+input[type="date"],
+input[type="time"] {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+.select-wrapper {
+  width: 100%;
+}
+
+.error {
+  grid-column: 2 / 3;
+  color: #e53935;
+  font-size: 13px;
+}
+
+.checkboxes {
+  grid-column: 2 / 3;
+  display: flex;
+  gap: 30px;
+  margin-top: 10px;
+}
+
+.checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.submit-btn {
+  grid-column: 2 / 3;
+  background-color: #1f4b59;
+  color: white;
+  padding: 14px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #163b46;
+}

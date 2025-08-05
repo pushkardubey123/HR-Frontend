@@ -9,11 +9,12 @@ import {
   FaUsers, FaQuestionCircle, FaAddressCard, FaRegHandPointRight,
   FaMoneyCheckAlt
 } from "react-icons/fa";
-import { MdEvent, MdOutlineAddHome, MdOutlineDesignServices } from "react-icons/md";
+import { MdEvent, MdMeetingRoom, MdOutlineAddHome, MdOutlineDesignServices } from "react-icons/md";
 import { FcLeave } from "react-icons/fc";
 import { IoListCircle, IoDocuments } from "react-icons/io5";
 import { BsFillShiftFill } from "react-icons/bs";
-import { TbCalendarDollar, TbDeviceProjector } from "react-icons/tb";
+import { TbCalendarDollar, TbDeviceProjector, TbFilter } from "react-icons/tb";
+import { FaIndianRupeeSign } from "react-icons/fa6";
 
 const AdminLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -73,7 +74,15 @@ const navItems = [
       { name: "Full & Final", to: "/admin/fullandfinal" },
     ]
   },
+  {
+    name: "Meeting", icon: <MdMeetingRoom />,
+    submenu: [
+      { name: "Create Meeting", to: "/admin/meeting-form" },
+      { name: "Meeting lists", to: "/admin/meeting-calender" },
+    ]
+  },
   { name: "Department", to: "/admin/department", icon: <FaAddressCard /> },
+  { name: "Designations", to: "/admin/designations", icon: <TbFilter /> },
   { name: "WFH Requests", to: "/admin/wfh/requests", icon: <MdOutlineAddHome /> },
   { name: "Event", to: "/admin/events", icon: <MdEvent /> },
   { name: "Shifts", to: "/admin/shifts", icon: <BsFillShiftFill /> },
@@ -152,9 +161,7 @@ const navItems = [
 
         <div className="main-content">
           <div className="p-3 bg-light content-area">
-            <div className="bg-white shadow-sm p-4 rounded">
               {children}
-            </div>
           </div>
         </div>
       </div>
@@ -168,17 +175,22 @@ const navItems = [
 
         .sidebar {
           width: 260px;
-          background-color: #212529;
-          flex-shrink: 0;
-          overflow: hidden;
+  background-color: #212529;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #888 transparent;
+  transition: all 0.3s ease;
+    position: relative;
         }
 
         .sidebar.mobile {
-          position: fixed;
-          top: 56px;
-          left: -260px;
-          z-index: 1000;
-          height: calc(100vh - 56px);
+  position: fixed;
+  top: 56px;
+  left: -260px;
+  z-index: 1000;
+  height: calc(100vh - 56px);
         }
 
         .sidebar.mobile.show {
@@ -215,6 +227,32 @@ const navItems = [
         .content-area {
           min-height: 100%;
         }
+
+        .sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 10px;
+}
+.sidebar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2); /* subtle scrollbar on hover */
+}
+
+/* Hide scrollbar for Firefox */
+.sidebar {
+  scrollbar-width: none;  /* Firefox */
+}
+.sidebar:hover {         /* Show slim scrollbar on hover */
+  scrollbar-color: rgba(0,0,0,0) transparent;
+}
+.sidebar {
+  scroll-behavior: smooth;
+}
+
       `}</style>
     </>
   );

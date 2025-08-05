@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fullcalendar/daygrid": "^6.1.18",
+    "@fullcalendar/react": "^6.1.18",
     "@hookform/resolvers": "^5.0.1",
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/vite": "^4.1.6",
@@ -25,6 +27,7 @@
     "number-to-words": "^1.2.4",
     "papaparse": "^5.5.2",
     "react": "^19.1.0",
+    "react-big-calendar": "^1.19.4",
     "react-bootstrap": "^2.10.10",
     "react-datepicker": "^8.4.0",
     "react-dom": "^19.1.0",

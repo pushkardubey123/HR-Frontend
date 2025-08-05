@@ -52,6 +52,8 @@ import NotificationHistory from "./Components/Admin/NotificationHistory";
 import EmployeeNotifications from "./Components/Employee/EmployeeNotifications";
 import EventManagement from "./Components/Admin/EventManagement";
 import EmployeeEvents from "./Components/Employee/EmployeeEvents";
+import CreateMeetingForm from "./Components/Admin/CreateMeetingForm";
+import MeetingCalendar from "./Components/Admin/MeetingCalendar";
 
 function App() {
   return (
@@ -88,6 +90,8 @@ function App() {
           <Route path="/admin/send-notification" element={<SendNotification/>} />
           <Route path="/admin/notification-history" element={<NotificationHistory/>} />
           <Route path="/admin/events" element={<EventManagement/>} />
+          <Route path="/admin/meeting-form" element={<CreateMeetingForm/>} />
+          <Route path="/admin/meeting-calender" element={<MeetingCalendar/>} />
           <Route
             path="/admin/employee-attendence-lists"
             element={<AdminAttendancePanel />}

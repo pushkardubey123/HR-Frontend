@@ -145,3 +145,52 @@
   font-size: 22px !important;
   color: #2c3e50 !important;
 }
+
+.event-chip {
+  background-color: #2563eb;
+  color: white;
+  padding: 3px 6px;
+  margin: 2px 0;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-chip:hover {
+  background-color: #1d4ed8;
+}
+
+.calendar-sidebar .upcoming-card {
+  background-color: #f3f4f6;
+  border-left: 4px solid #2563eb;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.calendar-buttons button {
+  background: linear-gradient(to right, #4facfe, #007ffe);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 6px;
+}
+
+.calendar-buttons button:hover {
+  transform: scale(1.05);
+  transition: all 0.2s ease-in-out;
+}
+
+.upcoming-card {
+  transition: 0.2s ease;
+}
+
+.upcoming-card:hover {
+  background-color: #e9f0f7;
+  transform: translateY(-2px);
+}
+
+.calendar-main {
+  transition: 0.3s ease;
+}

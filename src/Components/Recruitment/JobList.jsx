@@ -6,7 +6,7 @@ import AdminLayout from "../Admin/AdminLayout";
 import { FaTrash, FaEdit, FaEye, FaPlus } from "react-icons/fa";
 import { CgFileDocument } from "react-icons/cg";
 import moment from "moment";
-import "./CreateJob.module.css"; // same style reuse
+import "./CreateJob.module.css";
 
 const JobList = () => {
   const [jobs, setJobs] = useState([]);

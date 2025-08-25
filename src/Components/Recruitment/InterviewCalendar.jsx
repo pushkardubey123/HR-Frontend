@@ -35,7 +35,6 @@ const InterviewCalendar = () => {
     }
   };
 
-  // Fetch interviews
   const fetchInterviews = async () => {
     try {
       const res = await axios.get(
@@ -49,13 +48,11 @@ const InterviewCalendar = () => {
     }
   };
 
-// Add new interview
 const handleAddInterview = async () => {
   if (!shortlisted || shortlisted.length === 0) {
     return Swal.fire("⚠️ No candidates", "No shortlisted candidates available", "warning");
   }
 
-  // Build select options using applicationId._id
   const options = shortlisted
     .map(
       (c) =>
@@ -124,7 +121,7 @@ const handleAddInterview = async () => {
       Swal.fire("Added", "Interview scheduled successfully", "success");
       fetchInterviews();
     } catch (err) {
-      console.error("❌ Error scheduling interview:", err);
+      console.error("Error scheduling interview:", err);
       Swal.fire(
         "Error",
         err.response?.data?.message || "Failed to schedule interview",

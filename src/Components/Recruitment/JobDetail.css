@@ -1,0 +1,85 @@
+/* Container */
+.job-detail-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  background: linear-gradient(120deg, #f0f9ff, #f3e8ff);
+}
+
+/* Card */
+.job-card {
+  background: #fff;
+  width: 100%;
+  max-width: 1000px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  display: flex;
+  padding: 40px;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+/* Left - Job Info */
+.job-main {
+  flex: 2;
+  min-width: 300px;
+}
+.job-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: #1a202c;
+}
+.job-info p {
+  margin-bottom: 12px;
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+.job-info strong {
+  color: #111827;
+}
+
+/* Right - Apply Button */
+.job-action {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: flex-start;
+}
+.apply-btn {
+  background: linear-gradient(90deg, #10b981, #3b82f6);
+  color: #fff;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+.apply-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.4);
+}
+
+/* Loading */
+.job-loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #4b5563;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .job-card {
+    flex-direction: column;
+    padding: 30px 20px;
+  }
+  .job-action {
+    margin-top: 20px;
+  }
+}

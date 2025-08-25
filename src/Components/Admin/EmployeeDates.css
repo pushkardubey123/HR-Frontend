@@ -1,0 +1,15 @@
+/* src/pages/EmployeeReminders.css */
+
+.table td, .table th {
+  vertical-align: middle !important;
+  text-align: center;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background 0.3s ease-in-out;
+}
+
+input::placeholder {
+  font-style: italic;
+}

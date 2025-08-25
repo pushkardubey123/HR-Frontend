@@ -54,6 +54,14 @@ import EventManagement from "./Components/Admin/EventManagement";
 import EmployeeEvents from "./Components/Employee/EmployeeEvents";
 import CreateMeetingForm from "./Components/Admin/CreateMeetingForm";
 import MeetingCalendar from "./Components/Admin/MeetingCalendar";
+import BirthdayAndAnniversary from "./Components/Admin/BirthdayAndAnniversary";
+import CreateJob from "./Components/Recruitment/CreateJob";
+import JobList from "./Components/Recruitment/JobList";
+import JobDetail from "./Components/Recruitment/JobDetail";
+import ApplyJob from "./Components/Recruitment/ApplyJob";
+import UserJobLists from "./Components/Recruitment/userJobLists";
+import AdminApplications from "./Components/Recruitment/AdminApplications";
+import InterviewCalendar from "./Components/Recruitment/InterviewCalendar";
 
 function App() {
   return (
@@ -75,6 +83,7 @@ function App() {
           <Route path="/admin/department/:id" element={<Department />} />
           <Route path="/admin/employee-exit-lists" element={<AdminExit />} />
           <Route path="/admin/employee-reports" element={<AdminReport/>} />
+          <Route path="/admin/time-sheets" element={<Timesheet/>} />
           <Route
             path="/admin/designations"
             element={<DesignationManagement />}
@@ -92,6 +101,15 @@ function App() {
           <Route path="/admin/events" element={<EventManagement/>} />
           <Route path="/admin/meeting-form" element={<CreateMeetingForm/>} />
           <Route path="/admin/meeting-calender" element={<MeetingCalendar/>} />
+          <Route path="/admin/bday-anniversary" element={<BirthdayAndAnniversary/>} />
+          <Route path="/admin/jobcreate" element={<CreateJob/>} />
+          <Route path="/admin/joblist" element={<JobList/>} />
+          <Route path="/jobs" element={<UserJobLists/>}/>
+                  <Route path="/jobs/:id" element={<JobDetail />} />
+        <Route path="/jobs/:id/apply" element={<ApplyJob />} />
+        <Route path="/jobs/candidates" element={<AdminApplications />} />
+        <Route path="/jobs/interview" element={<InterviewCalendar />} />
+
           <Route
             path="/admin/employee-attendence-lists"
             element={<AdminAttendancePanel />}

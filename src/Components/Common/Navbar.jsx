@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; 
 import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import Login from "./Login";
 
 const HomeNavbar = () => {
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate(); // navigate hook
 
   return (
     <>
@@ -23,20 +25,31 @@ const HomeNavbar = () => {
             style={{ color: "white", fontWeight: "bold", fontSize: "20px" }}
           >
             <img
-          src="https://www.hareetech.com/assets/logo/hareetech.png"
-          alt="logo"
-          style={{ height: "38px", objectFit: "contain" }}
-        />
+              src="https://www.hareetech.com/assets/logo/hareetech.png"
+              alt="logo"
+              style={{ height: "38px", objectFit: "contain" }}
+            />
           </a>
 
-          {/* Login Button */}
-          <button
-            className="btn btn-outline-light d-flex align-items-center gap-2 px-3 py-1 rounded-pill"
-            onClick={() => setShowModal(true)}
-          >
-            <FaUserCircle size={18} />
-            <span className="fw-semibold">Login</span>
-          </button>
+          {/* Navbar Buttons */}
+          <div className="d-flex align-items-center gap-2">
+            {/* Career Button */}
+            <button
+              className="btn btn-outline-light px-3 py-1 rounded-pill"
+              onClick={() => navigate("/jobs")}
+            >
+              Career
+            </button>
+
+            {/* Login Button */}
+            <button
+              className="btn btn-outline-light d-flex align-items-center gap-2 px-3 py-1 rounded-pill"
+              onClick={() => setShowModal(true)}
+            >
+              <FaUserCircle size={18} />
+              <span className="fw-semibold">Login</span>
+            </button>
+          </div>
         </div>
       </nav>
 

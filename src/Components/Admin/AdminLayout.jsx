@@ -7,13 +7,14 @@ import {
 } from "react-icons/bi";
 import {
   FaUsers, FaQuestionCircle, FaAddressCard, FaRegHandPointRight,
-  FaMoneyCheckAlt
+  FaMoneyCheckAlt,
+  FaBirthdayCake
 } from "react-icons/fa";
 import { MdEvent, MdMeetingRoom, MdOutlineAddHome, MdOutlineDesignServices } from "react-icons/md";
 import { FcLeave } from "react-icons/fc";
 import { IoListCircle, IoDocuments } from "react-icons/io5";
 import { BsFillShiftFill } from "react-icons/bs";
-import { TbCalendarDollar, TbDeviceProjector, TbFilter } from "react-icons/tb";
+import { TbCalendarDollar, TbDeviceProjector, TbFilter, TbJoinBevel } from "react-icons/tb";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 
 const AdminLayout = ({ children }) => {
@@ -81,7 +82,17 @@ const navItems = [
       { name: "Meeting lists", to: "/admin/meeting-calender" },
     ]
   },
+  {
+    name: "Recruitment", icon: <TbJoinBevel />,
+    submenu: [
+      { name: "Create job", to: "/admin/jobcreate" },
+      { name: "Job Lists", to: "/admin/joblist" },
+      { name: "Job Candidates", to: "/jobs/candidates" },
+      { name: "Interview Schedule", to: "/jobs/interview" },
+    ]
+  },
   { name: "Department", to: "/admin/department", icon: <FaAddressCard /> },
+  { name: "Birthday/Anniversary", to: "/admin/bday-anniversary", icon: <FaBirthdayCake /> },
   { name: "Designations", to: "/admin/designations", icon: <TbFilter /> },
   { name: "WFH Requests", to: "/admin/wfh/requests", icon: <MdOutlineAddHome /> },
   { name: "Event", to: "/admin/events", icon: <MdEvent /> },

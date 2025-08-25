@@ -42,6 +42,7 @@ const BulkAttendancePanel = () => {
       );
       Swal.fire("✅ Success", res.data.message, "success");
       setMarkedEmployees(res.data.data);
+      clg
     } catch (err) {
       Swal.fire("Error", err.response?.data?.message || "Something went wrong", "error");
     }

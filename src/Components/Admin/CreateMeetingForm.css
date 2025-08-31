@@ -6,7 +6,6 @@ body {
   max-width: 100%;
   margin:auto;
   background-color: #ffffff;
-  /* padding: 50px; */
   border-radius: 16px;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
   display: flex;
@@ -17,7 +16,6 @@ body {
 .meeting-header {
   background: url("https://images.pexels.com/photos/1181396/pexels-photo-1181396.jpeg") center/cover no-repeat;
   height: 250px;
-  /* border-radius: 12px; */
   display: flex;
   align-items: center;
   justify-content: center;

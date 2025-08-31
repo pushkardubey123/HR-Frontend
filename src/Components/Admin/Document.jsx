@@ -24,8 +24,6 @@ const Document = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingEmployees, setLoadingEmployees] = useState(true);
 
-
-
   const token = JSON.parse(localStorage.getItem("user"))?.token;
 
   const axiosInstance = axios.create({
@@ -37,18 +35,17 @@ const Document = () => {
     return config;
   });
 
-const fetchEmployees = async () => {
-  try {
-    setLoadingEmployees(true);
-    const res = await axiosInstance.get("/user");
-    setEmployees(res.data?.data || []);
-  } catch {
-    Swal.fire("Error", "Failed to load employees", "error");
-  } finally {
-    setLoadingEmployees(false);
-  }
-};
-
+  const fetchEmployees = async () => {
+    try {
+      setLoadingEmployees(true);
+      const res = await axiosInstance.get("/user");
+      setEmployees(res.data?.data || []);
+    } catch {
+      Swal.fire("Error", "Failed to load employees", "error");
+    } finally {
+      setLoadingEmployees(false);
+    }
+  };
 
   const fetchDocuments = async (emp) => {
     try {
@@ -117,74 +114,77 @@ const fetchEmployees = async () => {
         <h4 className="mb-4 d-flex align-items-center gap-2 text-primary">
           <FaFolderOpen /> Employee Documents
         </h4>
-<Form.Group className="mb-4">
-  <Form.Control
-    type="text"
-    placeholder="Search employee by name or email..."
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    className="shadow-sm rounded-pill px-4 py-2"
-  />
-</Form.Group>
+        <Form.Group className="mb-4">
+          <Form.Control
+            type="text"
+            placeholder="Search employee by name or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="shadow-sm rounded-pill px-4 py-2"
+          />
+        </Form.Group>
 
-{loadingEmployees ? (
-  <div className="text-center py-5">
-    <Loader />
-  </div>
-) : (
-  <div className="row g-4">
-    {employees
-      .filter((emp) =>
-        emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        emp.email.toLowerCase().includes(searchQuery.toLowerCase())
-      ).length === 0 ? (
-        <div className="text-muted text-center">No employees found</div>
-      ) : (
-        employees
-          .filter((emp) =>
-            emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            emp.email.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .map((emp) => (
-            <div key={emp._id} className="col-md-6 col-lg-4">
-              <Card className="h-100 border-0 rounded-4 shadow-sm employee-card position-relative overflow-hidden">
-                <Card.Body className="d-flex flex-column justify-content-between p-4">
-                  <div className="mb-3">
-                    <h5 className="fw-bold d-flex align-items-center gap-2 text-dark mb-2">
-                      <FaUser /> {emp.name}
-                    </h5>
-                    <p className="text-muted d-flex align-items-center gap-2 mb-0">
-                      <FaEnvelope /> {emp.email}
-                    </p>
+        {loadingEmployees ? (
+          <div className="text-center py-5">
+            <Loader />
+          </div>
+        ) : (
+          <div className="row g-4">
+            {employees.filter(
+              (emp) =>
+                emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                emp.email.toLowerCase().includes(searchQuery.toLowerCase())
+            ).length === 0 ? (
+              <div className="text-muted text-center">No employees found</div>
+            ) : (
+              employees
+                .filter(
+                  (emp) =>
+                    emp.name
+                      .toLowerCase()
+                      .includes(searchQuery.toLowerCase()) ||
+                    emp.email.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map((emp) => (
+                  <div key={emp._id} className="col-md-6 col-lg-4">
+                    <Card className="h-100 border-0 rounded-4 shadow-sm employee-card position-relative overflow-hidden">
+                      <Card.Body className="d-flex flex-column justify-content-between p-4">
+                        <div className="mb-3">
+                          <h5 className="fw-bold d-flex align-items-center gap-2 text-dark mb-2">
+                            <FaUser /> {emp.name}
+                          </h5>
+                          <p className="text-muted d-flex align-items-center gap-2 mb-0">
+                            <FaEnvelope /> {emp.email}
+                          </p>
+                        </div>
+                        <div className="mt-auto text-end">
+                          <Button
+                            variant="info"
+                            className="text-white d-inline-flex align-items-center gap-2"
+                            onClick={() => fetchDocuments(emp)}
+                          >
+                            <FaEye /> View Files
+                          </Button>
+                        </div>
+                      </Card.Body>
+                    </Card>
                   </div>
-                  <div className="mt-auto text-end">
-                    <Button
-                      variant="info"
-                      className="text-white d-inline-flex align-items-center gap-2"
-                      onClick={() => fetchDocuments(emp)}
-                    >
-                      <FaEye /> View Files
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
-            </div>
-          ))
-      )}
-  </div>
-)}
-
-
-
+                ))
+            )}
+          </div>
+        )}
       </Card>
 
-      {/* 📁 Document Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered>
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        size="lg"
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Documents for: {selectedEmployee?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* Upload Section */}
           <Card className="p-3 shadow-sm mb-4 border rounded">
             <h6 className="mb-3 d-flex align-items-center gap-2">
               <FaCloudUploadAlt /> Upload New Document
@@ -205,7 +205,7 @@ const fetchEmployees = async () => {
                 <option value="Others">Others</option>
               </Form.Select>
             </Form.Group>
-            <Form.Group className="mb-3" >
+            <Form.Group className="mb-3">
               <Form.Label>Upload File</Form.Label>
               <Form.Control
                 type="file"
@@ -213,19 +213,28 @@ const fetchEmployees = async () => {
                 onChange={(e) => setUploadFile(e.target.files[0])}
               />
             </Form.Group>
-            <Button variant="success" className="d-inline-flex align-items-center gap-1" onClick={handleUpload} disabled={!uploadFile}>
+            <Button
+              variant="success"
+              className="d-inline-flex align-items-center gap-1"
+              onClick={handleUpload}
+              disabled={!uploadFile}
+            >
               <FaCloudUploadAlt className="me-2" />
               Upload
             </Button>
           </Card>
 
-          {/* Document Table */}
           {loadingDocs ? (
             <div className="text-center py-5">
               <Loader />
             </div>
           ) : (
-            <Table bordered hover responsive className="align-middle text-center">
+            <Table
+              bordered
+              hover
+              responsive
+              className="align-middle text-center"
+            >
               <thead className="table-dark">
                 <tr>
                   <th>#</th>
@@ -252,7 +261,9 @@ const fetchEmployees = async () => {
                       <td>{new Date(doc.uploadedAt).toLocaleDateString()}</td>
                       <td>
                         <a
-                          href={`${import.meta.env.VITE_API_URL}/static/${doc.fileUrl}`}
+                          href={`${import.meta.env.VITE_API_URL}/static/${
+                            doc.fileUrl
+                          }`}
                           target="_blank"
                           rel="noreferrer"
                           className="btn btn-sm btn-success d-flex align-items-center justify-content-center gap-2"

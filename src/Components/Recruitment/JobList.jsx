@@ -16,7 +16,6 @@ const JobList = () => {
   const token = JSON.parse(localStorage.getItem("user"))?.token;
   const getHeaders = () => ({ headers: { Authorization: `Bearer ${token}` } });
 
-  // ✅ Fetch Jobs
   const fetchJobs = async () => {
     try {
       setLoading(true);
@@ -36,7 +35,6 @@ const JobList = () => {
     fetchJobs();
   }, []);
 
-  // ✅ Delete Job
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
@@ -62,7 +60,6 @@ const JobList = () => {
     }
   };
 
-  // ✅ View Job (Modal)
   const handleView = (job) => {
     Swal.fire({
       title: `<strong>${job.title}</strong>`,
@@ -84,16 +81,23 @@ const JobList = () => {
     });
   };
 
-  // ✅ Edit Job (SweetAlert Form)
   const handleEdit = (job) => {
     Swal.fire({
       title: "Edit Job",
       html: `
-        <input id="title" class="swal2-input" placeholder="Title" value="${job.title}" />
-        <input id="positions" class="swal2-input" type="number" placeholder="Positions" value="${job.positions}" />
+        <input id="title" class="swal2-input" placeholder="Title" value="${
+          job.title
+        }" />
+        <input id="positions" class="swal2-input" type="number" placeholder="Positions" value="${
+          job.positions
+        }" />
         <select id="status" class="swal2-input">
-          <option value="Active" ${job.status === "Active" ? "selected" : ""}>Active</option>
-          <option value="Inactive" ${job.status === "Inactive" ? "selected" : ""}>Inactive</option>
+          <option value="Active" ${
+            job.status === "Active" ? "selected" : ""
+          }>Active</option>
+          <option value="Inactive" ${
+            job.status === "Inactive" ? "selected" : ""
+          }>Inactive</option>
         </select>
       `,
       focusConfirm: false,
@@ -117,13 +121,16 @@ const JobList = () => {
           Swal.fire("Updated!", "Job has been updated.", "success");
           fetchJobs();
         } catch (err) {
-          Swal.fire("Error", err.response?.data?.message || err.message, "error");
+          Swal.fire(
+            "Error",
+            err.response?.data?.message || err.message,
+            "error"
+          );
         }
       }
     });
   };
 
-  // ✅ Count Stats
   const totalJobs = jobs.length;
   const activeJobs = jobs.filter((j) => j.status === "Active").length;
   const inactiveJobs = jobs.filter((j) => j.status === "Inactive").length;
@@ -143,28 +150,23 @@ const JobList = () => {
           </button>
         </div>
 
-        {/* ✅ Stats Boxes */}
-<div className="d-flex justify-content-between align-items-center mb-4 gap-3">
-  {/* Total Jobs Card */}
-  <div className="card text-center shadow-lg p-3 border-0 bg-light flex-grow-1">
-    <h5>Total Jobs</h5>
-    <h3 className="text-primary">{totalJobs}</h3>
-  </div>
+        <div className="d-flex justify-content-between align-items-center mb-4 gap-3">
+          <div className="card text-center shadow-lg p-3 border-0 bg-light flex-grow-1">
+            <h5>Total Jobs</h5>
+            <h3 className="text-primary">{totalJobs}</h3>
+          </div>
 
-  {/* Active Jobs Card */}
-  <div className="card text-center shadow-lg p-3 border-0 bg-light flex-grow-1">
-    <h5>Active Jobs</h5>
-    <h3 className="text-success">{activeJobs}</h3>
-  </div>
+          <div className="card text-center shadow-lg p-3 border-0 bg-light flex-grow-1">
+            <h5>Active Jobs</h5>
+            <h3 className="text-success">{activeJobs}</h3>
+          </div>
 
-  {/* Inactive Jobs Card */}
-  <div className="card text-center shadow-lg p-3 border-0 bg-light flex-grow-1">
-    <h5>Inactive Jobs</h5>
-    <h3 className="text-danger">{inactiveJobs}</h3>
-  </div>
-</div>
+          <div className="card text-center shadow-lg p-3 border-0 bg-light flex-grow-1">
+            <h5>Inactive Jobs</h5>
+            <h3 className="text-danger">{inactiveJobs}</h3>
+          </div>
+        </div>
 
-        {/* ✅ Job Table */}
         {loading ? (
           <p>Loading jobs...</p>
         ) : jobs.length === 0 ? (

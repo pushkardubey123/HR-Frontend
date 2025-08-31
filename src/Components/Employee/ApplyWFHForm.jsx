@@ -1,4 +1,3 @@
-// src/Pages/WorkFromHome/EmployeeWFHForm.jsx
 import React from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -6,7 +5,7 @@ import * as yup from "yup";
 import Swal from "sweetalert2";
 import axios from "axios";
 import EmployeeLayout from "./EmployeeLayout";
-import "./EmployeeWFHForm.css"; // Optional CSS file
+import "./EmployeeWFHForm.css";
 import { FcHome } from "react-icons/fc";
 
 const schema = yup.object().shape({
@@ -29,9 +28,13 @@ const EmployeeWFHForm = () => {
   const onSubmit = async (data) => {
     try {
       const token = JSON.parse(localStorage.getItem("user"))?.token;
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/wfh/apply`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/wfh/apply`,
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (res.data.success) {
         Swal.fire("Success", res.data.message, "success");
@@ -45,12 +48,16 @@ const EmployeeWFHForm = () => {
   return (
     <EmployeeLayout>
       <div className="wfh-container">
-        <h2 className="wfh-title d-flex text-align-center justify-center "><FcHome className="mt-1 me-2" /> Apply for Work From Home</h2>
+        <h2 className="wfh-title d-flex text-align-center justify-center ">
+          <FcHome className="mt-1 me-2" /> Apply for Work From Home
+        </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="wfh-form">
           <div className="form-group">
             <label>From Date</label>
             <input type="date" {...register("fromDate")} />
-            {errors.fromDate && <p className="error">{errors.fromDate.message}</p>}
+            {errors.fromDate && (
+              <p className="error">{errors.fromDate.message}</p>
+            )}
           </div>
 
           <div className="form-group">
@@ -61,7 +68,11 @@ const EmployeeWFHForm = () => {
 
           <div className="form-group">
             <label>Reason</label>
-            <textarea rows="4" {...register("reason")} placeholder="Reason for WFH..."></textarea>
+            <textarea
+              rows="4"
+              {...register("reason")}
+              placeholder="Reason for WFH..."
+            ></textarea>
             {errors.reason && <p className="error">{errors.reason.message}</p>}
           </div>
 

@@ -1,4 +1,3 @@
-// src/components/EmployeeNavbar.jsx
 import React, { useEffect, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";

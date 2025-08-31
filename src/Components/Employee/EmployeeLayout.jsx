@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  BiExit,
-  BiNotification,
-  BiSolidDashboard
-} from "react-icons/bi";
+import { BiExit, BiNotification, BiSolidDashboard } from "react-icons/bi";
 import { FcLeave } from "react-icons/fc";
 import { VscGitStashApply } from "react-icons/vsc";
 import { MdCoPresent, MdEvent } from "react-icons/md";
@@ -26,14 +22,18 @@ const EmployeeLayout = ({ children }) => {
   };
 
   const navItems = [
-    { name: "Dashboard", to: "/employee/dashboard", icon: <BiSolidDashboard /> },
+    {
+      name: "Dashboard",
+      to: "/employee/dashboard",
+      icon: <BiSolidDashboard />,
+    },
     {
       name: "Leave Panel",
       icon: <FcLeave />,
       submenu: [
         { name: "Apply Leave", to: "/employee/apply-leave" },
         { name: "My Leave List", to: "/employee/my-leaves" },
-      ]
+      ],
     },
     {
       name: "Attendance",
@@ -42,7 +42,7 @@ const EmployeeLayout = ({ children }) => {
         { name: "Mark Attendance", to: "/employee/mark-attendence" },
         { name: "My Attendance List", to: "/employee/my-attendence-list" },
         { name: "My Timesheet", to: "/employee/timesheet" },
-      ]
+      ],
     },
     {
       name: "WHF",
@@ -50,14 +50,18 @@ const EmployeeLayout = ({ children }) => {
       submenu: [
         { name: "Apply Form", to: "/wfh/apply" },
         { name: "WHF Lists", to: "/wfh/mine" },
-      ]
+      ],
     },
     { name: "Salary List", to: "/employee/salary-slips", icon: <CiBoxList /> },
     { name: "Tasks", to: "/employee/tasks", icon: <CgEditMask /> },
     { name: "Documents", to: "/employee/my-documents", icon: <IoDocuments /> },
     { name: "Events", to: "/employee/events", icon: <MdEvent /> },
     { name: "Exit", to: "/employee/exit-request", icon: <BiExit /> },
-    { name: "All Notification", to: "/employee/notification", icon: <BiNotification /> },
+    {
+      name: "All Notification",
+      to: "/employee/notification",
+      icon: <BiNotification />,
+    },
   ];
 
   useEffect(() => {
@@ -73,54 +77,69 @@ const EmployeeLayout = ({ children }) => {
 
   return (
     <>
-      <EmployeeNavbar toggleSidebar={() => setSidebarOpen((prev) => !prev)} sidebarOpen={sidebarOpen} />
+      <EmployeeNavbar
+        toggleSidebar={() => setSidebarOpen((prev) => !prev)}
+        sidebarOpen={sidebarOpen}
+      />
       <div className="layout-wrapper">
-        <div className={`sidebar bg-dark text-white p-3 shadow ${sidebarOpen ? "show" : ""} ${isMobile ? "mobile" : ""}`}>
-{navItems.map((item, index) => {
-  const isActive =
-    location.pathname === item.to ||
-    item.submenu?.some(sub => location.pathname === sub.to);
+        <div
+          className={`sidebar bg-dark text-white p-3 shadow ${
+            sidebarOpen ? "show" : ""
+          } ${isMobile ? "mobile" : ""}`}
+        >
+          {navItems.map((item, index) => {
+            const isActive =
+              location.pathname === item.to ||
+              item.submenu?.some((sub) => location.pathname === sub.to);
 
-  return (
-    <div key={index}>
-      <div
-        onClick={() => {
-          if (item.submenu) {
-            toggleMenu(item.name);
-          } else if (item.to) {
-            navigate(item.to); // 👈 navigate if no submenu
-            if (isMobile) setSidebarOpen(false); // 👈 close sidebar on mobile
-          }
-        }}
-        className={`sidebar-link d-flex align-items-center justify-content-between ${isActive ? "active" : ""}`}
-        style={{ cursor: "pointer" }}
-      >
-        <div className="d-flex align-items-center">
-          <span className="icon fs-5">{item.icon}</span>
-          <span className="label ps-2 text-white">{item.name}</span>
-        </div>
-        {item.submenu && (
-          <span className="text-white">{openMenus[item.name] ? "▲" : "▼"}</span>
-        )}
-      </div>
+            return (
+              <div key={index}>
+                <div
+                  onClick={() => {
+                    if (item.submenu) {
+                      toggleMenu(item.name);
+                    } else if (item.to) {
+                      navigate(item.to);
+                      if (isMobile) setSidebarOpen(false);
+                    }
+                  }}
+                  className={`sidebar-link d-flex align-items-center justify-content-between ${
+                    isActive ? "active" : ""
+                  }`}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="d-flex align-items-center">
+                    <span className="icon fs-5">{item.icon}</span>
+                    <span className="label ps-2 text-white">{item.name}</span>
+                  </div>
+                  {item.submenu && (
+                    <span className="text-white">
+                      {openMenus[item.name] ? "▲" : "▼"}
+                    </span>
+                  )}
+                </div>
 
-      {item.submenu && openMenus[item.name] && (
-        <div className="ps-4">
-          {item.submenu.map((sub, i) => (
-            <Link
-              key={i}
-              to={sub.to}
-              onClick={() => isMobile && setSidebarOpen(false)}
-              className={`sidebar-link d-flex align-items-center ${location.pathname === sub.to ? "active" : ""}`}
-            >
-              <span className="label ps-2 text-white">• {sub.name}</span>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-})}
+                {item.submenu && openMenus[item.name] && (
+                  <div className="ps-4">
+                    {item.submenu.map((sub, i) => (
+                      <Link
+                        key={i}
+                        to={sub.to}
+                        onClick={() => isMobile && setSidebarOpen(false)}
+                        className={`sidebar-link d-flex align-items-center ${
+                          location.pathname === sub.to ? "active" : ""
+                        }`}
+                      >
+                        <span className="label ps-2 text-white">
+                          • {sub.name}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <div className="main-content flex-grow-1">

@@ -3,7 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import AdminLayout from "./AdminLayout";
 import { FcLeave } from "react-icons/fc";
-import DotLoader from "./Loader/Loader"; // Reusable dot loader
+import DotLoader from "./Loader/Loader";
 
 const AdminLeavePanel = () => {
   const [leaves, setLeaves] = useState([]);
@@ -16,9 +16,12 @@ const AdminLeavePanel = () => {
   const fetchLeaves = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/leaves`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setLeaves(res.data.data || []);
     } catch (err) {
       Swal.fire("Error", "Failed to load leave data", "error");
@@ -75,7 +78,6 @@ const AdminLeavePanel = () => {
           Leave Management
         </h3>
 
-        {/* Filters */}
         <div className="row g-2 mb-4">
           <div className="col-md-6">
             <input
@@ -101,8 +103,10 @@ const AdminLeavePanel = () => {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="table-responsive position-relative" style={{ minHeight: "200px" }}>
+        <div
+          className="table-responsive position-relative"
+          style={{ minHeight: "200px" }}
+        >
           {loading ? (
             <div className="d-flex justify-content-center align-items-center w-100 h-100">
               <DotLoader />
@@ -134,7 +138,9 @@ const AdminLeavePanel = () => {
                       <td>{leave.endDate?.slice(0, 10)}</td>
                       <td>{leave.reason}</td>
                       <td>
-                        <span className={`badge bg-${getStatusColor(leave.status)}`}>
+                        <span
+                          className={`badge bg-${getStatusColor(leave.status)}`}
+                        >
                           {leave.status}
                         </span>
                       </td>

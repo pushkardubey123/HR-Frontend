@@ -1,4 +1,3 @@
-// src/components/AdminNavbar.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
@@ -38,7 +37,11 @@ const AdminNavbar = ({ sidebarOpen, toggleSidebar }) => {
         zIndex: 1050,
       }}
     >
-      <div className="d-md-none" onClick={toggleSidebar} style={{ cursor: "pointer" }}>
+      <div
+        className="d-md-none"
+        onClick={toggleSidebar}
+        style={{ cursor: "pointer" }}
+      >
         {sidebarOpen ? (
           <RxCross2 size={24} color="white" />
         ) : (
@@ -63,10 +66,13 @@ const AdminNavbar = ({ sidebarOpen, toggleSidebar }) => {
           className="btn btn-sm bg-white"
           onClick={() => navigate("/mail/inbox")}
         >
-          <MdOutlineEmail size={33} className="pb-2"/>
+          <MdOutlineEmail size={33} className="pb-2" />
         </button>
         <NotificationBell />
-        <button className="btn btn-sm btn-danger d-flex align-items-center gap-2 me-1" onClick={handleLogout}>
+        <button
+          className="btn btn-sm btn-danger d-flex align-items-center gap-2 me-1"
+          onClick={handleLogout}
+        >
           <FaSignOutAlt /> Logout
         </button>
       </div>

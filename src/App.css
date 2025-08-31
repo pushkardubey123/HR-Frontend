@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-/* Ensure SweetAlert always appears on top */
 .swal2-container.custom-swal-zindex {
   z-index: 11000 !important;
   position: fixed !important;
@@ -11,7 +10,6 @@
   background: linear-gradient(to right, #f8f9fa, #eaf4f4);
 }
 
-/* in your CSS file or styled-components */
 .employee-card {
   background: linear-gradient(135deg, #1596bd, #f6f9ff);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -33,7 +31,6 @@
   100% { background-position: 0% 50%; }
 }
 
-/* Force Swal on top of custom modal */
 .swal2-container {
   z-index: 10010 !important;
 }

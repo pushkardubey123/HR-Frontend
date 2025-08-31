@@ -19,9 +19,12 @@ const ComposeMail = () => {
 
   const fetchEmployees = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/mail/user/all`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/mail/user/all`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       const loggedInEmail = JSON.parse(localStorage.getItem("user"))?.email;
 
@@ -100,7 +103,6 @@ const ComposeMail = () => {
         </h4>
 
         <form onSubmit={handleSubmit}>
-          {/* To field */}
           <div className="mb-4">
             <label className="form-label fw-semibold">To </label>
             <Select
@@ -114,7 +116,6 @@ const ComposeMail = () => {
             />
           </div>
 
-          {/* Subject */}
           <div className="mb-4">
             <label className="form-label fw-semibold">Subject</label>
             <input
@@ -127,7 +128,6 @@ const ComposeMail = () => {
             />
           </div>
 
-          {/* Message */}
           <div className="mb-4">
             <label className="form-label fw-semibold">Message</label>
             <textarea
@@ -140,7 +140,6 @@ const ComposeMail = () => {
             ></textarea>
           </div>
 
-          {/* Attachments */}
           <div className="mb-4">
             <label className="form-label fw-semibold d-flex align-items-center gap-2">
               <MdAttachFile />
@@ -155,7 +154,6 @@ const ComposeMail = () => {
             />
           </div>
 
-          {/* Submit */}
           <div className="text-end">
             <button
               type="submit"

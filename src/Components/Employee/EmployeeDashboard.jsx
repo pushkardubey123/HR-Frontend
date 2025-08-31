@@ -14,7 +14,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const COLORS = ["#f0ad4e", "#5bc0de", "#5cb85c"]; // Pending, In Progress, Completed
+const COLORS = ["#f0ad4e", "#5bc0de", "#5cb85c"];
 
 const EmployeeDashboard = () => {
   const [leaveStats, setLeaveStats] = useState({
@@ -58,7 +58,6 @@ const EmployeeDashboard = () => {
         setLeaveStats(stats);
         setLatestLeaves(myLeaves.slice(-5).reverse());
 
-        // 🔽 Fetch tasks
         const taskRes = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/projects`,
           {
@@ -76,9 +75,7 @@ const EmployeeDashboard = () => {
 
             if (
               assignedArray.some((e) =>
-                typeof e === "object"
-                  ? e?._id === employeeId
-                  : e === employeeId
+                typeof e === "object" ? e?._id === employeeId : e === employeeId
               )
             ) {
               allTasks.push({
@@ -148,12 +145,14 @@ const EmployeeDashboard = () => {
 
   return (
     <EmployeeLayout>
-      <div className="container mt-4 bg-light p-4 rounded shadow-sm" style={{ minHeight: "90vh" }}>
+      <div
+        className="container mt-4 bg-light p-4 rounded shadow-sm"
+        style={{ minHeight: "90vh" }}
+      >
         <h4 className="text-center text-primary mb-4">
           Welcome {userName || "Employee"}
         </h4>
 
-        {/* Leave Stats */}
         <div className="row">
           {["Total", "Pending", "Approved", "Rejected"].map((label, index) => {
             const count = leaveStats[label.toLowerCase()];
@@ -172,14 +171,19 @@ const EmployeeDashboard = () => {
           })}
         </div>
 
-        {/* Recent Leaves */}
         <div className="d-flex justify-content-between align-items-center mt-4">
           <h5 className="text-dark">Recent Leave Requests</h5>
           <div>
-            <button className="btn btn-sm btn-outline-success me-2" onClick={exportToCSV}>
+            <button
+              className="btn btn-sm btn-outline-success me-2"
+              onClick={exportToCSV}
+            >
               Export CSV
             </button>
-            <button className="btn btn-sm btn-outline-primary" onClick={exportToPDF}>
+            <button
+              className="btn btn-sm btn-outline-primary"
+              onClick={exportToPDF}
+            >
               Export PDF
             </button>
           </div>
@@ -226,7 +230,6 @@ const EmployeeDashboard = () => {
           </tbody>
         </table>
 
-        {/* Task Pie Chart */}
         <div className="mt-5">
           <h5 className="text-dark mb-3">📊 Task Progress Overview</h5>
           <ResponsiveContainer width="100%" height={300}>
@@ -250,7 +253,6 @@ const EmployeeDashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* My Tasks */}
         <div className="mt-5">
           <div className="d-flex justify-content-between align-items-center">
             <h5>My Assigned Tasks</h5>
@@ -284,7 +286,9 @@ const EmployeeDashboard = () => {
                 </tr>
               ) : (
                 myTasks
-                  .filter((t) => taskFilter === "all" || t.status === taskFilter)
+                  .filter(
+                    (t) => taskFilter === "all" || t.status === taskFilter
+                  )
                   .map((task, idx) => (
                     <tr key={task._id}>
                       <td>{idx + 1}</td>

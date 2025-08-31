@@ -1,4 +1,3 @@
-// MonthlyAttendance.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AdminLayout from "../Admin/AdminLayout";
@@ -17,13 +16,20 @@ const MonthlyAttendance = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
 
-  const daysInMonth = new Date(month.split("-")[0], month.split("-")[1], 0).getDate();
+  const daysInMonth = new Date(
+    month.split("-")[0],
+    month.split("-")[1],
+    0
+  ).getDate();
 
   const fetchAttendance = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/monthly?month=${month}`, {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/attendance/monthly?month=${month}`,
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+        }
+      );
       setAttendanceData(res.data.data);
     } catch (err) {
       console.error("Failed to fetch monthly attendance:", err);
@@ -48,26 +54,28 @@ const MonthlyAttendance = () => {
 
   const getEmployeeList = () => {
     const employees = {};
-    Object.values(attendanceData).flat().forEach((record) => {
-      const emp = record.employeeId;
-      if (!emp || (selectedEmployee && selectedEmployee !== emp._id)) return;
+    Object.values(attendanceData)
+      .flat()
+      .forEach((record) => {
+        const emp = record.employeeId;
+        if (!emp || (selectedEmployee && selectedEmployee !== emp._id)) return;
 
-      if (!employees[emp._id]) {
-        employees[emp._id] = {
-          name: emp.name,
-          attendance: {},
-          present: 0,
-          absent: 0,
-          late: 0,
-        };
-      }
-      const day = new Date(record.date).getDate();
-      const status = record.status || "-";
-      employees[emp._id].attendance[day] = status[0];
-      if (status === "Present") employees[emp._id].present += 1;
-      if (status === "Absent") employees[emp._id].absent += 1;
-      if (status === "Late") employees[emp._id].late += 1;
-    });
+        if (!employees[emp._id]) {
+          employees[emp._id] = {
+            name: emp.name,
+            attendance: {},
+            present: 0,
+            absent: 0,
+            late: 0,
+          };
+        }
+        const day = new Date(record.date).getDate();
+        const status = record.status || "-";
+        employees[emp._id].attendance[day] = status[0];
+        if (status === "Present") employees[emp._id].present += 1;
+        if (status === "Absent") employees[emp._id].absent += 1;
+        if (status === "Late") employees[emp._id].late += 1;
+      });
     return Object.values(employees);
   };
 
@@ -78,8 +86,14 @@ const MonthlyAttendance = () => {
     doc.setFontSize(14);
     doc.text(`Monthly Attendance - ${month}`, 14, 15);
 
-    const columns = ["Employee", ...Array.from({ length: daysInMonth }, (_, i) => i + 1), "Present", "Absent", "Late"];
-    const rows = employeeList.map(emp => {
+    const columns = [
+      "Employee",
+      ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+      "Present",
+      "Absent",
+      "Late",
+    ];
+    const rows = employeeList.map((emp) => {
       const row = [emp.name];
       for (let i = 1; i <= daysInMonth; i++) {
         row.push(emp.attendance[i] || "-");
@@ -92,7 +106,7 @@ const MonthlyAttendance = () => {
       head: [columns],
       body: rows,
       startY: 25,
-      styles: { fontSize: 8, halign: 'center' },
+      styles: { fontSize: 8, halign: "center" },
       headStyles: { fillColor: [0, 102, 204] },
     });
 
@@ -100,8 +114,14 @@ const MonthlyAttendance = () => {
   };
 
   const exportToExcel = () => {
-    const columns = ["Employee", ...Array.from({ length: daysInMonth }, (_, i) => i + 1), "P", "A", "L"];
-    const data = employeeList.map(emp => {
+    const columns = [
+      "Employee",
+      ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+      "P",
+      "A",
+      "L",
+    ];
+    const data = employeeList.map((emp) => {
       const row = [emp.name];
       for (let i = 1; i <= daysInMonth; i++) {
         row.push(emp.attendance[i] || "-");
@@ -118,7 +138,10 @@ const MonthlyAttendance = () => {
   return (
     <AdminLayout>
       <div className="p-4">
-        <h2 className="mb-3 d-flex text-align-center"><BiSolidCalendar className="mt-1 me-1" />Monthly Attendance - {month}</h2>
+        <h2 className="mb-3 d-flex text-align-center">
+          <BiSolidCalendar className="mt-1 me-1" />
+          Monthly Attendance - {month}
+        </h2>
 
         <div className="d-flex flex-wrap gap-3 mb-3">
           <input
@@ -134,12 +157,27 @@ const MonthlyAttendance = () => {
           >
             <option value="">All Employees</option>
             {employees.map((emp) => (
-              <option key={emp._id} value={emp._id}>{emp.name}</option>
+              <option key={emp._id} value={emp._id}>
+                {emp.name}
+              </option>
             ))}
           </Form.Select>
-          <Button className="d-flex text-align-center" variant="dark" onClick={exportToExcel}><FaFileExcel />Export Excel</Button>
-          <Button className="d-flex text-align-center " variant="secondary" onClick={exportToPDF}><FaFilePdf />Export PDF
-</Button>
+          <Button
+            className="d-flex text-align-center"
+            variant="dark"
+            onClick={exportToExcel}
+          >
+            <FaFileExcel />
+            Export Excel
+          </Button>
+          <Button
+            className="d-flex text-align-center "
+            variant="secondary"
+            onClick={exportToPDF}
+          >
+            <FaFilePdf />
+            Export PDF
+          </Button>
         </div>
 
         <div className="table-responsive">
@@ -162,9 +200,15 @@ const MonthlyAttendance = () => {
                   {[...Array(daysInMonth)].map((_, i) => (
                     <td key={i}>{emp.attendance[i + 1] || "-"}</td>
                   ))}
-                  <td><strong>{emp.present}</strong></td>
-                  <td><strong>{emp.absent}</strong></td>
-                  <td><strong>{emp.late}</strong></td>
+                  <td>
+                    <strong>{emp.present}</strong>
+                  </td>
+                  <td>
+                    <strong>{emp.absent}</strong>
+                  </td>
+                  <td>
+                    <strong>{emp.late}</strong>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,4 +1,3 @@
-/* Container */
 .job-detail-container {
   min-height: 100vh;
   display: flex;
@@ -8,20 +7,18 @@
   background: linear-gradient(120deg, #f0f9ff, #f3e8ff);
 }
 
-/* Card */
 .job-card {
   background: #fff;
   width: 100%;
   max-width: 1000px;
   border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   display: flex;
   padding: 40px;
   gap: 40px;
   flex-wrap: wrap;
 }
 
-/* Left - Job Info */
 .job-main {
   flex: 2;
   min-width: 300px;
@@ -42,7 +39,6 @@
   color: #111827;
 }
 
-/* Right - Apply Button */
 .job-action {
   flex: 1;
   min-width: 200px;
@@ -66,14 +62,12 @@
   box-shadow: 0 12px 28px rgba(59, 130, 246, 0.4);
 }
 
-/* Loading */
 .job-loading {
   text-align: center;
   font-size: 1.2rem;
   color: #4b5563;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .job-card {
     flex-direction: column;

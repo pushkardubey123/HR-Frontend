@@ -134,7 +134,6 @@ const MyAttendanceList = () => {
           </div>
         </div>
 
-        {/* Date Filters */}
         <div className="row mb-4 g-2">
           <div className="col-12 col-md-5">
             <label>From Date:</label>
@@ -161,7 +160,6 @@ const MyAttendanceList = () => {
           </div>
         </div>
 
-        {/* Table */}
         <div className="table-responsive">
           <table className="table table-bordered text-center">
             <thead className="table-dark">

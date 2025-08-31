@@ -6,11 +6,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setProjects } from "../Redux/Slices/projectSlice";
 import TaskModal from "./TaskModal";
-import {
-  AiOutlinePlus,
-  AiFillEdit,
-  AiFillDelete,
-} from "react-icons/ai";
+import { AiOutlinePlus, AiFillEdit, AiFillDelete } from "react-icons/ai";
 import {
   BsClipboardCheck,
   BsFolderFill,
@@ -152,7 +148,6 @@ const ProjectManagement = () => {
           )}
         </div>
 
-        {/* 🔍 Search + Filter Bar */}
         <Row className="mb-3 g-2">
           <Col md={6}>
             <Form.Control
@@ -175,7 +170,6 @@ const ProjectManagement = () => {
           </Col>
         </Row>
 
-        {/* Table Section */}
         {loading ? (
           <Loader />
         ) : (
@@ -213,15 +207,28 @@ const ProjectManagement = () => {
                     <td>{proj.endDate?.substring(0, 10)}</td>
                     <td>
                       <div className="d-flex justify-content-center gap-2 flex-wrap">
-                        <Button className="d-flex align-items-center" size="sm" variant="info" onClick={() => openTaskModal(proj)}>
+                        <Button
+                          className="d-flex align-items-center"
+                          size="sm"
+                          variant="info"
+                          onClick={() => openTaskModal(proj)}
+                        >
                           <BsClipboardCheck /> Tasks
                         </Button>
                         {role === "admin" && (
                           <>
-                            <Button size="sm" variant="warning" onClick={() => openEdit(proj)}>
+                            <Button
+                              size="sm"
+                              variant="warning"
+                              onClick={() => openEdit(proj)}
+                            >
                               <AiFillEdit />
                             </Button>
-                            <Button size="sm" variant="danger" onClick={() => handleDelete(proj._id)}>
+                            <Button
+                              size="sm"
+                              variant="danger"
+                              onClick={() => handleDelete(proj._id)}
+                            >
                               <AiFillDelete />
                             </Button>
                           </>
@@ -235,15 +242,23 @@ const ProjectManagement = () => {
           </div>
         )}
 
-        {/* Add/Edit Modal */}
-        <Modal show={showModal} onHide={() => setShowModal(false)} backdrop="static" keyboard={false}>
+        <Modal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          backdrop="static"
+          keyboard={false}
+        >
           <Modal.Header closeButton>
-            <Modal.Title>{editingProject ? "Edit Project" : "Add Project"}</Modal.Title>
+            <Modal.Title>
+              {editingProject ? "Edit Project" : "Add Project"}
+            </Modal.Title>
           </Modal.Header>
           <Form onSubmit={handleSubmit(handleSave)}>
             <Modal.Body>
               <Form.Group className="mb-2">
-                <Form.Label className="d-flex align-items-center"><BsFolderFill className="me-2" /> Name</Form.Label>
+                <Form.Label className="d-flex align-items-center">
+                  <BsFolderFill className="me-2" /> Name
+                </Form.Label>
                 <Form.Control {...register("name")} required />
               </Form.Group>
               <Form.Group className="mb-2">
@@ -251,15 +266,21 @@ const ProjectManagement = () => {
                 <Form.Control {...register("description")} />
               </Form.Group>
               <Form.Group className="mb-2">
-                <Form.Label className="d-flex align-items-center gap-2"><FaRegCalendarAlt /> Start Date</Form.Label>
+                <Form.Label className="d-flex align-items-center gap-2">
+                  <FaRegCalendarAlt /> Start Date
+                </Form.Label>
                 <Form.Control type="date" {...register("startDate")} required />
               </Form.Group>
               <Form.Group className="mb-2">
-                <Form.Label className="d-flex align-items-center gap-2"><BsCalendarEvent /> End Date</Form.Label>
+                <Form.Label className="d-flex align-items-center gap-2">
+                  <BsCalendarEvent /> End Date
+                </Form.Label>
                 <Form.Control type="date" {...register("endDate")} required />
               </Form.Group>
               <Form.Group className="mb-2">
-                <Form.Label className="d-flex align-items-center gap-2"><BsClipboardCheck /> Status</Form.Label>
+                <Form.Label className="d-flex align-items-center gap-2">
+                  <BsClipboardCheck /> Status
+                </Form.Label>
                 <Form.Select {...register("status")} required>
                   <option value="not-started">Not Started</option>
                   <option value="in-progress">In Progress</option>
@@ -278,7 +299,6 @@ const ProjectManagement = () => {
           </Form>
         </Modal>
 
-        {/* Task Modal */}
         {selectedProject && (
           <TaskModal
             show={showTaskModal}

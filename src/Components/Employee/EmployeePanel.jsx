@@ -2,8 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Table, Badge, Form, Button } from "react-bootstrap";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { FaRegCommentDots, FaCheckCircle, FaHourglassStart, FaRegClock, FaComments, FaClock } from "react-icons/fa";
-import { AiOutlineClockCircle } from "react-icons/ai";
+import {
+  FaCheckCircle,
+  FaHourglassStart,
+  FaRegClock,
+  FaComments,
+  FaClock,
+} from "react-icons/fa";
 import EmployeeLayout from "./EmployeeLayout";
 
 const EmployeePanel = () => {
@@ -36,9 +41,14 @@ const EmployeePanel = () => {
             const assigned = task.assignedTo;
             const uid = userId?.toString();
             if (Array.isArray(assigned)) {
-              return assigned.some((a) => a._id?.toString() === uid || a?.toString() === uid);
+              return assigned.some(
+                (a) => a._id?.toString() === uid || a?.toString() === uid
+              );
             } else {
-              return assigned?._id?.toString() === uid || assigned?.toString() === uid;
+              return (
+                assigned?._id?.toString() === uid ||
+                assigned?.toString() === uid
+              );
             }
           })
           .map((task) => ({
@@ -58,7 +68,10 @@ const EmployeePanel = () => {
 
   const updateStatus = async (projectId, taskId, status) => {
     try {
-      await axiosInstance.put(`/api/projects/${projectId}/tasks/${taskId}/status`, { status });
+      await axiosInstance.put(
+        `/api/projects/${projectId}/tasks/${taskId}/status`,
+        { status }
+      );
       fetchTasks();
     } catch {
       Swal.fire("Error", "Failed to update status", "error");
@@ -69,10 +82,13 @@ const EmployeePanel = () => {
     const commentText = commentMap[taskId];
     if (!commentText) return;
     try {
-      await axiosInstance.post(`/api/projects/${projectId}/tasks/${taskId}/comments`, {
-        commentText,
-        commentedBy: userId,
-      });
+      await axiosInstance.post(
+        `/api/projects/${projectId}/tasks/${taskId}/comments`,
+        {
+          commentText,
+          commentedBy: userId,
+        }
+      );
       setCommentMap((prev) => ({ ...prev, [taskId]: "" }));
       fetchTasks();
     } catch {
@@ -84,10 +100,13 @@ const EmployeePanel = () => {
     const hours = logMap[taskId];
     if (!hours) return;
     try {
-      await axiosInstance.post(`/api/projects/${projectId}/tasks/${taskId}/timelogs`, {
-        employeeId: userId,
-        hours,
-      });
+      await axiosInstance.post(
+        `/api/projects/${projectId}/tasks/${taskId}/timelogs`,
+        {
+          employeeId: userId,
+          hours,
+        }
+      );
       setLogMap((prev) => ({ ...prev, [taskId]: "" }));
       fetchTasks();
     } catch {
@@ -102,7 +121,7 @@ const EmployeePanel = () => {
   return (
     <EmployeeLayout>
       <div className="container mt-4">
-        <h4>🧑‍💻 My Assigned Tasks</h4>
+        <h4>My Assigned Tasks</h4>
 
         {loading ? (
           <p>Loading...</p>
@@ -130,32 +149,31 @@ const EmployeePanel = () => {
                     <td>{task.title}</td>
                     <td>
                       <Badge
-  bg={
-    task.status === "completed"
-      ? "success"
-      : task.status === "in-progress"
-      ? "warning"
-      : "secondary"
-  }
-  className="d-inline-flex align-items-center gap-1"
->
-  {task.status === "completed" && (
-    <>
-      Completed <FaCheckCircle />
-    </>
-  )}
-  {task.status === "in-progress" && (
-    <>
-      In Progress <FaHourglassStart />
-    </>
-  )}
-  {task.status === "pending" && (
-    <>
-      Pending <FaRegClock />
-    </>
-  )}
-</Badge>
-
+                        bg={
+                          task.status === "completed"
+                            ? "success"
+                            : task.status === "in-progress"
+                            ? "warning"
+                            : "secondary"
+                        }
+                        className="d-inline-flex align-items-center gap-1"
+                      >
+                        {task.status === "completed" && (
+                          <>
+                            Completed <FaCheckCircle />
+                          </>
+                        )}
+                        {task.status === "in-progress" && (
+                          <>
+                            In Progress <FaHourglassStart />
+                          </>
+                        )}
+                        {task.status === "pending" && (
+                          <>
+                            Pending <FaRegClock />
+                          </>
+                        )}
+                      </Badge>
                     </td>
                     <td>{task.dueDate?.substring(0, 10)}</td>
                     <td>
@@ -177,29 +195,32 @@ const EmployeePanel = () => {
                           size="sm"
                           variant="outline-secondary"
                           onClick={() =>
-                            document.getElementById(`comments-${task._id}`)?.classList.toggle("d-none")
+                            document
+                              .getElementById(`comments-${task._id}`)
+                              ?.classList.toggle("d-none")
                           }
                         >
                           <strong className="d-inline-flex align-items-center gap-1">
-  Comments <FaComments />
-</strong>
+                            Comments <FaComments />
+                          </strong>
                         </Button>
                         <Button
                           size="sm"
                           variant="outline-secondary"
                           onClick={() =>
-                            document.getElementById(`timelogs-${task._id}`)?.classList.toggle("d-none")
+                            document
+                              .getElementById(`timelogs-${task._id}`)
+                              ?.classList.toggle("d-none")
                           }
                         >
                           <strong className="d-inline-flex align-items-center gap-1">
-  Time Logs <FaClock />
-</strong>
+                            Time Logs <FaClock />
+                          </strong>
                         </Button>
                       </div>
                     </td>
                   </tr>
 
-                  {/* Comments Section */}
                   <tr id={`comments-${task._id}`} className="d-none">
                     <td colSpan={7}>
                       <strong>Comments</strong>
@@ -209,7 +230,10 @@ const EmployeePanel = () => {
                           placeholder="Add comment"
                           value={commentMap[task._id] || ""}
                           onChange={(e) =>
-                            setCommentMap({ ...commentMap, [task._id]: e.target.value })
+                            setCommentMap({
+                              ...commentMap,
+                              [task._id]: e.target.value,
+                            })
                           }
                         />
                         <Button
@@ -223,7 +247,9 @@ const EmployeePanel = () => {
                         <ul className="ps-3">
                           {task.comments.map((c, idx) => (
                             <li key={idx}>
-                              <strong>{c.commentedBy?.name || "Unknown"}:</strong>{" "}
+                              <strong>
+                                {c.commentedBy?.name || "Unknown"}:
+                              </strong>{" "}
                               {c.commentText}
                             </li>
                           ))}
@@ -234,10 +260,9 @@ const EmployeePanel = () => {
                     </td>
                   </tr>
 
-                  {/* Time Logs Section */}
                   <tr id={`timelogs-${task._id}`} className="d-none">
                     <td colSpan={7}>
-                      <strong>🕒 Time Logs</strong>
+                      <strong>Time Logs</strong>
                       <Form className="mb-2 d-flex gap-2">
                         <Form.Control
                           size="sm"
@@ -259,7 +284,8 @@ const EmployeePanel = () => {
                         <ul className="ps-3">
                           {task.timeLogs.map((log, idx) => (
                             <li key={idx}>
-                              {log.employeeId?.name || "Unknown"} — {log.hours} hrs on{" "}
+                              {log.employeeId?.name || "Unknown"} — {log.hours}{" "}
+                              hrs on{" "}
                               {new Date(log.logDate).toLocaleDateString()}
                             </li>
                           ))}

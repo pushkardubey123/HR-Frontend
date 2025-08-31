@@ -50,21 +50,24 @@ const NotificationBell = () => {
   };
 
   const clearAll = async () => {
-  try {
-    const res = await axiosInstance.put(`/api/notifications/clear-bell`, {}, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    console.log(res)
-    if (res.data.success) {
-      setNotifications([]); 
-      Swal.fire("Success", "All notifications cleared from bell", "success");
+    try {
+      const res = await axiosInstance.put(
+        `/api/notifications/clear-bell`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log(res);
+      if (res.data.success) {
+        setNotifications([]);
+        Swal.fire("Success", "All notifications cleared from bell", "success");
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "Failed to clear notifications", "error");
     }
-  } catch (error) {
-    console.error(error);
-    Swal.fire("Error", "Failed to clear notifications", "error");
-  }
-};
-
+  };
 
   const handleToggle = (nextShow) => {
     setShow(nextShow);
@@ -94,50 +97,57 @@ const NotificationBell = () => {
         )}
       </Dropdown.Toggle>
 
-<Dropdown.Menu style={{ minWidth: "350px", maxHeight: "400px", overflowY: "auto" }}>
-  <div className="d-flex justify-content-between align-items-center px-3 pt-2 pb-1">
-    <strong>Notifications</strong>
-    <div className="d-flex gap-2">
-      <FaTrash
-        title="Clear all"
-        size={18}
-        style={{ cursor: "pointer" }}
-        onClick={clearAll}
-      />
-    </div>
-  </div>
-  <Dropdown.Divider />
+      <Dropdown.Menu
+        style={{ minWidth: "350px", maxHeight: "400px", overflowY: "auto" }}
+      >
+        <div className="d-flex justify-content-between align-items-center px-3 pt-2 pb-1">
+          <strong>Notifications</strong>
+          <div className="d-flex gap-2">
+            <FaTrash
+              title="Clear all"
+              size={18}
+              style={{ cursor: "pointer" }}
+              onClick={clearAll}
+            />
+          </div>
+        </div>
+        <Dropdown.Divider />
 
-  {loading ? (
-    <div className="text-center py-4">
-      <Spinner animation="border" size="sm" />
-    </div>
-  ) : notifications.length === 0 ? (
-    <div className="text-muted text-center py-3">No notifications</div>
-  ) : (
-    <>
-      {notifications.slice(0, 5).map((notif) => (
-        <Dropdown.Item
-          key={notif._id}
-          className={`d-flex flex-column ${notif.read ? "" : "bg-light"}`}
-        >
-          <strong>{notif.title}</strong>
-          <small>{notif.message}</small>
-          <small className="text-muted">{moment(notif.createdAt).fromNow()}</small>
-        </Dropdown.Item>
-      ))}
-      {notifications.length > 5 && (
-        <Dropdown.Item
-          className="text-center text-primary"
-          onClick={() => window.location.href = "/employee/notification"}
-        >
-          <label className="d-flex text-align-center"><FcViewDetails className="mt-1 me-1"/> View All</label>
-        </Dropdown.Item>
-      )}
-    </>
-  )}
-</Dropdown.Menu>
-
+        {loading ? (
+          <div className="text-center py-4">
+            <Spinner animation="border" size="sm" />
+          </div>
+        ) : notifications.length === 0 ? (
+          <div className="text-muted text-center py-3">No notifications</div>
+        ) : (
+          <>
+            {notifications.slice(0, 5).map((notif) => (
+              <Dropdown.Item
+                key={notif._id}
+                className={`d-flex flex-column ${notif.read ? "" : "bg-light"}`}
+              >
+                <strong>{notif.title}</strong>
+                <small>{notif.message}</small>
+                <small className="text-muted">
+                  {moment(notif.createdAt).fromNow()}
+                </small>
+              </Dropdown.Item>
+            ))}
+            {notifications.length > 5 && (
+              <Dropdown.Item
+                className="text-center text-primary"
+                onClick={() =>
+                  (window.location.href = "/employee/notification")
+                }
+              >
+                <label className="d-flex text-align-center">
+                  <FcViewDetails className="mt-1 me-1" /> View All
+                </label>
+              </Dropdown.Item>
+            )}
+          </>
+        )}
+      </Dropdown.Menu>
     </Dropdown>
   );
 };

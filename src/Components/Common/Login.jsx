@@ -7,7 +7,6 @@ import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { FaLock } from "react-icons/fa";
 
-// ✅ Validation Schema
 const schema = yup.object().shape({
   role: yup.string().required("Role is required"),
   email: yup.string().email("Invalid email").required("Email is required"),

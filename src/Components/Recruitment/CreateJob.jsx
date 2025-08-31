@@ -5,7 +5,7 @@ import * as yup from "yup";
 import axios from "axios";
 import Swal from "sweetalert2";
 import AdminLayout from "../Admin/AdminLayout";
-import styles from "./CreateJob.module.css"; // ✅ CSS Module
+import styles from "./CreateJob.module.css"; 
 import { CgFileDocument } from "react-icons/cg";
 import { useNavigate } from "react-router-dom";
 

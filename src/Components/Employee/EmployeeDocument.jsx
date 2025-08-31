@@ -46,7 +46,11 @@ const EmployeeDocument = () => {
 
   const handleUpload = async () => {
     if (!documentType || (!uploadFile && !editingDocId)) {
-      return Swal.fire("Warning", "Document type and file are required", "warning");
+      return Swal.fire(
+        "Warning",
+        "Document type and file are required",
+        "warning"
+      );
     }
 
     const formData = new FormData();
@@ -56,16 +60,23 @@ const EmployeeDocument = () => {
 
     try {
       if (editingDocId) {
-        const res = await axiosInstance.put(`/api/documents/${editingDocId}`, formData);
+        const res = await axiosInstance.put(
+          `/api/documents/${editingDocId}`,
+          formData
+        );
         if (res.data.success) {
           Swal.fire("Updated", "Document updated successfully", "success");
         } else {
           Swal.fire("Failed", res.data.message || "Update failed", "error");
         }
       } else {
-        const res = await axiosInstance.post("/api/documents/upload", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        const res = await axiosInstance.post(
+          "/api/documents/upload",
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
         if (res.data.success) {
           Swal.fire("Uploaded", "Document uploaded successfully", "success");
         } else {
@@ -121,7 +132,8 @@ const EmployeeDocument = () => {
 
         <Card className="p-3 border rounded shadow-sm mb-4">
           <h6 className="mb-3 d-flex align-items-center gap-2">
-            <FaCloudUploadAlt /> {editingDocId ? "Update Document" : "Upload New Document"}
+            <FaCloudUploadAlt />{" "}
+            {editingDocId ? "Update Document" : "Upload New Document"}
           </h6>
           <Form.Group className="mb-2">
             <Form.Label>Document Type</Form.Label>
@@ -140,7 +152,9 @@ const EmployeeDocument = () => {
             </Form.Select>
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>{editingDocId ? "Replace File (optional)" : "Upload File"}</Form.Label>
+            <Form.Label>
+              {editingDocId ? "Replace File (optional)" : "Upload File"}
+            </Form.Label>
             <Form.Control
               type="file"
               accept=".pdf,.jpg,.jpeg,.png"
@@ -189,7 +203,9 @@ const EmployeeDocument = () => {
             <tbody>
               {documents.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="text-muted">No documents found</td>
+                  <td colSpan="5" className="text-muted">
+                    No documents found
+                  </td>
                 </tr>
               ) : (
                 documents.map((doc, i) => (
@@ -199,7 +215,9 @@ const EmployeeDocument = () => {
                     <td>{new Date(doc.uploadedAt).toLocaleDateString()}</td>
                     <td>
                       <a
-                        href={`${import.meta.env.VITE_API_URL}/static/${doc.fileUrl}`}
+                        href={`${import.meta.env.VITE_API_URL}/static/${
+                          doc.fileUrl
+                        }`}
                         target="_blank"
                         rel="noreferrer"
                         className="btn btn-sm btn-success d-flex align-items-center justify-content-center gap-2"
@@ -208,10 +226,19 @@ const EmployeeDocument = () => {
                       </a>
                     </td>
                     <td>
-                      <Button variant="warning" size="sm" className="me-2" onClick={() => handleEdit(doc)}>
+                      <Button
+                        variant="warning"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => handleEdit(doc)}
+                      >
                         <FaSyncAlt />
                       </Button>
-                      <Button variant="danger" size="sm" onClick={() => handleDelete(doc._id)}>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDelete(doc._id)}
+                      >
                         <FaTrash />
                       </Button>
                     </td>

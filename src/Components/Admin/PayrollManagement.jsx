@@ -50,7 +50,6 @@ const PayrollManagement = () => {
     if (selectedEmployeeId && !editingId) {
       const emp = employees.find((e) => e._id === selectedEmployeeId);
       if (emp) {
-
         setSelectedEmployeeDetails(emp);
         if (emp.basicSalary) {
           setValue("basicSalary", emp.basicSalary);
@@ -73,7 +72,9 @@ const PayrollManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
-      const employeeList = empRes.data.data.filter((e) => e.role === "employee");
+      const employeeList = empRes.data.data.filter(
+        (e) => e.role === "employee"
+      );
       setEmployees(employeeList);
       setPayrolls(payRes.data.data.reverse());
     } catch {
@@ -94,32 +95,28 @@ const PayrollManagement = () => {
     return basic + totalAllowances - totalDeductions;
   };
 
-const allowanceTitles = [
-  "House Rent Allowance",
-  "Conveyance Allowance",
-  "Special Allowance",
-  "Performance Bonus",
-];
+  const allowanceTitles = [
+    "House Rent Allowance",
+    "Conveyance Allowance",
+    "Special Allowance",
+    "Performance Bonus",
+  ];
 
-const deductionTitles = [
-  "Provident Fund (PF)",
-  "Professional Tax",
-  "TDS",
-];
+  const deductionTitles = ["Provident Fund (PF)", "Professional Tax", "TDS"];
 
-const addItem = (type) => {
-  if (type === "allowances") {
-    const items = allowanceTitles.map((title) => ({ title, amount: 0 }));
-    setAllowances(items); // overwrite with fixed titles
-  } else {
-    const items = deductionTitles.map((title) => ({ title, amount: 0 }));
-    setDeductions(items);
-  }
-};
-
+  const addItem = (type) => {
+    if (type === "allowances") {
+      const items = allowanceTitles.map((title) => ({ title, amount: 0 }));
+      setAllowances(items); // overwrite with fixed titles
+    } else {
+      const items = deductionTitles.map((title) => ({ title, amount: 0 }));
+      setDeductions(items);
+    }
+  };
 
   const removeItem = (type, index) => {
-    if (type === "allowances") setAllowances(allowances.filter((_, i) => i !== index));
+    if (type === "allowances")
+      setAllowances(allowances.filter((_, i) => i !== index));
     else setDeductions(deductions.filter((_, i) => i !== index));
   };
 
@@ -140,9 +137,13 @@ const addItem = (type) => {
         );
         Swal.fire("Updated", "Payroll updated", "success");
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/api/payrolls`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/payrolls`,
+          payload,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         Swal.fire("Created", "Payroll created", "success");
       }
       reset();
@@ -190,7 +191,9 @@ const addItem = (type) => {
     const doc = new jsPDF();
     doc.text("Payroll Report", 14, 10);
     autoTable(doc, {
-      head: [["#", "Employee", "Month", "Basic", "Allowances", "Deductions", "Net"]],
+      head: [
+        ["#", "Employee", "Month", "Basic", "Allowances", "Deductions", "Net"],
+      ],
       body: filteredPayrolls.map((p, i) => [
         i + 1,
         p.employeeId?.name,
@@ -210,8 +213,10 @@ const addItem = (type) => {
       Employee: p.employeeId?.name,
       Month: p.month,
       Basic: p.basicSalary,
-      Allowances: p.allowances?.map((a) => `${a.title}: ₹${a.amount}`).join(", ") || "-",
-      Deductions: p.deductions?.map((d) => `${d.title}: ₹${d.amount}`).join(", ") || "-",
+      Allowances:
+        p.allowances?.map((a) => `${a.title}: ₹${a.amount}`).join(", ") || "-",
+      Deductions:
+        p.deductions?.map((d) => `${d.title}: ₹${d.amount}`).join(", ") || "-",
       Net: p.netSalary,
     }));
     const csv = Papa.unparse(csvData);
@@ -238,7 +243,9 @@ const addItem = (type) => {
             <div className="col-md-4 mb-2">
               <label className="form-label mb-1">Employee</label>
               <select
-                className={`form-select form-select-sm ${errors.employeeId ? "is-invalid" : ""}`}
+                className={`form-select form-select-sm ${
+                  errors.employeeId ? "is-invalid" : ""
+                }`}
                 {...register("employeeId")}
               >
                 <option value="">Select Employee</option>
@@ -248,162 +255,171 @@ const addItem = (type) => {
                   </option>
                 ))}
               </select>
-              <div className="invalid-feedback">{errors.employeeId?.message}</div>
+              <div className="invalid-feedback">
+                {errors.employeeId?.message}
+              </div>
 
               {selectedEmployeeDetails && (
-  <div className="small mt-1 mb-2">
-    <div><strong>PAN:</strong> {selectedEmployeeDetails.pan || "N/A"}</div>
-    <div><strong>Bank A/C:</strong> {selectedEmployeeDetails.bankAccount || "N/A"}</div>
-    <div><strong>Department:</strong> {selectedEmployeeDetails.departmentId?.name || "N/A"}</div>
-    <div><strong>Designation:</strong> {selectedEmployeeDetails.designationId?.name || "N/A"}</div>
-  </div>
-)}
-
+                <div className="small mt-1 mb-2">
+                  <div>
+                    <strong>PAN:</strong> {selectedEmployeeDetails.pan || "N/A"}
+                  </div>
+                  <div>
+                    <strong>Bank A/C:</strong>{" "}
+                    {selectedEmployeeDetails.bankAccount || "N/A"}
+                  </div>
+                  <div>
+                    <strong>Department:</strong>{" "}
+                    {selectedEmployeeDetails.departmentId?.name || "N/A"}
+                  </div>
+                  <div>
+                    <strong>Designation:</strong>{" "}
+                    {selectedEmployeeDetails.designationId?.name || "N/A"}
+                  </div>
+                </div>
+              )}
             </div>
 
-    {/* Month */}
-    <div className="col-md-4 mb-2">
-      <label className="form-label mb-1">Month</label>
-      <input
-        type="month"
-        className={`form-control form-control-sm ${errors.month ? "is-invalid" : ""}`}
-        {...register("month")}
-      />
-      <div className="invalid-feedback">{errors.month?.message}</div>
-    </div>
-    <div className="col-md-3 mb-2">
-  <label className="form-label mb-1">Working Days</label>
-  <input
-    type="number"
-    className="form-control form-control-sm"
-    {...register("workingDays")}
-  />
-</div>
+            <div className="col-md-4 mb-2">
+              <label className="form-label mb-1">Month</label>
+              <input
+                type="month"
+                className={`form-control form-control-sm ${
+                  errors.month ? "is-invalid" : ""
+                }`}
+                {...register("month")}
+              />
+              <div className="invalid-feedback">{errors.month?.message}</div>
+            </div>
+            <div className="col-md-3 mb-2">
+              <label className="form-label mb-1">Working Days</label>
+              <input
+                type="number"
+                className="form-control form-control-sm"
+                {...register("workingDays")}
+              />
+            </div>
 
-<div className="col-md-3 mb-2">
-  <label className="form-label mb-1">Paid Days</label>
-  <input
-    type="number"
-    className="form-control form-control-sm"
-    {...register("paidDays")}
-  />
-</div>
+            <div className="col-md-3 mb-2">
+              <label className="form-label mb-1">Paid Days</label>
+              <input
+                type="number"
+                className="form-control form-control-sm"
+                {...register("paidDays")}
+              />
+            </div>
 
-    {/* Basic Salary + Toggle */}
-    <div className="col-md-4 mb-2">
-      <div className="d-flex justify-content-between align-items-center">
-        <label className="form-label mb-1">Basic Salary</label>
-        <div className="form-check form-switch">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            checked={editable}
-            onChange={(e) => setEditable(e.target.checked)}
-          />
-          <label className="form-check-label small">Edit?</label>
-        </div>
-      </div>
-      <input
-        type="number"
-        className={`form-control form-control-sm ${errors.basicSalary ? "is-invalid" : ""}`}
-        {...register("basicSalary")}
-        disabled={!editable}
-      />
-      <div className="invalid-feedback">{errors.basicSalary?.message}</div>
-    </div>
-  </div>
+            <div className="col-md-4 mb-2">
+              <div className="d-flex justify-content-between align-items-center">
+                <label className="form-label mb-1">Basic Salary</label>
+                <div className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={editable}
+                    onChange={(e) => setEditable(e.target.checked)}
+                  />
+                  <label className="form-check-label small">Edit?</label>
+                </div>
+              </div>
+              <input
+                type="number"
+                className={`form-control form-control-sm ${
+                  errors.basicSalary ? "is-invalid" : ""
+                }`}
+                {...register("basicSalary")}
+                disabled={!editable}
+              />
+              <div className="invalid-feedback">
+                {errors.basicSalary?.message}
+              </div>
+            </div>
+          </div>
 
-  {/* Allowances */}
-  <div className="row mt-3">
-<div className="col-md-6">
-  <h6>Earnings</h6>
-  <ul className="ps-3">
-    {allowances.map((item, i) => (
-      <li key={i} className="d-flex align-items-center mb-1">
-        <input
-          type="text"
-          value={item.title}
-          disabled
-          className="form-control form-control-sm me-2"
-          style={{ maxWidth: "220px" }}
-        />
-        <input
-          type="number"
-          value={item.amount}
-          onChange={(e) => {
-            const updated = [...allowances];
-            updated[i].amount = Number(e.target.value);
-            setAllowances(updated);
-          }}
-          className="form-control form-control-sm"
-          placeholder="Amount (₹)"
-          style={{ maxWidth: "120px" }}
-        />
-      </li>
-    ))}
-  </ul>
-  <button
-    type="button"
-    className="btn btn-sm btn-outline-success"
-    onClick={() => addItem("allowances")}
-  >
-    + Add Allowance
-  </button>
-</div>
+          <div className="row mt-3">
+            <div className="col-md-6">
+              <h6>Earnings</h6>
+              <ul className="ps-3">
+                {allowances.map((item, i) => (
+                  <li key={i} className="d-flex align-items-center mb-1">
+                    <input
+                      type="text"
+                      value={item.title}
+                      disabled
+                      className="form-control form-control-sm me-2"
+                      style={{ maxWidth: "220px" }}
+                    />
+                    <input
+                      type="number"
+                      value={item.amount}
+                      onChange={(e) => {
+                        const updated = [...allowances];
+                        updated[i].amount = Number(e.target.value);
+                        setAllowances(updated);
+                      }}
+                      className="form-control form-control-sm"
+                      placeholder="Amount (₹)"
+                      style={{ maxWidth: "120px" }}
+                    />
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-success"
+                onClick={() => addItem("allowances")}
+              >
+                + Add Allowance
+              </button>
+            </div>
 
+            <div className="col-md-6">
+              <h6>Deductions</h6>
+              <ul className="ps-3">
+                {deductions.map((item, i) => (
+                  <li key={i} className="d-flex align-items-center mb-1">
+                    <input
+                      type="text"
+                      value={item.title}
+                      disabled
+                      className="form-control form-control-sm me-2"
+                      style={{ maxWidth: "220px" }}
+                    />
+                    <input
+                      type="number"
+                      value={item.amount}
+                      onChange={(e) => {
+                        const updated = [...deductions];
+                        updated[i].amount = Number(e.target.value);
+                        setDeductions(updated);
+                      }}
+                      className="form-control form-control-sm"
+                      placeholder="Amount (₹)"
+                      style={{ maxWidth: "120px" }}
+                    />
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-warning"
+                onClick={() => addItem("deductions")}
+              >
+                + Add Deduction
+              </button>
+            </div>
+          </div>
 
-    {/* Deductions */}
-<div className="col-md-6">
-  <h6>Deductions</h6>
-  <ul className="ps-3">
-    {deductions.map((item, i) => (
-      <li key={i} className="d-flex align-items-center mb-1">
-        <input
-          type="text"
-          value={item.title}
-          disabled
-          className="form-control form-control-sm me-2"
-          style={{ maxWidth: "220px" }}
-        />
-        <input
-          type="number"
-          value={item.amount}
-          onChange={(e) => {
-            const updated = [...deductions];
-            updated[i].amount = Number(e.target.value);
-            setDeductions(updated);
-          }}
-          className="form-control form-control-sm"
-          placeholder="Amount (₹)"
-          style={{ maxWidth: "120px" }}
-        />
-      </li>
-    ))}
-  </ul>
-  <button
-    type="button"
-    className="btn btn-sm btn-outline-warning"
-    onClick={() => addItem("deductions")}
-  >
-    + Add Deduction
-  </button>
-</div>
-
-  </div>
-
-  {/* Submit */}
-  <div className="col-12 mt-3">
-    <button type="submit" className="btn btn-secondary w-100">
-      {editingId ? "Update Payroll" : "Add Payroll"} (Net ₹
-      {calculateNet(watch("basicSalary"))})
-    </button>
-  </div>
-</form>
-
+          <div className="col-12 mt-3">
+            <button type="submit" className="btn btn-secondary w-100">
+              {editingId ? "Update Payroll" : "Add Payroll"} (Net ₹
+              {calculateNet(watch("basicSalary"))})
+            </button>
+          </div>
+        </form>
 
         <hr className="my-4" />
 
-        {/* Filters + Export */}
         <div className="d-flex justify-content-between mb-3">
           <input
             type="text"
@@ -428,7 +444,6 @@ const addItem = (type) => {
           </div>
         </div>
 
-        {/* Table */}
         <h5 className="text-center">All Payroll Records</h5>
         <table className="table table-bordered mt-3 text-center">
           <thead className="table-dark">
@@ -452,7 +467,9 @@ const addItem = (type) => {
               </tr>
             ) : filteredPayrolls.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-muted">No payroll records found.</td>
+                <td colSpan="6" className="text-muted">
+                  No payroll records found.
+                </td>
               </tr>
             ) : (
               filteredPayrolls.map((p, i) => (
@@ -461,20 +478,20 @@ const addItem = (type) => {
                   <td>{p.employeeId?.name}</td>
                   <td>{p.month}</td>
                   <td>₹{p.basicSalary}</td>
-                          <td>
-          {p.allowances?.map((a, idx) => (
-            <div key={idx}>
-              {a.title}: ₹{a.amount}
-            </div>
-          ))}
-        </td>
-        <td>
-          {p.deductions?.map((d, idx) => (
-            <div key={idx}>
-              {d.title}: ₹{d.amount}
-            </div>
-          ))}
-        </td>
+                  <td>
+                    {p.allowances?.map((a, idx) => (
+                      <div key={idx}>
+                        {a.title}: ₹{a.amount}
+                      </div>
+                    ))}
+                  </td>
+                  <td>
+                    {p.deductions?.map((d, idx) => (
+                      <div key={idx}>
+                        {d.title}: ₹{d.amount}
+                      </div>
+                    ))}
+                  </td>
                   <td>₹{p.netSalary}</td>
                   <td>
                     <button
@@ -489,12 +506,12 @@ const addItem = (type) => {
                     >
                       Delete
                     </button>
-                     <button
-        className="btn btn-sm btn-info"
-        onClick={() => generateSalarySlipPDF(p)}
-      >
-        PDF
-      </button>
+                    <button
+                      className="btn btn-sm btn-info"
+                      onClick={() => generateSalarySlipPDF(p)}
+                    >
+                      PDF
+                    </button>
                   </td>
                 </tr>
               ))

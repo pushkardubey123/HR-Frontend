@@ -16,9 +16,12 @@ const Trash = () => {
   const fetchTrash = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/mail/trash`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/mail/trash`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setTrashMails(res.data.data);
     } catch (err) {
       console.error("Trash fetch error:", err);
@@ -57,9 +60,12 @@ const Trash = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/mail/permanent-delete/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(
+          `${import.meta.env.VITE_API_URL}/mail/permanent-delete/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         Swal.fire("Deleted", "Mail deleted permanently", "success");
         fetchTrash();
       } catch (err) {
@@ -90,7 +96,9 @@ const Trash = () => {
                 <div className="fw-bold">
                   From: {mail.sender?.email || "N/A"}
                 </div>
-                <div className="text-dark fw-semibold">To: {mail.recipients.join(", ")}</div>
+                <div className="text-dark fw-semibold">
+                  To: {mail.recipients.join(", ")}
+                </div>
                 <div className="text-muted small">{mail.subject}</div>
 
                 {mail.attachments?.length > 0 && (
@@ -120,13 +128,22 @@ const Trash = () => {
       )}
 
       {/* Modal */}
-      <Modal show={!!selectedMail} onHide={() => setSelectedMail(null)} size="lg" centered>
+      <Modal
+        show={!!selectedMail}
+        onHide={() => setSelectedMail(null)}
+        size="lg"
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>{selectedMail?.subject}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p><strong>From:</strong> {selectedMail?.sender?.email}</p>
-          <p><strong>To:</strong> {selectedMail?.recipients?.join(", ")}</p>
+          <p>
+            <strong>From:</strong> {selectedMail?.sender?.email}
+          </p>
+          <p>
+            <strong>To:</strong> {selectedMail?.recipients?.join(", ")}
+          </p>
           <hr />
           <p>{selectedMail?.message || "No content available."}</p>
 
@@ -138,7 +155,9 @@ const Trash = () => {
                 {selectedMail.attachments.map((att, i) => (
                   <li key={i}>
                     <a
-                      href={`${import.meta.env.VITE_API_URL}/mail/download/${att}`}
+                      href={`${
+                        import.meta.env.VITE_API_URL
+                      }/mail/download/${att}`}
                       target="_blank"
                       rel="noreferrer"
                       className="text-decoration-none d-flex align-item-center"

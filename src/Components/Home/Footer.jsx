@@ -13,55 +13,107 @@ const Footer = () => {
     <footer className="footer-section bg-dark text-white pt-5">
       <div className="container">
         <div className="row">
-          {/* Company Info */}
           <div className="col-md-3 mb-4">
-            <h5 className="fw-bold text-uppercase mb-3">Hareetech Development Pvt. Ltd.</h5>
+            <h5 className="fw-bold text-uppercase mb-3">
+              Hareetech Development Pvt. Ltd.
+            </h5>
             <p className="footer-text">
-              As Hareetech Development, we pride ourselves on being one of the top development companies in the industry. Our team of expert developers and engineers are dedicated to delivering innovative solutions.
+              As Hareetech Development, we pride ourselves on being one of the
+              top development companies in the industry. Our team of expert
+              developers and engineers are dedicated to delivering innovative
+              solutions.
             </p>
           </div>
 
-          {/* Products */}
           <div className="col-md-2 mb-4">
             <h6 className="fw-semibold text-uppercase mb-3">Products</h6>
             <ul className="list-unstyled">
-              <li><a className="footer-link" href="#">Dashboard</a></li>
-              <li><a className="footer-link" href="#">Employees</a></li>
-              <li><a className="footer-link" href="#">Payrolls</a></li>
-              <li><a className="footer-link" href="#">Attendance</a></li>
+              <li>
+                <a className="footer-link" href="#">
+                  Dashboard
+                </a>
+              </li>
+              <li>
+                <a className="footer-link" href="#">
+                  Employees
+                </a>
+              </li>
+              <li>
+                <a className="footer-link" href="#">
+                  Payrolls
+                </a>
+              </li>
+              <li>
+                <a className="footer-link" href="#">
+                  Attendance
+                </a>
+              </li>
             </ul>
           </div>
 
-          {/* Contact */}
           <div className="col-md-4 mb-4">
             <h6 className="fw-semibold text-uppercase mb-3">Contact</h6>
-            <p><i className="fas fa-home"></i>203-2nd floor OM Plaza Apartment Indire Nagar Lucknow Uttar Pradesh 226016</p>
-            <p><i className="fas fa-envelope"></i> info@hareetech.com
-</p>
-            <p><i className="fas fa-phone"></i> +91 6394181905
-</p>
+            <p>
+              <i className="fas fa-home"></i>203-2nd floor OM Plaza Apartment
+              Indire Nagar Lucknow Uttar Pradesh 226016
+            </p>
+            <p>
+              <i className="fas fa-envelope"></i> info@hareetech.com
+            </p>
+            <p>
+              <i className="fas fa-phone"></i> +91 6394181905
+            </p>
           </div>
 
-          {/* Social Media */}
           <div className="col-md-3 mb-4 text-center">
             <h6 className="fw-semibold text-uppercase mb-3">Follow Us</h6>
             <div className="d-flex justify-content-center flex-wrap">
-              <a href="#" className="social-icon" style={{ backgroundColor: "#3b5998" }} title="Facebook">
+              <a
+                href="#"
+                className="social-icon"
+                style={{ backgroundColor: "#3b5998" }}
+                title="Facebook"
+              >
                 <FaFacebookF />
               </a>
-              <a href="#" className="social-icon" style={{ backgroundColor: "#55acee" }} title="Twitter">
+              <a
+                href="#"
+                className="social-icon"
+                style={{ backgroundColor: "#55acee" }}
+                title="Twitter"
+              >
                 <AiFillTwitterCircle />
               </a>
-              <a href="#" className="social-icon" style={{ backgroundColor: "#dd4b39" }} title="Google">
+              <a
+                href="#"
+                className="social-icon"
+                style={{ backgroundColor: "#dd4b39" }}
+                title="Google"
+              >
                 <FaGoogle />
               </a>
-              <a href="#" className="social-icon" style={{ backgroundColor: "#ac2bac" }} title="Instagram">
+              <a
+                href="#"
+                className="social-icon"
+                style={{ backgroundColor: "#ac2bac" }}
+                title="Instagram"
+              >
                 <FaInstagram />
               </a>
-              <a href="#" className="social-icon" style={{ backgroundColor: "#0082ca" }} title="LinkedIn">
+              <a
+                href="#"
+                className="social-icon"
+                style={{ backgroundColor: "#0082ca" }}
+                title="LinkedIn"
+              >
                 <FaLinkedinIn />
               </a>
-              <a href="#" className="social-icon" style={{ backgroundColor: "#333" }} title="GitHub">
+              <a
+                href="#"
+                className="social-icon"
+                style={{ backgroundColor: "#333" }}
+                title="GitHub"
+              >
                 <FaGithub />
               </a>
             </div>
@@ -70,10 +122,10 @@ const Footer = () => {
       </div>
 
       <div className="text-center py-3 mt-3 copyright">
-        © {new Date().getFullYear()} All rights reserved | Designed by Hareetech Development Pvt. Ltd.
+        © {new Date().getFullYear()} All rights reserved | Designed by Hareetech
+        Development Pvt. Ltd.
       </div>
 
-      {/* Style */}
       <style>{`
         .footer-section {
           font-size: 14px;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown, Badge, Spinner } from "react-bootstrap";
 import { FaBell, FaSyncAlt, FaTrash } from "react-icons/fa";
 import axios from "axios";
@@ -7,7 +7,7 @@ const AdminNotificationBell = () => {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
-  const [acknowledged, setAcknowledged] = useState(false); 
+  const [acknowledged, setAcknowledged] = useState(false);
 
   const token = JSON.parse(localStorage.getItem("user"))?.token;
   const axiosInstance = axios.create({
@@ -47,7 +47,7 @@ const AdminNotificationBell = () => {
 
   useEffect(() => {
     fetchAdminAlerts();
-    const interval = setInterval(fetchAdminAlerts, 60000); 
+    const interval = setInterval(fetchAdminAlerts, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -56,13 +56,19 @@ const AdminNotificationBell = () => {
       <Dropdown.Toggle variant="light" className="position-relative">
         <FaBell size={20} />
         {unreadCount > 0 && (
-          <Badge bg="danger" pill className="position-absolute top-0 start-100 translate-middle">
+          <Badge
+            bg="danger"
+            pill
+            className="position-absolute top-0 start-100 translate-middle"
+          >
             {unreadCount}
           </Badge>
         )}
       </Dropdown.Toggle>
 
-      <Dropdown.Menu style={{ minWidth: "350px", maxHeight: "400px", overflowY: "auto" }}>
+      <Dropdown.Menu
+        style={{ minWidth: "350px", maxHeight: "400px", overflowY: "auto" }}
+      >
         <div className="d-flex justify-content-between align-items-center px-3 pt-2 pb-1">
           <strong>Admin Alerts</strong>
           <div className="d-flex gap-2">
@@ -90,7 +96,10 @@ const AdminNotificationBell = () => {
           <div className="text-muted text-center py-3">No pending alerts</div>
         ) : (
           alerts.map((alert, idx) => (
-            <Dropdown.Item key={idx} className="bg-warning-subtle d-flex flex-column">
+            <Dropdown.Item
+              key={idx}
+              className="bg-warning-subtle d-flex flex-column"
+            >
               <strong>{alert.title}</strong>
               <small className="text-muted">{alert.count} pending</small>
             </Dropdown.Item>

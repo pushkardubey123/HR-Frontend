@@ -18,11 +18,14 @@ const PayrollReport = () => {
   const fetchPayrolls = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/payrolls`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/payrolls`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setPayrolls(res.data.data || []);
     } catch (err) {
       console.error("Failed to fetch payroll data", err);
@@ -35,7 +38,6 @@ const PayrollReport = () => {
     fetchPayrolls();
   }, []);
 
-  // Unique employee list
   const employeeList = Array.from(
     new Set(
       payrolls
@@ -45,15 +47,19 @@ const PayrollReport = () => {
     )
   ).map((str) => JSON.parse(str));
 
-  // Filtered Data
   const filteredPayrolls = payrolls.filter((p) => {
     const matchMonth = selectedMonth ? p.month === selectedMonth : true;
-    const matchEmployee = selectedEmployee ? p.employeeId?._id === selectedEmployee : true;
+    const matchEmployee = selectedEmployee
+      ? p.employeeId?._id === selectedEmployee
+      : true;
     const matchStatus = selectedStatus ? p.status === selectedStatus : true;
     return matchMonth && matchEmployee && matchStatus;
   });
 
-  const totalBasic = filteredPayrolls.reduce((sum, p) => sum + p.basicSalary, 0);
+  const totalBasic = filteredPayrolls.reduce(
+    (sum, p) => sum + p.basicSalary,
+    0
+  );
   const totalNet = filteredPayrolls.reduce((sum, p) => sum + p.netSalary, 0);
   const totalAllowances = filteredPayrolls.reduce(
     (sum, p) => sum + (p.allowances?.reduce((a, x) => a + x.amount, 0) || 0),
@@ -64,12 +70,22 @@ const PayrollReport = () => {
     0
   );
 
-  // PDF Export
   const exportToPDF = () => {
     const doc = new jsPDF();
     doc.text("Payroll Report", 14, 10);
     autoTable(doc, {
-      head: [["#", "Employee", "Month", "Basic", "Allowances", "Deductions", "Net", "Status"]],
+      head: [
+        [
+          "#",
+          "Employee",
+          "Month",
+          "Basic",
+          "Allowances",
+          "Deductions",
+          "Net",
+          "Status",
+        ],
+      ],
       body: filteredPayrolls.map((p, i) => [
         i + 1,
         p.employeeId?.name,
@@ -84,7 +100,6 @@ const PayrollReport = () => {
     doc.save("payroll_report.pdf");
   };
 
-  // CSV Export
   const exportToCSV = () => {
     const csvData = filteredPayrolls.map((p, i) => ({
       S_No: i + 1,
@@ -111,7 +126,6 @@ const PayrollReport = () => {
       <div className="container mt-4">
         <h3 className="text-center mb-4 fw-bold">Payroll Report</h3>
 
-        {/* Filters */}
         <div className="row g-3 mb-4">
           <div className="col-md-3">
             <label className="form-label fw-semibold">Month</label>
@@ -151,17 +165,22 @@ const PayrollReport = () => {
           </div>
           <div className="col-md-2 d-flex align-items-end">
             <div className="d-flex gap-2">
-              <button className="btn btn-sm btn-outline-success" onClick={exportToCSV}>
+              <button
+                className="btn btn-sm btn-outline-success"
+                onClick={exportToCSV}
+              >
                 Export CSV
               </button>
-              <button className="btn btn-sm btn-outline-primary" onClick={exportToPDF}>
+              <button
+                className="btn btn-sm btn-outline-primary"
+                onClick={exportToPDF}
+              >
                 Export PDF
               </button>
             </div>
           </div>
         </div>
 
-        {/* Summary Cards */}
         <div className="row text-center mb-4">
           <div className="col-md-3">
             <div className="bg-light rounded shadow-sm py-3">
@@ -189,7 +208,6 @@ const PayrollReport = () => {
           </div>
         </div>
 
-        {/* Report Table */}
         <div className="table-responsive">
           <table className="table table-bordered table-hover text-center shadow-sm">
             <thead className="table-dark">

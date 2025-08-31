@@ -20,8 +20,8 @@ const UserJobLists = () => {
     const today = new Date();
     const start = new Date(job.startDate);
     const diff = (start - today) / (1000 * 60 * 60 * 24);
-    if (diff <= 7) return "bg-red-500"; 
-    if (diff <= 30) return "bg-indigo-500"; 
+    if (diff <= 7) return "bg-red-500";
+    if (diff <= 30) return "bg-indigo-500";
     return "bg-blue-500";
   };
 
@@ -29,8 +29,7 @@ const UserJobLists = () => {
     <div
       className="min-h-screen p-8 bg-cover bg-center relative"
       style={{
-        backgroundImage:
-          'url("https://wallpapercave.com/wp/wp3616209.jpg")',
+        backgroundImage: 'url("https://wallpapercave.com/wp/wp3616209.jpg")',
         backgroundAttachment: "fixed",
       }}
     >
@@ -49,7 +48,6 @@ const UserJobLists = () => {
                 key={job._id}
                 className="relative bg-white bg-opacity-90 rounded-2xl shadow-xl p-6 hover:shadow-2xl hover:-translate-y-3 transform transition-all duration-300 cursor-pointer"
               >
-                {/* Tag */}
                 <div
                   className={`absolute top-4 right-4 text-white px-3 py-1 rounded-full text-sm font-semibold ${getTagColor(
                     job

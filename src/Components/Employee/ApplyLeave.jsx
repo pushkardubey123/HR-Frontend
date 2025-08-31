@@ -18,8 +18,7 @@ const schema = yup.object().shape({
 });
 
 const ApplyLeave = () => {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -46,7 +45,7 @@ const ApplyLeave = () => {
       if (response.data.success) {
         Swal.fire("Success", response.data.message, "success");
         reset();
-        navigate("/employee/my-leaves")
+        navigate("/employee/my-leaves");
       } else {
         Swal.fire("Error", response.data.message, "error");
       }

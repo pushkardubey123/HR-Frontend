@@ -11,12 +11,12 @@ const ApplyJob = () => {
     phone: "",
     gender: "",
     dob: "",
-    address: ""
+    address: "",
   });
   const [files, setFiles] = useState({
     profileImage: null,
     resume: null,
-    coverLetter: null
+    coverLetter: null,
   });
 
   const handleChange = (e) =>
@@ -29,7 +29,9 @@ const ApplyJob = () => {
     e.preventDefault();
     const data = new FormData();
     Object.keys(formData).forEach((key) => data.append(key, formData[key]));
-    Object.keys(files).forEach((key) => files[key] && data.append(key, files[key]));
+    Object.keys(files).forEach(
+      (key) => files[key] && data.append(key, files[key])
+    );
 
     await applyJob(data);
     alert("Application submitted successfully!");
@@ -49,12 +51,22 @@ const ApplyJob = () => {
               {/* Left Column */}
               <div className="form-col">
                 <div className="input-group">
-                  <input type="text" name="name" required onChange={handleChange} />
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    onChange={handleChange}
+                  />
                   <label>Full Name</label>
                 </div>
 
                 <div className="input-group">
-                  <input type="email" name="email" required onChange={handleChange} />
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    onChange={handleChange}
+                  />
                   <label>Email Address</label>
                 </div>
 
@@ -88,18 +100,35 @@ const ApplyJob = () => {
 
                 <div className="file-group">
                   <label className="file-label">
-                    {files.profileImage ? files.profileImage.name : "Upload Profile Image"}
-                    <input type="file" name="profileImage" onChange={handleFileChange} />
+                    {files.profileImage
+                      ? files.profileImage.name
+                      : "Upload Profile Image"}
+                    <input
+                      type="file"
+                      name="profileImage"
+                      onChange={handleFileChange}
+                    />
                   </label>
 
                   <label className="file-label">
                     {files.resume ? files.resume.name : "Upload Resume (PDF) *"}
-                    <input type="file" name="resume" onChange={handleFileChange} required />
+                    <input
+                      type="file"
+                      name="resume"
+                      onChange={handleFileChange}
+                      required
+                    />
                   </label>
 
                   <label className="file-label">
-                    {files.coverLetter ? files.coverLetter.name : "Upload Cover Letter"}
-                    <input type="file" name="coverLetter" onChange={handleFileChange} />
+                    {files.coverLetter
+                      ? files.coverLetter.name
+                      : "Upload Cover Letter"}
+                    <input
+                      type="file"
+                      name="coverLetter"
+                      onChange={handleFileChange}
+                    />
                   </label>
                 </div>
               </div>

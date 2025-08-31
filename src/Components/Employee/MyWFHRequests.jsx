@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaRegClock, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { MdPendingActions } from "react-icons/md";
-import Loader from "../Admin/Loader/Loader"; 
+import Loader from "../Admin/Loader/Loader";
 import EmployeeLayout from "./EmployeeLayout";
 
 const statusIcon = {
@@ -18,9 +18,12 @@ const EmployeeWFHList = () => {
   const getWFHRequests = async () => {
     try {
       const token = JSON.parse(localStorage.getItem("user"))?.token;
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/wfh/my`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/wfh/my`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setWfhList(res.data.data || []);
     } catch (err) {
       console.error("Failed to fetch WFH data:", err);
@@ -55,23 +58,31 @@ const EmployeeWFHList = () => {
                         <th scope="col">From</th>
                         <th scope="col">To</th>
                         <th scope="col">Reason</th>
-                        <th scope="col" className="text-center">Status</th>
+                        <th scope="col" className="text-center">
+                          Status
+                        </th>
                         <th scope="col">Admin Remarks</th>
                       </tr>
                     </thead>
                     <tbody>
                       {wfhList.map((item) => (
                         <tr key={item._id}>
-                          <td>{new Date(item.fromDate).toLocaleDateString()}</td>
+                          <td>
+                            {new Date(item.fromDate).toLocaleDateString()}
+                          </td>
                           <td>{new Date(item.toDate).toLocaleDateString()}</td>
                           <td>{item.reason}</td>
                           <td className="text-center">
                             <div className="d-flex justify-content-center align-items-center gap-1">
                               {statusIcon[item.status]}
-                              <span className="text-capitalize fw-medium">{item.status}</span>
+                              <span className="text-capitalize fw-medium">
+                                {item.status}
+                              </span>
                             </div>
                           </td>
-                          <td className="text-muted small">{item.adminRemarks || "-"}</td>
+                          <td className="text-muted small">
+                            {item.adminRemarks || "-"}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

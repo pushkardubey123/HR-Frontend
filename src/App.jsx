@@ -59,7 +59,7 @@ import CreateJob from "./Components/Recruitment/CreateJob";
 import JobList from "./Components/Recruitment/JobList";
 import JobDetail from "./Components/Recruitment/JobDetail";
 import ApplyJob from "./Components/Recruitment/ApplyJob";
-import UserJobLists from "./Components/Recruitment/userJobLists";
+import UserJobLists from "./Components/Recruitment/UserJobLists"
 import AdminApplications from "./Components/Recruitment/AdminApplications";
 import InterviewCalendar from "./Components/Recruitment/InterviewCalendar";
 

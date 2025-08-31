@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPendingUsers, rejectUser } from "../Redux/Slices/pendingUserSlice";
-import Swal from "sweetalert2";
 import {
-  Container,
-  Card,
-  Table,
-  Button,
-  Modal,
-  Form,
-} from "react-bootstrap";
+  fetchPendingUsers,
+  rejectUser,
+} from "../Redux/Slices/pendingUserSlice";
+import Swal from "sweetalert2";
+import { Container, Card, Table, Button, Modal, Form } from "react-bootstrap";
 import {
   FaUserClock,
   FaCheckCircle,
@@ -22,7 +18,9 @@ import axios from "axios";
 
 const AdminApproveEmployees = () => {
   const dispatch = useDispatch();
-  const { data = [], loading = false } = useSelector((state) => state.pendingUsers);
+  const { data = [], loading = false } = useSelector(
+    (state) => state.pendingUsers
+  );
 
   const [showModal, setShowModal] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -85,19 +83,33 @@ const AdminApproveEmployees = () => {
       title: `<h3>${emp.name}</h3>`,
       html: `
         <div style="text-align:left; max-height:500px; overflow-y:auto">
-          ${profileUrl ? `<img src='${profileUrl}' alt='profile' style='height:120px;width:120px;border-radius:8px;object-fit:cover;margin:0 auto 10px;display:block'/>` : ''}
+          ${
+            profileUrl
+              ? `<img src='${profileUrl}' alt='profile' style='height:120px;width:120px;border-radius:8px;object-fit:cover;margin:0 auto 10px;display:block'/>`
+              : ""
+          }
           <table class='table table-bordered'>
             <tr><td><b>Email</b></td><td>${emp.email}</td></tr>
-            <tr><td><b>Phone</b></td><td>${emp.phone || 'N/A'}</td></tr>
-            <tr><td><b>Gender</b></td><td>${emp.gender || 'N/A'}</td></tr>
-            <tr><td><b>Date of Birth</b></td><td>${emp.dob?.substring(0,10) || 'N/A'}</td></tr>
-            <tr><td><b>Department</b></td><td>${emp.departmentId?.name || 'N/A'}</td></tr>
-            <tr><td><b>Designation</b></td><td>${emp.designationId?.name || 'N/A'}</td></tr>
-            <tr><td><b>Shift</b></td><td>${emp.shiftId?.name || 'N/A'}</td></tr>
-            <tr><td><b>Joining Date</b></td><td>${emp.doj?.substring(0,10) || 'N/A'}</td></tr>
-            <tr><td><b>Address</b></td><td>${emp.address || 'N/A'}</td></tr>
+            <tr><td><b>Phone</b></td><td>${emp.phone || "N/A"}</td></tr>
+            <tr><td><b>Gender</b></td><td>${emp.gender || "N/A"}</td></tr>
+            <tr><td><b>Date of Birth</b></td><td>${
+              emp.dob?.substring(0, 10) || "N/A"
+            }</td></tr>
+            <tr><td><b>Department</b></td><td>${
+              emp.departmentId?.name || "N/A"
+            }</td></tr>
+            <tr><td><b>Designation</b></td><td>${
+              emp.designationId?.name || "N/A"
+            }</td></tr>
+            <tr><td><b>Shift</b></td><td>${emp.shiftId?.name || "N/A"}</td></tr>
+            <tr><td><b>Joining Date</b></td><td>${
+              emp.doj?.substring(0, 10) || "N/A"
+            }</td></tr>
+            <tr><td><b>Address</b></td><td>${emp.address || "N/A"}</td></tr>
             <tr><td><b>Emergency Contact</b></td>
-                <td>${emp.emergencyContact?.name || '-'} (${emp.emergencyContact?.relation || '-'}) - ${emp.emergencyContact?.phone || '-'}</td></tr>
+                <td>${emp.emergencyContact?.name || "-"} (${
+        emp.emergencyContact?.relation || "-"
+      }) - ${emp.emergencyContact?.phone || "-"}</td></tr>
           </table>
         </div>
       `,
@@ -122,10 +134,16 @@ const AdminApproveEmployees = () => {
                 <Loader />
               </div>
             ) : data.length === 0 ? (
-              <p className="text-center text-muted fs-5">No pending registrations</p>
+              <p className="text-center text-muted fs-5">
+                No pending registrations
+              </p>
             ) : (
               <div className="table-responsive">
-                <Table bordered hover className="text-center align-middle shadow-sm">
+                <Table
+                  bordered
+                  hover
+                  className="text-center align-middle shadow-sm"
+                >
                   <thead className="table-primary">
                     <tr>
                       <th>#</th>

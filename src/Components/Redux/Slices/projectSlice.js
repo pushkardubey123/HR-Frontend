@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const projectSlice = createSlice({
   name: "project",
   initialState: {
-    list: [], // ✅ यह default होना ज़रूरी है
+    list: [],
   },
   reducers: {
     setProjects: (state, action) => {

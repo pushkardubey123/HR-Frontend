@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import EmployeeLayout from "./EmployeeLayout";
 import axios from "axios";
 import { Button, Card, Form, Table, Badge } from "react-bootstrap";
-import { FaCalendarAlt, FaCheckCircle, FaClock, FaFileAlt } from "react-icons/fa";
+import {
+  FaCalendarAlt,
+  FaCheckCircle,
+  FaClock,
+  FaFileAlt,
+} from "react-icons/fa";
 import Swal from "sweetalert2";
 import Loader from "../Admin/Loader/Loader";
 
@@ -64,8 +69,22 @@ const EmployeeExit = () => {
 
   return (
     <EmployeeLayout>
-      <div className="d-flex justify-content-center align-items-center py-5" style={{ minHeight: "100vh", background: "linear-gradient(135deg, #cfd9df 0%, #e2ebf0 100%)" }}>
-        <Card className="p-4 shadow-lg border-0 rounded-4" style={{ backdropFilter: "blur(15px)", background: "rgba(255, 255, 255, 0.6)", width: "100%", maxWidth: "900px" }}>
+      <div
+        className="d-flex justify-content-center align-items-center py-5"
+        style={{
+          minHeight: "100vh",
+          background: "linear-gradient(135deg, #cfd9df 0%, #e2ebf0 100%)",
+        }}
+      >
+        <Card
+          className="p-4 shadow-lg border-0 rounded-4"
+          style={{
+            backdropFilter: "blur(15px)",
+            background: "rgba(255, 255, 255, 0.6)",
+            width: "100%",
+            maxWidth: "900px",
+          }}
+        >
           <h5 className="mb-4 d-flex align-items-center gap-2 text-danger">
             <FaFileAlt /> Exit Management
           </h5>
@@ -94,7 +113,11 @@ const EmployeeExit = () => {
                 required
               />
             </Form.Group>
-            <Button variant="dark" type="submit" className="d-inline-flex align-items-center gap-2">
+            <Button
+              variant="dark"
+              type="submit"
+              className="d-inline-flex align-items-center gap-2"
+            >
               <FaCheckCircle /> Submit Resignation
             </Button>
           </Form>
@@ -104,12 +127,18 @@ const EmployeeExit = () => {
             <FaClock /> Your Exit Requests
           </h6>
           {loading ? (
-            <div className="text-center py-4"><Loader /></div>
+            <div className="text-center py-4">
+              <Loader />
+            </div>
           ) : requests.length === 0 ? (
             <div className="text-muted">No exit requests found</div>
           ) : (
             <div className="table-responsive">
-              <Table bordered hover className="text-center align-middle bg-white rounded-3">
+              <Table
+                bordered
+                hover
+                className="text-center align-middle bg-white rounded-3"
+              >
                 <thead className="table-dark">
                   <tr>
                     <th>S No</th>
@@ -125,15 +154,25 @@ const EmployeeExit = () => {
                     <tr key={r._id}>
                       <td>{i + 1}</td>
                       <td>{r.reason}</td>
-                      <td>{new Date(r.resignationDate).toLocaleDateString()}</td>
+                      <td>
+                        {new Date(r.resignationDate).toLocaleDateString()}
+                      </td>
                       <td>{getStatusBadge(r.clearanceStatus)}</td>
-                      <td>{r.interviewFeedback || <span className="text-muted">--</span>}</td>
+                      <td>
+                        {r.interviewFeedback || (
+                          <span className="text-muted">--</span>
+                        )}
+                      </td>
                       <td>
                         {r.finalSettlement?.amount ? (
                           <>
                             ₹{r.finalSettlement.amount}
                             <br />
-                            <small>{new Date(r.finalSettlement.settledOn).toLocaleDateString()}</small>
+                            <small>
+                              {new Date(
+                                r.finalSettlement.settledOn
+                              ).toLocaleDateString()}
+                            </small>
                           </>
                         ) : (
                           <span className="text-muted">--</span>

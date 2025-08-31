@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getJobById } from "./jobApi";
-import "./JobDetail.css"; // Custom CSS file
+import "./JobDetail.css"; 
 
 const JobDetail = () => {
   const { id } = useParams();

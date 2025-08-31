@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import { Button, Form, Table, Card, Container } from "react-bootstrap";
 import AdminLayout from "./AdminLayout";
 import { FcDepartment } from "react-icons/fc";
-import Loader from "./Loader/Loader"; // Dot-style loader
+import Loader from "./Loader/Loader";
 
 const schema = yup.object().shape({
   name: yup.string().required("Department name is required"),
@@ -37,7 +37,9 @@ const Department = () => {
   const fetchDepartments = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/departments`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/departments`
+      );
       setDepartments(res.data.data || []);
     } catch (err) {
       Swal.fire("Error", "No fetching departments", err);
@@ -78,7 +80,11 @@ const Department = () => {
       navigate("/admin/department");
       fetchDepartments();
     } catch (err) {
-      Swal.fire("Error", err.response?.data?.message || "Action failed", "error");
+      Swal.fire(
+        "Error",
+        err.response?.data?.message || "Action failed",
+        "error"
+      );
     }
   };
 
@@ -93,9 +99,12 @@ const Department = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/departments/${deptId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(
+          `${import.meta.env.VITE_API_URL}/api/departments/${deptId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         Swal.fire("Deleted!", "Department removed successfully", "success");
         fetchDepartments();
       } catch (err) {
@@ -133,7 +142,9 @@ const Department = () => {
                     className="mb-2"
                   />
                   {errors.description && (
-                    <small className="text-danger">{errors.description.message}</small>
+                    <small className="text-danger">
+                      {errors.description.message}
+                    </small>
                   )}
                 </div>
                 <div className="col-md-2 d-grid">
@@ -144,16 +155,22 @@ const Department = () => {
               </div>
             </form>
 
-            {/* 🔄 Table Section */}
             {loading ? (
               <div className="text-center my-5">
                 <Loader />
               </div>
             ) : departments.length === 0 ? (
-              <p className="text-center text-muted fs-5">No departments available</p>
+              <p className="text-center text-muted fs-5">
+                No departments available
+              </p>
             ) : (
               <div className="table-responsive">
-                <Table bordered hover responsive className="align-middle text-center shadow-sm">
+                <Table
+                  bordered
+                  hover
+                  responsive
+                  className="align-middle text-center shadow-sm"
+                >
                   <thead className="table-primary">
                     <tr>
                       <th>#</th>

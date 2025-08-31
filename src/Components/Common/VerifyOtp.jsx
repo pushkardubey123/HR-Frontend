@@ -23,10 +23,13 @@ const VerifyOtp = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/verify-otp`, {
-        email,
-        otp: data.otp,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/user/verify-otp`,
+        {
+          email,
+          otp: data.otp,
+        }
+      );
       Swal.fire("Success", res.data.message, "success");
       localStorage.setItem("otp", data.otp);
       navigate("/reset-password");

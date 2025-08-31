@@ -234,7 +234,6 @@ await axios.post(
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="mt-4">
           <ReactPaginate
             pageCount={pageCount}

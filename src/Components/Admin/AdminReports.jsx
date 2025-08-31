@@ -30,7 +30,6 @@ const handleGenerate = async () => {
   setLoading(true);
   try {
     window.open(`${import.meta.env.VITE_API_URL}/api/reports/stream?type=${type}`, "_blank");
-    // No need to show success or error Swal
   } catch (err) {
     Swal.fire("Error", "Something went wrong", "error");
   } finally {

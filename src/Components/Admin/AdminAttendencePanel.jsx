@@ -27,9 +27,12 @@ const AdminAttendancePanel = () => {
   const fetchAllAttendance = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/attendance`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (res.data.success) {
         setGroupedAttendance(res.data.data);
         setFilteredAttendance(res.data.data);
@@ -47,10 +50,16 @@ const AdminAttendancePanel = () => {
     const filtered = {};
     Object.keys(groupedAttendance).forEach((date) => {
       const filteredRecords = groupedAttendance[date].filter((record) => {
-        const matchesStatus = filterStatus ? record.status === filterStatus : true;
+        const matchesStatus = filterStatus
+          ? record.status === filterStatus
+          : true;
         const matchesSearch =
-          record.employeeId?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          record.employeeId?.email.toLowerCase().includes(searchQuery.toLowerCase());
+          record.employeeId?.name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          record.employeeId?.email
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase());
         return matchesStatus && matchesSearch;
       });
 
@@ -134,7 +143,9 @@ const AdminAttendancePanel = () => {
           Email: a.employeeId?.email,
           Status: a.status,
           Type: a.statusType,
-          InOutLogs: a.inOutLogs.map((log) => `IN: ${log.inTime} | OUT: ${log.outTime || "N/A"}`).join(" | "),
+          InOutLogs: a.inOutLogs
+            .map((log) => `IN: ${log.inTime} | OUT: ${log.outTime || "N/A"}`)
+            .join(" | "),
         });
       });
     });
@@ -160,7 +171,9 @@ const AdminAttendancePanel = () => {
           a.employeeId?.email,
           a.status,
           a.statusType,
-          a.inOutLogs.map((log) => `IN: ${log.inTime} OUT: ${log.outTime || "N/A"}`).join("\n"),
+          a.inOutLogs
+            .map((log) => `IN: ${log.inTime} OUT: ${log.outTime || "N/A"}`)
+            .join("\n"),
         ]);
       });
     });
@@ -208,11 +221,17 @@ const AdminAttendancePanel = () => {
           </div>
 
           <div className="d-flex gap-2">
-            <button className="btn btn-success d-flex align-items-center" onClick={exportToPDF}>
+            <button
+              className="btn btn-success d-flex align-items-center"
+              onClick={exportToPDF}
+            >
               <FaDownload className="me-2" />
               Export PDF
             </button>
-            <button className="btn btn-primary d-flex align-items-center" onClick={exportToCSV}>
+            <button
+              className="btn btn-primary d-flex align-items-center"
+              onClick={exportToCSV}
+            >
               <FaFileCsv className="me-2" />
               Export CSV
             </button>
@@ -267,7 +286,8 @@ const AdminAttendancePanel = () => {
                             {a.inOutLogs.length > 0 ? (
                               a.inOutLogs.map((log, idx) => (
                                 <div key={idx}>
-                                  <strong>IN:</strong> {log.inTime || "N/A"} &nbsp;
+                                  <strong>IN:</strong> {log.inTime || "N/A"}{" "}
+                                  &nbsp;
                                   <strong>OUT:</strong> {log.outTime || "N/A"}
                                 </div>
                               ))

@@ -8,9 +8,8 @@ import Swal from "sweetalert2";
 import { FcApproval } from "react-icons/fc";
 import { Button, Form, Table, Card, Container } from "react-bootstrap";
 import AdminLayout from "./AdminLayout";
-import Loader from "./Loader/Loader"; // 🌀 Reusable dot-style loader
+import Loader from "./Loader/Loader";
 
-// ✅ Yup validation schema
 const schema = yup.object().shape({
   name: yup.string().required("Designation name is required"),
   departmentId: yup.string().required("Department is required"),
@@ -36,10 +35,12 @@ const DesignationManagement = () => {
   const fetchDesignations = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/designations`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/designations`
+      );
       if (res.data.success) setDesignations(res.data.data);
     } catch (err) {
-      Swal.fire("Error", "Error fetching designations:",err);
+      Swal.fire("Error", "Error fetching designations:", err);
     } finally {
       setLoading(false);
     }
@@ -47,10 +48,12 @@ const DesignationManagement = () => {
 
   const fetchDepartments = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/departments`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/departments`
+      );
       if (res.data.success) setDepartments(res.data.data);
     } catch (err) {
-            Swal.fire("Error", "No fetching departments",err);
+      Swal.fire("Error", "No fetching departments", err);
     }
   };
 
@@ -107,9 +110,12 @@ const DesignationManagement = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/designations/${id}`, {
-          headers: { Authorization: getToken() },
-        });
+        await axios.delete(
+          `${import.meta.env.VITE_API_URL}/api/designations/${id}`,
+          {
+            headers: { Authorization: getToken() },
+          }
+        );
         fetchDesignations();
         Swal.fire("Deleted!", "Designation has been deleted.", "success");
       } catch (err) {
@@ -150,7 +156,9 @@ const DesignationManagement = () => {
                     ))}
                   </Form.Select>
                   {errors.departmentId && (
-                    <small className="text-danger">{errors.departmentId.message}</small>
+                    <small className="text-danger">
+                      {errors.departmentId.message}
+                    </small>
                   )}
                 </div>
                 <div className="col-md-2 d-grid">
@@ -166,10 +174,17 @@ const DesignationManagement = () => {
                 <Loader />
               </div>
             ) : designations.length === 0 ? (
-              <p className="text-center text-muted fs-5">No designations found.</p>
+              <p className="text-center text-muted fs-5">
+                No designations found.
+              </p>
             ) : (
               <div className="table-responsive">
-                <Table bordered hover responsive className="align-middle text-center shadow-sm">
+                <Table
+                  bordered
+                  hover
+                  responsive
+                  className="align-middle text-center shadow-sm"
+                >
                   <thead className="table-success">
                     <tr>
                       <th>#</th>

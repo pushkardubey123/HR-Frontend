@@ -5,7 +5,12 @@ import Loader from "./Loader/Loader";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
-import { FaFilePdf, FaFileExcel, FaSearch, FaMoneyBillWave } from "react-icons/fa";
+import {
+  FaFilePdf,
+  FaFileExcel,
+  FaSearch,
+  FaMoneyBillWave,
+} from "react-icons/fa";
 
 const FullAndFinalSalary = () => {
   const [payrolls, setPayrolls] = useState([]);
@@ -19,9 +24,12 @@ const FullAndFinalSalary = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/payrolls`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/payrolls`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setPayrolls(res.data.data.reverse());
     } catch (err) {
       console.error("Error fetching payrolls:", err);
@@ -35,7 +43,9 @@ const FullAndFinalSalary = () => {
   }, []);
 
   const getUniqueDepartments = () => {
-    const depts = payrolls.map((p) => p.employeeId?.departmentId?.name).filter(Boolean);
+    const depts = payrolls
+      .map((p) => p.employeeId?.departmentId?.name)
+      .filter(Boolean);
     return ["All", ...new Set(depts)];
   };
 
@@ -45,8 +55,12 @@ const FullAndFinalSalary = () => {
   };
 
   const filteredPayrolls = payrolls.filter((p) => {
-    const nameMatch = p.employeeId?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const deptMatch = selectedDept === "All" || p.employeeId?.departmentId?.name === selectedDept;
+    const nameMatch = p.employeeId?.name
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const deptMatch =
+      selectedDept === "All" ||
+      p.employeeId?.departmentId?.name === selectedDept;
     const monthMatch = selectedMonth === "All" || p.month === selectedMonth;
     return nameMatch && deptMatch && monthMatch;
   });
@@ -55,7 +69,18 @@ const FullAndFinalSalary = () => {
     const doc = new jsPDF();
     doc.text("Full and Final Salary Report", 14, 10);
     autoTable(doc, {
-      head: [["#", "Employee", "Department", "Month", "Basic", "Allowances", "Deductions", "Net"]],
+      head: [
+        [
+          "#",
+          "Employee",
+          "Department",
+          "Month",
+          "Basic",
+          "Allowances",
+          "Deductions",
+          "Net",
+        ],
+      ],
       body: filteredPayrolls.map((p, i) => [
         i + 1,
         p.employeeId?.name,
@@ -78,8 +103,10 @@ const FullAndFinalSalary = () => {
       Department: p.employeeId?.departmentId?.name || "-",
       Month: p.month,
       Basic: p.basicSalary,
-      Allowances: p.allowances?.map((a) => `${a.title}: ₹${a.amount}`).join(", ") || "-",
-      Deductions: p.deductions?.map((d) => `${d.title}: ₹${d.amount}`).join(", ") || "-",
+      Allowances:
+        p.allowances?.map((a) => `${a.title}: ₹${a.amount}`).join(", ") || "-",
+      Deductions:
+        p.deductions?.map((d) => `${d.title}: ₹${d.amount}`).join(", ") || "-",
       Net: p.netSalary,
     }));
     const worksheet = XLSX.utils.json_to_sheet(excelData);
@@ -99,7 +126,6 @@ const FullAndFinalSalary = () => {
             </h2>
           </div>
 
-          {/* Filters */}
           <div className="row g-3 mb-4">
             <div className="col-md-4">
               <div className="input-group">
@@ -143,17 +169,18 @@ const FullAndFinalSalary = () => {
             </div>
           </div>
 
-          {/* Export Buttons */}
           <div className="d-flex justify-content-end mb-3">
-            <button className="btn btn-outline-success me-2" onClick={exportToExcel}>
+            <button
+              className="btn btn-outline-success me-2"
+              onClick={exportToExcel}
+            >
               <FaFileExcel />
             </button>
             <button className="btn btn-outline-primary" onClick={exportToPDF}>
-              <FaFilePdf/>
+              <FaFilePdf />
             </button>
           </div>
 
-          {/* Table */}
           <div className="table-responsive rounded">
             <table className="table table-hover text-center align-middle">
               <thead className="table-light">
@@ -185,7 +212,9 @@ const FullAndFinalSalary = () => {
                   filteredPayrolls.map((p, i) => (
                     <tr key={p._id}>
                       <td>{i + 1}</td>
-                      <td><strong>{p.employeeId?.name}</strong></td>
+                      <td>
+                        <strong>{p.employeeId?.name}</strong>
+                      </td>
                       <td>{p.employeeId?.departmentId?.name || "-"}</td>
                       <td>{p.month}</td>
                       <td>₹{p.basicSalary}</td>

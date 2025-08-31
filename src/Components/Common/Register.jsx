@@ -1,6 +1,4 @@
-// Employee Register - 3 column layout with compact spacing and dynamic dropdowns
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -8,11 +6,22 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Swal from "sweetalert2";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  FaUser, FaEnvelope, FaLock, FaPhone, FaVenusMars, FaMapMarkerAlt,
-  FaCalendar, FaBuilding, FaBriefcase, FaClock, FaUserPlus,
-  FaPhoneAlt, FaUsers, FaImage,
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaPhone,
+  FaVenusMars,
+  FaMapMarkerAlt,
+  FaCalendar,
+  FaBuilding,
+  FaBriefcase,
+  FaClock,
+  FaUserPlus,
+  FaPhoneAlt,
+  FaUsers,
+  FaImage,
   FaUniversity,
-  FaIdCard
+  FaIdCard,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +29,10 @@ const schema = yup.object({
   name: yup.string().required("Name is required"),
   email: yup.string().email().required("Email is required"),
   password: yup.string().min(6).required("Password is required"),
-  phone: yup.string().matches(/^\d{10}$/, "10 digit phone required").required(),
+  phone: yup
+    .string()
+    .matches(/^\d{10}$/, "10 digit phone required")
+    .required(),
   gender: yup.string().required("Gender is required"),
   dob: yup.string().required("Date of Birth is required"),
   doj: yup.string().required("Date of Joining is required"),
@@ -29,14 +41,15 @@ const schema = yup.object({
   designationId: yup.string().required("Designation is required"),
   shiftId: yup.string().required("Shift is required"),
   emergencyName: yup.string().required(),
-  emergencyPhone: yup.string().matches(/^\d{10}$/, "10 digit required").required(),
+  emergencyPhone: yup
+    .string()
+    .matches(/^\d{10}$/, "10 digit required")
+    .required(),
   emergencyRelation: yup.string().required("Relation required"),
   profilePic: yup.mixed().required("Profile picture is required"),
   pan: yup.string().required("PAN is required"),
-bankAccount: yup.string().required("Bank A/C is required"),
+  bankAccount: yup.string().required("Bank A/C is required"),
 });
-
-// ...imports remain the same...
 
 const EmployeeRegister = () => {
   const [departments, setDepartments] = useState([]);
@@ -53,7 +66,7 @@ const EmployeeRegister = () => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  const selectedDepartmentId = watch("departmentId"); // 👈 watch department selection
+  const selectedDepartmentId = watch("departmentId");
 
   useEffect(() => {
     const fetchDropdowns = async () => {
@@ -87,16 +100,22 @@ const EmployeeRegister = () => {
       formData.append("departmentId", data.departmentId);
       formData.append("designationId", data.designationId);
       formData.append("shiftId", data.shiftId);
-      formData.append("emergencyContact", JSON.stringify({
-        name: data.emergencyName,
-        phone: data.emergencyPhone,
-        relation: data.emergencyRelation,
-      }));
+      formData.append(
+        "emergencyContact",
+        JSON.stringify({
+          name: data.emergencyName,
+          phone: data.emergencyPhone,
+          relation: data.emergencyRelation,
+        })
+      );
       formData.append("profilePic", data.profilePic[0]);
       formData.append("pan", data.pan);
       formData.append("bankAccount", data.bankAccount);
 
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/register`, formData);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/user/register`,
+        formData
+      );
       if (res.data.success) {
         Swal.fire("Success", res.data.message, "success");
         reset();
@@ -109,47 +128,100 @@ const EmployeeRegister = () => {
     }
   };
 
-const filteredDesignations = selectedDepartmentId
-  ? designations.filter((d) => d.departmentId?._id === selectedDepartmentId)
-  : [];
+  const filteredDesignations = selectedDepartmentId
+    ? designations.filter((d) => d.departmentId?._id === selectedDepartmentId)
+    : [];
 
-
-const fields = [
-  { label: "Name", icon: <FaUser />, name: "name" },
-  { label: "Email", icon: <FaEnvelope />, name: "email" },
-  { label: "Password", icon: <FaLock />, name: "password", type: "password" },
-  { label: "Phone", icon: <FaPhone />, name: "phone" },
-  { label: "Gender", icon: <FaVenusMars />, name: "gender", type: "select", options: genderOptions },
-  { label: "Date of Birth", icon: <FaCalendar />, name: "dob", type: "date" },
-  { label: "Date of Joining", icon: <FaCalendar />, name: "doj", type: "date" },
-  { label: "PAN Number", icon: <FaIdCard />, name: "pan" },
-{ label: "Bank A/C Number", icon: <FaUniversity />, name: "bankAccount" },
-  { label: "Address", icon: <FaMapMarkerAlt />, name: "address" },
-  { label: "Department", icon: <FaBuilding />, name: "departmentId", type: "select", options: departments },
-  {
-    label: "Designation", icon: <FaBriefcase />, name: "designationId", type: "select",
-    options: filteredDesignations,
-  },
-  { label: "Shift", icon: <FaClock />, name: "shiftId", type: "select", options: shifts },
-  { label: "Emergency Name", icon: <FaUserPlus />, name: "emergencyName" },
-  { label: "Emergency Phone", icon: <FaPhoneAlt />, name: "emergencyPhone" },
-  { label: "Emergency Relation", icon: <FaUsers />, name: "emergencyRelation" },
-  { label: "Profile Picture", icon: <FaImage />, name: "profilePic", type: "file" },
-];
+  const fields = [
+    { label: "Name", icon: <FaUser />, name: "name" },
+    { label: "Email", icon: <FaEnvelope />, name: "email" },
+    { label: "Password", icon: <FaLock />, name: "password", type: "password" },
+    { label: "Phone", icon: <FaPhone />, name: "phone" },
+    {
+      label: "Gender",
+      icon: <FaVenusMars />,
+      name: "gender",
+      type: "select",
+      options: genderOptions,
+    },
+    { label: "Date of Birth", icon: <FaCalendar />, name: "dob", type: "date" },
+    {
+      label: "Date of Joining",
+      icon: <FaCalendar />,
+      name: "doj",
+      type: "date",
+    },
+    { label: "PAN Number", icon: <FaIdCard />, name: "pan" },
+    { label: "Bank A/C Number", icon: <FaUniversity />, name: "bankAccount" },
+    { label: "Address", icon: <FaMapMarkerAlt />, name: "address" },
+    {
+      label: "Department",
+      icon: <FaBuilding />,
+      name: "departmentId",
+      type: "select",
+      options: departments,
+    },
+    {
+      label: "Designation",
+      icon: <FaBriefcase />,
+      name: "designationId",
+      type: "select",
+      options: filteredDesignations,
+    },
+    {
+      label: "Shift",
+      icon: <FaClock />,
+      name: "shiftId",
+      type: "select",
+      options: shifts,
+    },
+    { label: "Emergency Name", icon: <FaUserPlus />, name: "emergencyName" },
+    { label: "Emergency Phone", icon: <FaPhoneAlt />, name: "emergencyPhone" },
+    {
+      label: "Emergency Relation",
+      icon: <FaUsers />,
+      name: "emergencyRelation",
+    },
+    {
+      label: "Profile Picture",
+      icon: <FaImage />,
+      name: "profilePic",
+      type: "file",
+    },
+  ];
 
   return (
-    <div className="animated-bg" style={{ fontFamily: "'Poppins', sans-serif", minHeight: "100vh", paddingTop: 40 }}>
+    <div
+      className="animated-bg"
+      style={{
+        fontFamily: "'Poppins', sans-serif",
+        minHeight: "100vh",
+        paddingTop: 40,
+      }}
+    >
       <div className="container">
         <div className="row bg-white rounded shadow-lg overflow-hidden">
-          <div className="col-md-4 d-none d-md-block text-white p-4" style={{ background: '#007bff' }}>
+          <div
+            className="col-md-4 d-none d-md-block text-white p-4"
+            style={{ background: "#007bff" }}
+          >
             <h2 className="fw-bold">Welcome</h2>
             <p className="text-light">Join the team and let's grow together.</p>
-            <img src="https://static.vecteezy.com/system/resources/previews/003/689/228/non_2x/online-registration-or-sign-up-login-for-account-on-smartphone-app-user-interface-with-secure-password-mobile-application-for-ui-web-banner-access-cartoon-people-illustration-vector.jpg" alt="register" className="img-fluid rounded" />
+            <img
+              src="https://static.vecteezy.com/system/resources/previews/003/689/228/non_2x/online-registration-or-sign-up-login-for-account-on-smartphone-app-user-interface-with-secure-password-mobile-application-for-ui-web-banner-access-cartoon-people-illustration-vector.jpg"
+              alt="register"
+              className="img-fluid rounded"
+            />
           </div>
 
           <div className="col-md-8 p-4">
-            <h4 className="text-center text-primary mb-4 fw-bold">Employee Registration</h4>
-            <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+            <h4 className="text-center text-primary mb-4 fw-bold">
+              Employee Registration
+            </h4>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              encType="multipart/form-data"
+            >
               <div className="row g-3">
                 {fields.map((field, index) => (
                   <div className="col-md-4" key={index}>
@@ -157,15 +229,22 @@ const fields = [
                       <span className="me-2">{field.icon}</span> {field.label}
                     </label>
                     {field.type === "select" ? (
-                      <select className="form-control" {...register(field.name)}>
+                      <select
+                        className="form-control"
+                        {...register(field.name)}
+                      >
                         <option value="">Select {field.label}</option>
-                        {field.options.map((opt, i) => (
+                        {field.options.map((opt, i) =>
                           typeof opt === "string" ? (
-                            <option key={i} value={opt}>{opt}</option>
+                            <option key={i} value={opt}>
+                              {opt}
+                            </option>
                           ) : (
-                            <option key={opt._id} value={opt._id}>{opt.name}</option>
+                            <option key={opt._id} value={opt._id}>
+                              {opt.name}
+                            </option>
                           )
-                        ))}
+                        )}
                       </select>
                     ) : (
                       <input
@@ -174,7 +253,9 @@ const fields = [
                         {...register(field.name)}
                       />
                     )}
-                    <p className="text-danger small">{errors[field.name]?.message}</p>
+                    <p className="text-danger small">
+                      {errors[field.name]?.message}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -200,4 +281,3 @@ const fields = [
 };
 
 export default EmployeeRegister;
-

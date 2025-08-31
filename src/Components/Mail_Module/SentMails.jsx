@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Loader from "../Admin/Loader/Loader";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal } from "react-bootstrap";
 import { FaPaperclip } from "react-icons/fa";
 import { BsFileEarmarkPdfFill, BsFileEarmarkImage } from "react-icons/bs";
@@ -18,9 +18,12 @@ const SentMails = () => {
   const fetchSentMails = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/mail/my-mails`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/mail/my-mails`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const all = res.data.data;
       const onlySent = all.filter((mail) => mail.sender?.email === email);
       setSentMails(onlySent);
@@ -56,9 +59,7 @@ const SentMails = () => {
               onClick={() => openModal(mail)}
             >
               <div className="ms-2 me-auto">
-                <div className="fw-bold">
-                  To: {mail.recipients?.join(", ")}
-                </div>
+                <div className="fw-bold">To: {mail.recipients?.join(", ")}</div>
                 <div className="text-dark fw-semibold">{mail.subject}</div>
                 <div className="text-muted small">
                   {mail.message?.slice(0, 80)}...
@@ -90,7 +91,6 @@ const SentMails = () => {
         </div>
       )}
 
-      {/* Preview Modal */}
       <Modal show={!!preview} onHide={closeModal} size="lg" centered>
         <Modal.Header closeButton>
           <Modal.Title>{preview?.subject}</Modal.Title>
@@ -112,7 +112,9 @@ const SentMails = () => {
                 {preview.attachments.map((att, i) => (
                   <li key={i}>
                     <a
-                      href={`${import.meta.env.VITE_API_URL}/mail/download/${att}`}
+                      href={`${
+                        import.meta.env.VITE_API_URL
+                      }/mail/download/${att}`}
                       target="_blank"
                       rel="noreferrer"
                       className="text-decoration-none d-flex align-item-center"

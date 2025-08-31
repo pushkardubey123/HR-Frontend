@@ -1,11 +1,11 @@
-import React, { useState } from "react"; 
+import React, { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Login from "./Login";
 
 const HomeNavbar = () => {
   const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate(); // navigate hook
+  const navigate = useNavigate();
 
   return (
     <>
@@ -18,7 +18,6 @@ const HomeNavbar = () => {
         }}
       >
         <div className="container-fluid d-flex justify-content-between align-items-center">
-          {/* Logo */}
           <a
             className="navbar-brand d-flex align-items-center gap-2"
             href="/"
@@ -31,9 +30,7 @@ const HomeNavbar = () => {
             />
           </a>
 
-          {/* Navbar Buttons */}
           <div className="d-flex align-items-center gap-2">
-            {/* Career Button */}
             <button
               className="btn btn-outline-light px-3 py-1 rounded-pill"
               onClick={() => navigate("/jobs")}
@@ -41,7 +38,6 @@ const HomeNavbar = () => {
               Career
             </button>
 
-            {/* Login Button */}
             <button
               className="btn btn-outline-light d-flex align-items-center gap-2 px-3 py-1 rounded-pill"
               onClick={() => setShowModal(true)}

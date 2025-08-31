@@ -27,7 +27,6 @@ const AdminApplications = () => {
 
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line
   }, []);
 
   const fetchData = async () => {
@@ -47,10 +46,11 @@ const AdminApplications = () => {
 
   const getFileUrl = (filePath) => {
     if (!filePath) return null;
-    return `${API_URL}/static/${filePath.replace(/\\/g, "/").replace("uploads/", "")}`;
+    return `${API_URL}/static/${filePath
+      .replace(/\\/g, "/")
+      .replace("uploads/", "")}`;
   };
 
-  // ---------- View ----------
   const handleView = (app) => {
     const profile = app.profileImage
       ? `<img src="${getFileUrl(app.profileImage)}" class="sa-avatar" />`
@@ -92,7 +92,6 @@ const AdminApplications = () => {
     });
   };
 
-  // ---------- Shortlist ----------
   const handleShortlist = async (id, status) => {
     if (status === "shortlisted" || status === "interview_scheduled") {
       return Swal.fire("Info", "Already shortlisted.", "info");
@@ -106,7 +105,11 @@ const AdminApplications = () => {
     if (!ok.isConfirmed) return;
 
     try {
-      await axios.put(`${API_URL}/api/applications/${id}/shortlist`, {}, headers);
+      await axios.put(
+        `${API_URL}/api/applications/${id}/shortlist`,
+        {},
+        headers
+      );
       Swal.fire("Shortlisted!", "Candidate has been shortlisted.", "success");
       fetchData();
     } catch (err) {
@@ -114,7 +117,6 @@ const AdminApplications = () => {
     }
   };
 
-  // ---------- Reject ----------
   const handleReject = async (id, status) => {
     if (status === "rejected") {
       return Swal.fire("Info", "Already rejected.", "info");
@@ -137,7 +139,6 @@ const AdminApplications = () => {
     }
   };
 
-  // ---------- Filters ----------
   const jobOptions = useMemo(() => {
     const set = new Set();
     allApplications.forEach((a) => a?.jobId?.title && set.add(a.jobId.title));
@@ -166,7 +167,6 @@ const AdminApplications = () => {
     setPage(1);
   }, [q, statusFilter, jobFilter, allApplications]);
 
-  // ---------- Pagination ----------
   const total = applications.length;
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
   const start = (page - 1) * PER_PAGE;
@@ -219,7 +219,10 @@ const AdminApplications = () => {
 
             <div className="select-group">
               <FaFilter />
-              <select value={jobFilter} onChange={(e) => setJobFilter(e.target.value)}>
+              <select
+                value={jobFilter}
+                onChange={(e) => setJobFilter(e.target.value)}
+              >
                 {jobOptions.map((opt) => (
                   <option key={opt} value={opt}>
                     {opt === "all" ? "All Jobs" : opt}
@@ -259,12 +262,15 @@ const AdminApplications = () => {
               </thead>
               <tbody>
                 {current.map((app) => {
-                  const avatarUrl = app.profileImage ? getFileUrl(app.profileImage) : null;
+                  const avatarUrl = app.profileImage
+                    ? getFileUrl(app.profileImage)
+                    : null;
                   const appliedOn = app.createdAt
                     ? new Date(app.createdAt).toLocaleDateString()
                     : "—";
                   const isShortlisted =
-                    app.status === "shortlisted" || app.status === "interview_scheduled";
+                    app.status === "shortlisted" ||
+                    app.status === "interview_scheduled";
                   const isRejected = app.status === "rejected";
 
                   return (
@@ -289,7 +295,11 @@ const AdminApplications = () => {
                       <td>{app.email || "—"}</td>
                       <td>{app.jobId?.title || "—"}</td>
                       <td>{appliedOn}</td>
-                      <td dangerouslySetInnerHTML={{ __html: prettyStatus(app.status) }} />
+                      <td
+                        dangerouslySetInnerHTML={{
+                          __html: prettyStatus(app.status),
+                        }}
+                      />
                       <td className="ta-right">
                         <div className="actions">
                           <button

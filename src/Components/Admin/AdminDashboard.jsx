@@ -112,7 +112,9 @@ const AdminDashboard = () => {
             border: "1px solid rgba(255,255,255,0.3)",
           }}
         >
-          <h4 className="mb-4 fw-bold text-primary">Admin Dashboard Overview</h4>
+          <h4 className="mb-4 fw-bold text-primary">
+            Admin Dashboard Overview
+          </h4>
 
           {loading ? (
             <div className="text-center py-5">
@@ -132,8 +134,12 @@ const AdminDashboard = () => {
                       transition: "transform 0.2s ease-in-out",
                       cursor: "pointer",
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.transform = "scale(1.03)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.transform = "scale(1)")
+                    }
                   >
                     <Card.Body className="d-flex flex-column align-items-start justify-content-between p-4">
                       <div className="d-flex align-items-center gap-3 mb-3">
@@ -148,7 +154,9 @@ const AdminDashboard = () => {
                         >
                           {card.icon}
                         </div>
-                        <h6 className="text-secondary fw-semibold mb-0">{card.label}</h6>
+                        <h6 className="text-secondary fw-semibold mb-0">
+                          {card.label}
+                        </h6>
                       </div>
                       <h3 className="fw-bold text-dark mb-0">{card.value}</h3>
                     </Card.Body>

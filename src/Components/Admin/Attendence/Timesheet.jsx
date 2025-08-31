@@ -28,25 +28,27 @@ const Timesheet = () => {
     }
   };
 
- const fetchTimesheets = async () => {
-  try {
-    let query = `?`;
-    if (startDate) query += `startDate=${startDate}&`;
-    if (endDate) query += `endDate=${endDate}&`;
-    if (selectedEmployee !== "all") query += `employee=${selectedEmployee}`;
+  const fetchTimesheets = async () => {
+    try {
+      let query = `?`;
+      if (startDate) query += `startDate=${startDate}&`;
+      if (endDate) query += `endDate=${endDate}&`;
+      if (selectedEmployee !== "all") query += `employee=${selectedEmployee}`;
 
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/timesheet/all${query}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/timesheet/all${query}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-    if (res.data.success) {
-      setTimesheets(res.data.data);
+      if (res.data.success) {
+        setTimesheets(res.data.data);
+      }
+    } catch (err) {
+      console.log("Error fetching timesheets:", err);
     }
-  } catch (err) {
-    console.log("Error fetching timesheets:", err);
-  }
-};
-
+  };
 
   useEffect(() => {
     fetchEmployees();
@@ -57,9 +59,10 @@ const Timesheet = () => {
     fetchTimesheets();
   }, [startDate, endDate, selectedEmployee]);
 
-  const filtered = timesheets.filter((item) =>
-    item?.employee?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item?.employee?.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filtered = timesheets.filter(
+    (item) =>
+      item?.employee?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item?.employee?.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const exportCSV = () => {
@@ -144,11 +147,17 @@ const Timesheet = () => {
           </div>
 
           <div className="d-flex gap-2">
-            <button className="btn btn-primary d-flex text-align-center" onClick={exportCSV}>
+            <button
+              className="btn btn-primary d-flex text-align-center"
+              onClick={exportCSV}
+            >
               <FaFileCsv className="me-2" />
               Export CSV
             </button>
-            <button className="btn btn-success d-flex text-align-center" onClick={exportPDF}>
+            <button
+              className="btn btn-success d-flex text-align-center"
+              onClick={exportPDF}
+            >
               <FaDownload className="me-2" />
               Export PDF
             </button>

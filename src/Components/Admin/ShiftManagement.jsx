@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import AdminLayout from "./AdminLayout";
 import { FaBusinessTime } from "react-icons/fa";
-import Loader from "./Loader/Loader"; // Your reusable dot loader
+import Loader from "./Loader/Loader";
 
 const schema = yup.object().shape({
   name: yup.string().required("Shift name is required"),
@@ -39,7 +39,7 @@ const ShiftManagement = () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`);
       if (res.data.success) setShifts(res.data.data);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -73,7 +73,11 @@ const ShiftManagement = () => {
       reset();
       setEditId(null);
     } catch (err) {
-      Swal.fire("Error", err.response?.data?.message || "Something went wrong", "error");
+      Swal.fire(
+        "Error",
+        err.response?.data?.message || "Something went wrong",
+        "error"
+      );
     }
   };
 
@@ -95,7 +99,10 @@ const ShiftManagement = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/shifts/${id}`, getTokenHeader());
+        await axios.delete(
+          `${import.meta.env.VITE_API_URL}/api/shifts/${id}`,
+          getTokenHeader()
+        );
         Swal.fire("Deleted!", "Shift deleted successfully", "success");
         fetchShifts();
       } catch (err) {
@@ -130,10 +137,13 @@ const ShiftManagement = () => {
                   <Form.Control
                     type="time"
                     {...register("startTime")}
-                    className="mb-2" placeholder="Start Time"
+                    className="mb-2"
+                    placeholder="Start Time"
                   />
                   {errors.startTime && (
-                    <small className="text-danger">{errors.startTime.message}</small>
+                    <small className="text-danger">
+                      {errors.startTime.message}
+                    </small>
                   )}
                 </div>
                 <div className="col-md-3">
@@ -143,7 +153,9 @@ const ShiftManagement = () => {
                     className="mb-2"
                   />
                   {errors.endTime && (
-                    <small className="text-danger">{errors.endTime.message}</small>
+                    <small className="text-danger">
+                      {errors.endTime.message}
+                    </small>
                   )}
                 </div>
                 <div className="col-md-2 d-grid">
@@ -152,7 +164,7 @@ const ShiftManagement = () => {
                   </Button>
                 </div>
               </div>
-                          <hr/>
+              <hr />
             </form>
             {/* 🔄 Table Section */}
             {loading ? (
@@ -163,7 +175,12 @@ const ShiftManagement = () => {
               <p className="text-center text-muted fs-5">No shifts available</p>
             ) : (
               <div className="table-responsive">
-                <Table bordered hover responsive className="align-middle text-center shadow-sm">
+                <Table
+                  bordered
+                  hover
+                  responsive
+                  className="align-middle text-center shadow-sm"
+                >
                   <thead className="table-primary">
                     <tr>
                       <th>S No.</th>

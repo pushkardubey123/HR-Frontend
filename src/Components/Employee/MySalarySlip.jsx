@@ -27,7 +27,7 @@ const MySalarySlips = () => {
         );
         setPayrolls(data);
       } catch (error) {
-      Swal.fire("Error", "Failed to fetch leaves",error.message);
+        Swal.fire("Error", "Failed to fetch leaves", error.message);
       }
     };
     fetchPayrolls();

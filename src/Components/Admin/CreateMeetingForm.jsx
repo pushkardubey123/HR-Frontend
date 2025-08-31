@@ -21,7 +21,7 @@ const schema = yup.object().shape({
 
 const CreateMeetingForm = () => {
   const [users, setUsers] = useState([]);
-  const navigate= useNavigate()
+  const navigate = useNavigate();
 
   const {
     register,
@@ -78,8 +78,7 @@ const CreateMeetingForm = () => {
       if (res.data.success) {
         Swal.fire("Success", "Meeting created successfully", "success");
         reset();
-        navigate("/admin/meeting-calender")
-
+        navigate("/admin/meeting-calender");
       } else {
         Swal.fire("Error", res.data.message || "Something went wrong", "error");
       }
@@ -89,85 +88,99 @@ const CreateMeetingForm = () => {
     }
   };
 
-return (
-  <AdminLayout>
-    <div className="meeting-container">
-      <div className="meeting-header pb-5"><MdMeetingRoom className="me-1"/> Schedule Meeting</div>
-      <form onSubmit={handleSubmit(onSubmit)} className="meeting-section">
-        <label>Meeting Title</label>
-        <div>
-          <input {...register("title")} className="form-input" placeholder="Enter title" />
-          <p className="error">{errors.title?.message}</p>
+  return (
+    <AdminLayout>
+      <div className="meeting-container">
+        <div className="meeting-header pb-5">
+          <MdMeetingRoom className="me-1" /> Schedule Meeting
         </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="meeting-section">
+          <label>Meeting Title</label>
+          <div>
+            <input
+              {...register("title")}
+              className="form-input"
+              placeholder="Enter title"
+            />
+            <p className="error">{errors.title?.message}</p>
+          </div>
 
-        <label>Description</label>
-        <div>
-          <textarea
-            {...register("description")}
-            className="form-input"
-            rows={3}
-            placeholder="Meeting description"
-          />
-          <p className="error">{errors.description?.message}</p>
-        </div>
+          <label>Description</label>
+          <div>
+            <textarea
+              {...register("description")}
+              className="form-input"
+              rows={3}
+              placeholder="Meeting description"
+            />
+            <p className="error">{errors.description?.message}</p>
+          </div>
 
-        <label>Date</label>
-        <div>
-          <input type="date" {...register("date")} className="form-input" />
-          <p className="error">{errors.date?.message}</p>
-        </div>
+          <label>Date</label>
+          <div>
+            <input type="date" {...register("date")} className="form-input" />
+            <p className="error">{errors.date?.message}</p>
+          </div>
 
-        <label>Start Time</label>
-        <div>
-          <input type="time" {...register("startTime")} className="form-input" />
-          <p className="error">{errors.startTime?.message}</p>
-        </div>
+          <label>Start Time</label>
+          <div>
+            <input
+              type="time"
+              {...register("startTime")}
+              className="form-input"
+            />
+            <p className="error">{errors.startTime?.message}</p>
+          </div>
 
-        <label>End Time</label>
-        <div>
-          <input type="time" {...register("endTime")} className="form-input" />
-          <p className="error">{errors.endTime?.message}</p>
-        </div>
+          <label>End Time</label>
+          <div>
+            <input
+              type="time"
+              {...register("endTime")}
+              className="form-input"
+            />
+            <p className="error">{errors.endTime?.message}</p>
+          </div>
 
-        <label>Participants</label>
-        <div>
-          <Controller
-            name="participants"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                isMulti
-                options={users}
-                className="select-wrapper"
-                classNamePrefix="select"
-                placeholder="Select participants"
-              />
-            )}
-          />
-          <p className="error">{errors.participants?.message}</p>
-        </div>
+          <label>Participants</label>
+          <div>
+            <Controller
+              name="participants"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  isMulti
+                  options={users}
+                  className="select-wrapper"
+                  classNamePrefix="select"
+                  placeholder="Select participants"
+                />
+              )}
+            />
+            <p className="error">{errors.participants?.message}</p>
+          </div>
 
-        <div></div>
-        <div className="checkboxes">
-          <label>
-            <input type="checkbox" {...register("sendEmail")} />
-            Send Email Notification
-          </label>
-          <label>
-            <input type="checkbox" {...register("sendReminder")} />
-            Send Reminder
-          </label>
-        </div>
+          <div></div>
+          <div className="checkboxes">
+            <label>
+              <input type="checkbox" {...register("sendEmail")} />
+              Send Email Notification
+            </label>
+            <label>
+              <input type="checkbox" {...register("sendReminder")} />
+              Send Reminder
+            </label>
+          </div>
 
-        <div></div>
-        <button type="submit" className="submit-btn">Create Meeting</button>
-      </form>
-    </div>
-  </AdminLayout>
-);
-
-
+          <div></div>
+          <button type="submit" className="submit-btn">
+            Create Meeting
+          </button>
+        </form>
+      </div>
+    </AdminLayout>
+  );
 };
 
 export default CreateMeetingForm;

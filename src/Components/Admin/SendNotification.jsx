@@ -8,7 +8,12 @@ const templates = {
   "New Announcement": {
     message:
       "{announcement_title} announcement created for branch {branch_name} from {start_date} to {end_date}",
-    placeholders: ["announcement_title", "branch_name", "start_date", "end_date"],
+    placeholders: [
+      "announcement_title",
+      "branch_name",
+      "start_date",
+      "end_date",
+    ],
   },
   "New Meeting": {
     message:
@@ -129,7 +134,9 @@ const SendNotification = () => {
           <div className="card-body p-4">
             <form onSubmit={handleSend} encType="multipart/form-data">
               <div className="mb-3">
-                <label className="form-label fw-semibold">Select Template</label>
+                <label className="form-label fw-semibold">
+                  Select Template
+                </label>
                 <select
                   className="form-select rounded-3"
                   value={template}
@@ -154,13 +161,17 @@ const SendNotification = () => {
                     className="form-control rounded-3"
                     placeholder={`Enter ${ph}`}
                     value={templateValues[ph] || ""}
-                    onChange={(e) => handlePlaceholderChange(ph, e.target.value)}
+                    onChange={(e) =>
+                      handlePlaceholderChange(ph, e.target.value)
+                    }
                   />
                 </div>
               ))}
 
               <div className="mb-3">
-                <label className="form-label fw-semibold">Notification Title</label>
+                <label className="form-label fw-semibold">
+                  Notification Title
+                </label>
                 <input
                   type="text"
                   className="form-control rounded-3"
@@ -234,7 +245,10 @@ const SendNotification = () => {
               </div>
 
               <div className="text-end mt-4">
-                <button type="submit" className="btn btn-success px-4 py-2 rounded-3 fw-semibold d-flex text-align-center">
+                <button
+                  type="submit"
+                  className="btn btn-success px-4 py-2 rounded-3 fw-semibold d-flex text-align-center"
+                >
                   <FaPaperPlane className="me-2" />
                   Send Notification
                 </button>

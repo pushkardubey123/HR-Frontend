@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { FaTrash, FaEye, FaBell } from "react-icons/fa";
@@ -20,7 +20,7 @@ const NotificationHistory = () => {
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/notifications/all`,
         {
-          headers: { Authorization: `Bearer ${token}`},
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setNotifications(res.data || []);
@@ -68,7 +68,9 @@ const NotificationHistory = () => {
 
   const handlePreview = (notif) => {
     const imgTag = notif.image
-      ? `<img src="${getImageUrl(notif.image)}" alt="image" style="max-width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; margin: auto" />`
+      ? `<img src="${getImageUrl(
+          notif.image
+        )}" alt="image" style="max-width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; margin: auto" />`
       : "";
     Swal.fire({
       title: notif.title,
@@ -99,7 +101,7 @@ const NotificationHistory = () => {
           </div>
           <div className="card-body table-responsive">
             {loading ? (
-              <Loader /> // ✅ Show loader while loading
+              <Loader />
             ) : Array.isArray(notifications) && notifications.length > 0 ? (
               <table className="table table-bordered table-hover align-middle">
                 <thead className="table-dark">
@@ -171,4 +173,3 @@ const NotificationHistory = () => {
 };
 
 export default NotificationHistory;
- 

@@ -3,7 +3,13 @@ import { Modal, Button, Table, Form, Badge } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { FaUserTag, FaTrash, FaClock, FaCommentDots, FaComments } from "react-icons/fa";
+import {
+  FaUserTag,
+  FaTrash,
+  FaClock,
+  FaCommentDots,
+  FaComments,
+} from "react-icons/fa";
 
 const TaskModal = ({ show, handleClose, project }) => {
   const [tasks, setTasks] = useState([]);
@@ -76,7 +82,8 @@ const TaskModal = ({ show, handleClose, project }) => {
       const assignedToIds = selectedEmployees.map((emp) => emp._id);
       await axiosInstance.post(`/api/projects/${project._id}/tasks`, {
         ...data,
-        assignedTo: assignedToIds.length === 1 ? assignedToIds[0] : assignedToIds,
+        assignedTo:
+          assignedToIds.length === 1 ? assignedToIds[0] : assignedToIds,
       });
       Swal.fire("Success", "Task added", "success");
       reset();
@@ -90,7 +97,10 @@ const TaskModal = ({ show, handleClose, project }) => {
 
   const handleStatusChange = async (taskId, status) => {
     try {
-      await axiosInstance.put(`/api/projects/${project._id}/tasks/${taskId}/status`, { status });
+      await axiosInstance.put(
+        `/api/projects/${project._id}/tasks/${taskId}/status`,
+        { status }
+      );
       fetchTasks();
     } catch {
       Swal.fire("Error", "Failed to update status", "error");
@@ -105,7 +115,9 @@ const TaskModal = ({ show, handleClose, project }) => {
     });
     if (confirm.isConfirmed) {
       try {
-        await axiosInstance.delete(`/api/projects/${project._id}/tasks/${taskId}`);
+        await axiosInstance.delete(
+          `/api/projects/${project._id}/tasks/${taskId}`
+        );
         Swal.fire("Deleted", "Task removed", "success");
         fetchTasks();
       } catch {
@@ -118,10 +130,13 @@ const TaskModal = ({ show, handleClose, project }) => {
     const commentText = commentMap[taskId];
     if (!commentText) return;
     try {
-      await axiosInstance.post(`/api/projects/${project._id}/tasks/${taskId}/comments`, {
-        commentText,
-        commentedBy: userId,
-      });
+      await axiosInstance.post(
+        `/api/projects/${project._id}/tasks/${taskId}/comments`,
+        {
+          commentText,
+          commentedBy: userId,
+        }
+      );
       setCommentMap((prev) => ({ ...prev, [taskId]: "" }));
       fetchTasks();
     } catch {
@@ -133,10 +148,13 @@ const TaskModal = ({ show, handleClose, project }) => {
     const hours = logMap[taskId];
     if (!hours) return;
     try {
-      await axiosInstance.post(`/api/projects/${project._id}/tasks/${taskId}/timelogs`, {
-        employeeId: userId,
-        hours,
-      });
+      await axiosInstance.post(
+        `/api/projects/${project._id}/tasks/${taskId}/timelogs`,
+        {
+          employeeId: userId,
+          hours,
+        }
+      );
       setLogMap((prev) => ({ ...prev, [taskId]: "" }));
       fetchTasks();
     } catch {
@@ -205,11 +223,12 @@ const TaskModal = ({ show, handleClose, project }) => {
                 ))}
               </Form.Select>
             </Form.Group>
-            <Button type="submit" variant="primary">Save Task</Button>
+            <Button type="submit" variant="primary">
+              Save Task
+            </Button>
           </Form>
         )}
 
-        {/* ✅ Stylish Task Table */}
         <Table bordered hover responsive size="sm" className="text-center">
           <thead className="table-dark">
             <tr>
@@ -223,7 +242,9 @@ const TaskModal = ({ show, handleClose, project }) => {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6}>Loading...</td></tr>
+              <tr>
+                <td colSpan={6}>Loading...</td>
+              </tr>
             ) : (
               tasks.map((t, i) => (
                 <React.Fragment key={t._id}>
@@ -231,50 +252,89 @@ const TaskModal = ({ show, handleClose, project }) => {
                     <td>{i + 1}</td>
                     <td>{t.title}</td>
                     <td>
-                      <Badge bg={
-                        t.status === "completed" ? "success" :
-                        t.status === "in-progress" ? "warning" : "secondary"
-                      }>
+                      <Badge
+                        bg={
+                          t.status === "completed"
+                            ? "success"
+                            : t.status === "in-progress"
+                            ? "warning"
+                            : "secondary"
+                        }
+                      >
                         {t.status}
                       </Badge>
                     </td>
                     <td>{t.dueDate?.substring(0, 10)}</td>
                     <td>
-                      {Array.isArray(t.assignedTo)
-                        ? t.assignedTo.map((emp, idx) => (
-                            <Badge key={idx} bg="light" text="dark" className="me-1">
-                              <strong className="d-inline-flex align-items-center gap-1"><FaUserTag />
+                      {Array.isArray(t.assignedTo) ? (
+                        t.assignedTo.map((emp, idx) => (
+                          <Badge
+                            key={idx}
+                            bg="light"
+                            text="dark"
+                            className="me-1"
+                          >
+                            <strong className="d-inline-flex align-items-center gap-1">
+                              <FaUserTag />
                               {emp?.name || "Unknown"}
-</strong>
-                            </Badge>
-                          ))
-                        : <Badge bg="light" text="dark"><FaUserTag className="me-1" />{t.assignedTo?.name || "Unknown"}</Badge>}
+                            </strong>
+                          </Badge>
+                        ))
+                      ) : (
+                        <Badge bg="light" text="dark">
+                          <FaUserTag className="me-1" />
+                          {t.assignedTo?.name || "Unknown"}
+                        </Badge>
+                      )}
                     </td>
                     <td>
                       <div className="d-flex flex-wrap justify-content-center gap-2">
-                        <Button size="sm" variant="outline-secondary" onClick={() => {
-                          document.getElementById(`comments-${t._id}`)?.classList.toggle("d-none");
-                        }}>
+                        <Button
+                          size="sm"
+                          variant="outline-secondary"
+                          onClick={() => {
+                            document
+                              .getElementById(`comments-${t._id}`)
+                              ?.classList.toggle("d-none");
+                          }}
+                        >
                           <strong className="d-inline-flex align-items-center gap-1">
                             Comments <FaComments />
                           </strong>
                         </Button>
-                        <Button size="sm" variant="outline-secondary" onClick={() => {
-                          document.getElementById(`timelogs-${t._id}`)?.classList.toggle("d-none");
-                        }}>
+                        <Button
+                          size="sm"
+                          variant="outline-secondary"
+                          onClick={() => {
+                            document
+                              .getElementById(`timelogs-${t._id}`)
+                              ?.classList.toggle("d-none");
+                          }}
+                        >
                           <strong className="d-inline-flex align-items-center gap-1">
                             Time Logs <FaClock />
                           </strong>
                         </Button>
                         {role === "admin" && (
-                          <Button size="sm" variant="danger" onClick={() => handleDeleteTask(t._id)}>
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            onClick={() => handleDeleteTask(t._id)}
+                          >
                             Delete
                           </Button>
                         )}
                         {role === "employee" &&
-                          ((Array.isArray(t.assignedTo) && t.assignedTo.some(emp => emp._id === userId)) ||
+                          ((Array.isArray(t.assignedTo) &&
+                            t.assignedTo.some((emp) => emp._id === userId)) ||
                             t.assignedTo === userId) && (
-                            <Form.Select size="sm" defaultValue={t.status} onChange={(e) => handleStatusChange(t._id, e.target.value)}>
+                            <Form.Select
+                              size="sm"
+                              defaultValue={t.status}
+                              onChange={(e) =>
+                                handleStatusChange(t._id, e.target.value)
+                              }
+                            >
                               <option value="pending">Pending</option>
                               <option value="in-progress">In Progress</option>
                               <option value="completed">Completed</option>
@@ -284,7 +344,6 @@ const TaskModal = ({ show, handleClose, project }) => {
                     </td>
                   </tr>
 
-                  {/* Comment & TimeLog Sections */}
                   <tr id={`comments-${t._id}`} className="d-none">
                     <td colSpan={6}>
                       <Form className="d-flex gap-2 mb-2">
@@ -292,17 +351,34 @@ const TaskModal = ({ show, handleClose, project }) => {
                           size="sm"
                           placeholder="Add comment"
                           value={commentMap[t._id] || ""}
-                          onChange={(e) => setCommentMap({ ...commentMap, [t._id]: e.target.value })}
+                          onChange={(e) =>
+                            setCommentMap({
+                              ...commentMap,
+                              [t._id]: e.target.value,
+                            })
+                          }
                         />
-                        <Button size="sm" onClick={() => handleAddComment(t._id)}>Post</Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleAddComment(t._id)}
+                        >
+                          Post
+                        </Button>
                       </Form>
                       {t.comments?.length > 0 ? (
                         <ul className="ps-3">
                           {t.comments.map((c, idx) => (
-                            <li key={idx}><strong>{c.commentedBy?.name || "Unknown"}:</strong> {c.commentText}</li>
+                            <li key={idx}>
+                              <strong>
+                                {c.commentedBy?.name || "Unknown"}:
+                              </strong>{" "}
+                              {c.commentText}
+                            </li>
                           ))}
                         </ul>
-                      ) : <p className="text-muted">No comments yet</p>}
+                      ) : (
+                        <p className="text-muted">No comments yet</p>
+                      )}
                     </td>
                   </tr>
 
@@ -314,19 +390,30 @@ const TaskModal = ({ show, handleClose, project }) => {
                           size="sm"
                           placeholder="Hours"
                           value={logMap[t._id] || ""}
-                          onChange={(e) => setLogMap({ ...logMap, [t._id]: e.target.value })}
+                          onChange={(e) =>
+                            setLogMap({ ...logMap, [t._id]: e.target.value })
+                          }
                         />
-                        <Button size="sm" onClick={() => handleAddTimeLog(t._id)}>Log</Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleAddTimeLog(t._id)}
+                        >
+                          Log
+                        </Button>
                       </Form>
                       {t.timeLogs?.length > 0 ? (
                         <ul className="ps-3">
                           {t.timeLogs.map((log, idx) => (
                             <li key={idx}>
-                              {log.employeeId?.name || "Unknown"} — {log.hours} hrs on {new Date(log.logDate).toLocaleDateString()}
+                              {log.employeeId?.name || "Unknown"} — {log.hours}{" "}
+                              hrs on{" "}
+                              {new Date(log.logDate).toLocaleDateString()}
                             </li>
                           ))}
                         </ul>
-                      ) : <p className="text-muted">No time logs yet</p>}
+                      ) : (
+                        <p className="text-muted">No time logs yet</p>
+                      )}
                     </td>
                   </tr>
                 </React.Fragment>
@@ -336,7 +423,9 @@ const TaskModal = ({ show, handleClose, project }) => {
         </Table>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>Close</Button>
+        <Button variant="secondary" onClick={handleClose}>
+          Close
+        </Button>
       </Modal.Footer>
     </Modal>
   );

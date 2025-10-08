@@ -40,7 +40,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
 
     try {
       setLoading(true);
-      const res = await axios.post("https://hr-backend-m6c4.onrender.com/user/login", data);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/login`, data);
 
       if (res.data.success) {
         const actualRole = res.data.data.role;

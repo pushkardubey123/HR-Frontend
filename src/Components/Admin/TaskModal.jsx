@@ -234,6 +234,7 @@ const TaskModal = ({ show, handleClose, project }) => {
             <tr>
               <th>#</th>
               <th>Title</th>
+              <th>Description</th>
               <th>Status</th>
               <th>Due Date</th>
               <th>Assigned Employees</th>
@@ -251,6 +252,7 @@ const TaskModal = ({ show, handleClose, project }) => {
                   <tr>
                     <td>{i + 1}</td>
                     <td>{t.title}</td>
+                    <td>{t.description}</td>
                     <td>
                       <Badge
                         bg={

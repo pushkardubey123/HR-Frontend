@@ -46,6 +46,7 @@ const SendNotification = () => {
   const [templateValues, setTemplateValues] = useState({});
 
   const token = JSON.parse(localStorage.getItem("user"))?.token;
+  console.log(token)
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -76,10 +77,16 @@ const SendNotification = () => {
     if (image) formData.append("image", image);
 
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/notifications/send`,
-        formData
-      );
+const res = await axios.post(
+  `${import.meta.env.VITE_API_URL}/api/notifications/send`,
+  formData,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
       Swal.fire("Success", res.data.message, "success");
       setTitle("");
       setMessage("");

@@ -5,7 +5,7 @@ import {
   rejectUser,
 } from "../Redux/Slices/pendingUserSlice";
 import Swal from "sweetalert2";
-import { Container, Card, Table, Button, Modal, Form } from "react-bootstrap";
+import { Container, Card, Table, Button } from "react-bootstrap";
 import {
   FaUserClock,
   FaCheckCircle,
@@ -22,58 +22,66 @@ const AdminApproveEmployees = () => {
     (state) => state.pendingUsers
   );
 
-  const [showModal, setShowModal] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [basicSalary, setBasicSalary] = useState("");
-
   const token = JSON.parse(localStorage.getItem("user"))?.token;
 
   useEffect(() => {
     dispatch(fetchPendingUsers());
   }, [dispatch]);
 
-  const handleApproveClick = (userId) => {
-    setSelectedUserId(userId);
-    setShowModal(true);
-  };
-
-  const handleApproveConfirm = async () => {
-    if (!basicSalary) {
-      Swal.fire("Error", "Please enter basic salary", "error");
-      return;
-    }
-
-    try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/user/approve-user/${selectedUserId}`,
-        { basicSalary },
-        {
-          headers: { Authorization: `Bearer ${token}` },
+  // ✅ Approve user with SweetAlert salary input
+  const handleApproveClick = async (userId) => {
+    const { value: basicSalary } = await Swal.fire({
+      title: "Enter Basic Salary",
+      input: "number",
+      inputPlaceholder: "Enter amount in ₹",
+      showCancelButton: true,
+      confirmButtonText: "Approve",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      inputValidator: (value) => {
+        if (!value) {
+          return "Please enter a valid salary!";
         }
-      );
-      Swal.fire("Approved!", "User approved with basic salary", "success");
-      setShowModal(false);
-      setBasicSalary("");
-      dispatch(fetchPendingUsers());
-    } catch (err) {
-      Swal.fire("Error", "Failed to approve user", "error");
+      },
+    });
+
+    if (basicSalary) {
+      try {
+        await axios.post(
+          `${import.meta.env.VITE_API_URL}/user/approve-user/${userId}`,
+          { basicSalary },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        Swal.fire("✅ Approved!", "User approved successfully", "success");
+        dispatch(fetchPendingUsers());
+      } catch (err) {
+        Swal.fire("❌ Error", "Failed to approve user", "error");
+      }
     }
   };
 
+  // ✅ Reject user SweetAlert confirm
   const handleReject = async (id) => {
     const confirm = await Swal.fire({
-      title: "Reject User?",
-      text: "This will remove the pending request.",
+      title: "Reject this user?",
+      text: "This will remove their pending registration.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Reject",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
     });
+
     if (confirm.isConfirmed) {
       await dispatch(rejectUser(id));
-      Swal.fire("Rejected!", "Request has been removed.", "success");
+      Swal.fire("Rejected!", "The registration request has been removed.", "success");
     }
   };
 
+  // ✅ View details in SweetAlert modal
   const handleViewDetails = (emp) => {
     const profileUrl = emp.profilePic
       ? `${import.meta.env.VITE_API_URL}/static/${emp.profilePic}`
@@ -92,19 +100,11 @@ const AdminApproveEmployees = () => {
             <tr><td><b>Email</b></td><td>${emp.email}</td></tr>
             <tr><td><b>Phone</b></td><td>${emp.phone || "N/A"}</td></tr>
             <tr><td><b>Gender</b></td><td>${emp.gender || "N/A"}</td></tr>
-            <tr><td><b>Date of Birth</b></td><td>${
-              emp.dob?.substring(0, 10) || "N/A"
-            }</td></tr>
-            <tr><td><b>Department</b></td><td>${
-              emp.departmentId?.name || "N/A"
-            }</td></tr>
-            <tr><td><b>Designation</b></td><td>${
-              emp.designationId?.name || "N/A"
-            }</td></tr>
+            <tr><td><b>Date of Birth</b></td><td>${emp.dob?.substring(0, 10) || "N/A"}</td></tr>
+            <tr><td><b>Department</b></td><td>${emp.departmentId?.name || "N/A"}</td></tr>
+            <tr><td><b>Designation</b></td><td>${emp.designationId?.name || "N/A"}</td></tr>
             <tr><td><b>Shift</b></td><td>${emp.shiftId?.name || "N/A"}</td></tr>
-            <tr><td><b>Joining Date</b></td><td>${
-              emp.doj?.substring(0, 10) || "N/A"
-            }</td></tr>
+            <tr><td><b>Joining Date</b></td><td>${emp.doj?.substring(0, 10) || "N/A"}</td></tr>
             <tr><td><b>Address</b></td><td>${emp.address || "N/A"}</td></tr>
             <tr><td><b>Emergency Contact</b></td>
                 <td>${emp.emergencyContact?.name || "-"} (${
@@ -116,6 +116,7 @@ const AdminApproveEmployees = () => {
       width: "700px",
       showCloseButton: true,
       confirmButtonText: "Close",
+      confirmButtonColor: "#3085d6",
     });
   };
 
@@ -139,11 +140,7 @@ const AdminApproveEmployees = () => {
               </p>
             ) : (
               <div className="table-responsive">
-                <Table
-                  bordered
-                  hover
-                  className="text-center align-middle shadow-sm"
-                >
+                <Table bordered hover className="text-center align-middle shadow-sm">
                   <thead className="table-primary">
                     <tr>
                       <th>#</th>
@@ -197,31 +194,6 @@ const AdminApproveEmployees = () => {
           </Card.Body>
         </Card>
       </Container>
-
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Enter Basic Salary</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group>
-            <Form.Label>Basic Salary (₹)</Form.Label>
-            <Form.Control
-              type="number"
-              value={basicSalary}
-              onChange={(e) => setBasicSalary(e.target.value)}
-              placeholder="Enter basic salary"
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleApproveConfirm}>
-            Approve
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </AdminLayout>
   );
 };

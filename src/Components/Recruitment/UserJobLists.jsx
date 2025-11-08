@@ -65,6 +65,11 @@ const UserJobLists = () => {
                     <FaBriefcase className="text-yellow-400" />
                     {job.title}
                   </div>
+                  {job.companyId && (
+                    <p className="text-gray-600 text-sm mt-1">
+                      <strong>Company:</strong> {job.companyId.name || "N/A"}
+                    </p>
+                  )}
 
                   <div className="flex items-center gap-2 text-gray-600 mb-2">
                     <FaCalendarAlt className="text-green-400" />

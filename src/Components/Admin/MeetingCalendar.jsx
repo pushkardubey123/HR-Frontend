@@ -21,7 +21,8 @@ const MeetingCalendar = () => {
   const fetchMeetings = async () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/meeting/all`, headers);
-      setMeetings(res.data);
+      console.log(res)
+      setMeetings(res.data.data);
     } catch (err) {
       console.error("Fetch error", err);
     }

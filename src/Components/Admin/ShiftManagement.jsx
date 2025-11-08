@@ -34,15 +34,17 @@ const ShiftManagement = () => {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  const fetchShifts = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`);
-      if (res.data.success) setShifts(res.data.data);
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchShifts = async () => {
+  setLoading(true);
+  try {
+    const config = token ? getTokenHeader() : {};
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/shifts`, config);
+    if (res.data.success) setShifts(res.data.data);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchShifts();

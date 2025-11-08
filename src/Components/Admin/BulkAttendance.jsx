@@ -27,25 +27,26 @@ const BulkAttendancePanel = () => {
     };
     fetchEmployees();
   }, []);
+const handleSubmit = async () => {
+  if (!selectedDate || selectedEmployees.length === 0) {
+    return Swal.fire("Error", "Select date and at least one employee", "error");
+  }
 
-  const handleSubmit = async () => {
-    if (!selectedDate || selectedEmployees.length === 0) {
-      return Swal.fire("Error", "Select date and at least one employee", "error");
-    }
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/attendance/bulk`,
+      { employeeIds: selectedEmployees, date: selectedDate },
+      { headers: { Authorization: `Bearer ${user.token}` } }
+    );
 
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/attendance/bulk`,
-        { employeeIds: selectedEmployees, date: selectedDate },
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
-      Swal.fire("✅ Success", res.data.message, "success");
-      setMarkedEmployees(res.data.data);
-      clg
-    } catch (err) {
-      Swal.fire("Error", err.response?.data?.message || "Something went wrong", "error");
-    }
-  };
+    Swal.fire("✅ Success", res.data.message, "success");
+    setMarkedEmployees(res.data.data);
+    console.log("📦 Bulk mark success:", res.data);
+  } catch (err) {
+    console.error("Bulk mark error:", err.response?.data || err);
+    Swal.fire("Error", err.response?.data?.message || "Something went wrong", "error");
+  }
+};
 
   const applyFilter = async () => {
     try {

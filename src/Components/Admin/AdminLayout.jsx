@@ -41,6 +41,7 @@ const AdminLayout = ({ children }) => {
 
   const navItems = [
     { name: "Dashboard", to: "/admin/dashboard", icon: <BiSolidDashboard /> },
+    { name: "My Profile", to: "/admin/profile", icon: <FaAddressCard /> },
     {
       name: "Reports",
       icon: <FaRegHandPointRight />,
@@ -133,6 +134,7 @@ const AdminLayout = ({ children }) => {
       to: "/admin/employee-exit-lists",
       icon: <BiExit />,
     },
+
   ];
   useEffect(() => {
     const handleResize = () => {

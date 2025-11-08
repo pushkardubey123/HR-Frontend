@@ -59,6 +59,8 @@ const CreateJob = () => {
     },
   });
 
+const token = JSON.parse(localStorage.getItem("user"))?.token;
+
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/api/departments`).then((res) =>
       setDepartments(res.data.data || [])
@@ -87,7 +89,14 @@ const CreateJob = () => {
         ? data.skills.split(",").map((s) => s.trim())
         : [];
 
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/jobs`, body);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/jobs`, body,
+        {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+      );
+
 
       Swal.fire("Success", "Job created successfully!", "success");
       reset();

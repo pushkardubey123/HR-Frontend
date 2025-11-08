@@ -15,16 +15,17 @@ const CalendarPage = () => {
     fetchEvents();
   }, []);
 
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
+  const getHeaders = () => ({ headers: { Authorization: `Bearer ${token}` } });
+
   const fetchEvents = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/events`);
-      setEvents(res.data);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/events`,getHeaders());
+      setEvents(res.data.data);
     } catch (err) {
       console.error(err);
     }
   };
-  const token = JSON.parse(localStorage.getItem("user"))?.token;
-  const getHeaders = () => ({ headers: { Authorization: `Bearer ${token}` } });
 
   const handleAddEvent = async () => {
     try {

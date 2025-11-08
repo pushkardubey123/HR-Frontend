@@ -62,6 +62,10 @@ import ApplyJob from "./Components/Recruitment/ApplyJob";
 import UserJobLists from "./Components/Recruitment/UserJobLists"
 import AdminApplications from "./Components/Recruitment/AdminApplications";
 import InterviewCalendar from "./Components/Recruitment/InterviewCalendar";
+import AdminRegister from "./Components/Common/AdminRegister";
+import SuperAdminDashboard from "./Components/SuperAdmin/SuperAdminDashboard";
+import AdminSubscription from "./Components/Admin/AdminSubscription";
+import AdminProfile from "./Components/Admin/AdminProfile";
 
 function App() {
   return (
@@ -75,6 +79,11 @@ function App() {
   <Route path="sent" element={<SentMails />} />
   <Route path="trash" element={<Trash/>} />
 </Route>
+<Route path="/admin/subscription" element={<AdminSubscription />} />
+<Route path="/admin/profile" element={<AdminProfile />} />
+
+          <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
+          <Route path="/superadmin/approve-pending-admin" element={<SuperAdminDashboard />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/pending-employee" element={<AdminApproveEmployees/>}/>
           <Route path="admin/leave-report" element={<LeaveReport/>}/>
@@ -148,7 +157,8 @@ function App() {
           <Route path="/employee/exit-request" element={<EmployeeExit/>} />
           <Route path="/employee/notification" element={<EmployeeNotifications/>} />
           <Route path="/employee/tasks" element={<EmployeePanel />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/employee/register" element={<Register />} />
+          <Route path="/admin/register" element={<AdminRegister />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />

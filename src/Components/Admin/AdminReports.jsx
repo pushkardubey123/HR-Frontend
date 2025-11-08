@@ -8,35 +8,46 @@ import { FaFileDownload, FaFileAlt } from "react-icons/fa";
 
 const AdminReport = () => {
   const [type, setType] = useState("");
-  const [fileUrl, setFileUrl] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const token = JSON.parse(localStorage.getItem("user"))?.token;
 
   const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    responseType: "blob", // ✅ Important for PDF
   });
 
-  axiosInstance.interceptors.request.use((config) => {
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-  });
+  const handleGenerate = async () => {
+    if (!type) {
+      return Swal.fire("Required", "Please select a report type", "warning");
+    }
 
-const handleGenerate = async () => {
-  if (!type) {
-    return Swal.fire("Required", "Please select a report type", "warning");
-  }
+    setLoading(true);
+    try {
+      const response = await axiosInstance.get(`/api/reports/stream?type=${type}`);
 
-  setLoading(true);
-  try {
-    window.open(`${import.meta.env.VITE_API_URL}/api/reports/stream?type=${type}`, "_blank");
-  } catch (err) {
-    Swal.fire("Error", "Something went wrong", "error");
-  } finally {
-    setLoading(false);
-  }
-};
+      // ✅ Create blob URL
+      const file = new Blob([response.data], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(file);
 
+      // ✅ Open in new tab
+      window.open(fileURL);
+
+      // Optional: auto-download
+      // const link = document.createElement("a");
+      // link.href = fileURL;
+      // link.setAttribute("download", `${type}_report.pdf`);
+      // document.body.appendChild(link);
+      // link.click();
+      // link.remove();
+
+    } catch (err) {
+      Swal.fire("Error", "Something went wrong while generating the report", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AdminLayout>

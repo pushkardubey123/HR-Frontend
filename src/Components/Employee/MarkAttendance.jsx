@@ -28,15 +28,13 @@ const MarkAttendance = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const employeeId = user?.id;
     const today = new Date().toDateString();
-    const storedDate = localStorage.getItem(
-      `attendanceMarkedDate_${employeeId}`
-    );
+    const storedDate = localStorage.getItem(`attendanceMarkedDate_${employeeId}`);
 
     if (storedDate === today) {
       setMarkedToday(true);
     }
 
-    fetchTodayLogs(employeeId);
+    if (employeeId) fetchTodayLogs(employeeId);
   }, []);
 
   const fetchTodayLogs = async (employeeId) => {
@@ -44,9 +42,7 @@ const MarkAttendance = () => {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/attendance/employee/${employeeId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.success) {
         const today = new Date().toDateString();
@@ -58,29 +54,35 @@ const MarkAttendance = () => {
         }
       }
     } catch (err) {
-      Swal.fire("Error", "Fetch logs failed", err);
+      Swal.fire("Error", "Failed to fetch logs", "error");
     }
   };
 
+  // ✅ Mark daily attendance
   const handleMark = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.token;
     const employeeId = user?.id;
 
     if (!navigator.geolocation) {
-      Swal.fire(
-        "Error",
-        "Geolocation is not supported by your browser",
-        "error"
-      );
+      Swal.fire("Error", "Geolocation not supported", "error");
       return;
     }
 
     setLoading(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const { latitude, longitude } = position.coords;
+        const latitude = position.coords?.latitude;
+        const longitude = position.coords?.longitude;
         const inTime = getCurrentTime();
+
+        if (!latitude || !longitude) {
+          Swal.fire("Error", "Unable to fetch GPS location", "error");
+          setLoading(false);
+          return;
+        }
+
+        console.log("📍 Marking attendance:", { employeeId, latitude, longitude });
 
         try {
           const res = await axios.post(
@@ -88,8 +90,9 @@ const MarkAttendance = () => {
             { employeeId, latitude, longitude, inTime },
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          const today = new Date().toDateString();
+
           if (res.data.success) {
+            const today = new Date().toDateString();
             setMarkedToday(true);
             localStorage.setItem(`attendanceMarkedDate_${employeeId}`, today);
             Swal.fire("Success", res.data.message, "success");
@@ -106,12 +109,13 @@ const MarkAttendance = () => {
       },
       () => {
         setLoading(false);
-        Swal.fire("Error", "Unable to fetch location", "error");
+        Swal.fire("Error", "Unable to access location", "error");
       }
     );
   };
 
-  const handleCheck = async (type) => {
+  // ✅ Handle Check In / Out sessions
+  const handleCheck = (type) => {
     const user = JSON.parse(localStorage.getItem("user"));
     const employeeId = user?.id;
     const token = user?.token;
@@ -122,20 +126,23 @@ const MarkAttendance = () => {
     }
 
     navigator.geolocation.getCurrentPosition(async (position) => {
+      const latitude = position.coords?.latitude;
+      const longitude = position.coords?.longitude;
+
+      if (!latitude || !longitude) {
+        Swal.fire("Error", "Unable to fetch GPS location", "error");
+        return;
+      }
+
+      console.log("📍 Session Action:", { employeeId, latitude, longitude, actionType: type });
+
       try {
-        const { latitude, longitude } = position.coords;
         const res = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/attendance/session`,
-          {
-            employeeId,
-            latitude,
-            longitude,
-            actionType: type,
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { employeeId, latitude, longitude, actionType: type },
+          { headers: { Authorization: `Bearer ${token}` } }
         );
+
         if (res.data.success) {
           Swal.fire(
             "Success",
@@ -147,11 +154,7 @@ const MarkAttendance = () => {
           Swal.fire("Error", res.data.message, "error");
         }
       } catch (err) {
-        Swal.fire(
-          "Error",
-          err.response?.data?.message || "Something went wrong",
-          "error"
-        );
+        Swal.fire("Error", err.response?.data?.message || "Something went wrong", "error");
       }
     });
   };
